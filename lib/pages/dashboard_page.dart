@@ -1,0 +1,489 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../bloc/anime_bloc.dart';
+import '../bloc/anime_event.dart';
+import '../bloc/anime_state.dart';
+import '../models/anime_model.dart';
+import '../widgets/sidebar.dart';
+import '../widgets/anime_card.dart';
+
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AnimeBloc>().add(FetchTopAnimeEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+    final isTablet = screenWidth >= 600 && screenWidth < 1200;
+
+    if (isMobile) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFE1BEE7),
+          title: const Text(
+            'AnimeList+',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => _showMobileDrawer(context),
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            _buildSearchBar(),
+            _buildBanner(context),
+            const SizedBox(height: 20),
+            _buildContentArea(),
+          ],
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: Row(
+        children: [
+          if (!isTablet) const Sidebar(selectedPage: ''),
+          Expanded(
+            child: Column(
+              children: [
+                _buildSearchBar(),
+                _buildBanner(context),
+                const SizedBox(height: 20),
+                _buildContentArea(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🔍 SEARCH BAR
+  Widget _buildSearchBar() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      color: Colors.white,
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Cari anime kesukaanmu...',
+          filled: true,
+          fillColor: const Color(0xFFF8F4FF),
+          prefixIcon: const Icon(Icons.search, color: Color(0xFFE1BEE7)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        onSubmitted: (query) {
+          context.read<AnimeBloc>().add(
+            query.isEmpty ? FetchTopAnimeEvent() : SearchAnimeEvent(query),
+          );
+        },
+      ),
+    );
+  }
+
+  // 🏷️ BANNER
+  Widget _buildBanner(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFE1BEE7), Color(0xFFBBDEFB)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Hai Rifda 💕!',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Hari ini ada banyak anime populer buat kamu tonton!',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.tv, color: Colors.white, size: 60),
+        ],
+      ),
+    );
+  }
+
+  // 🎬 CONTENT AREA (LIST + FILTERS)
+  Widget _buildContentArea() {
+    return Expanded(
+      child: BlocConsumer<AnimeBloc, AnimeState>(
+        listener: (context, state) {
+          if (state is AnimeError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is AnimeLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is AnimeLoaded) {
+            final animeList = state.displayList
+                .map((json) => Anime.fromJson(json))
+                .toList();
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(context),
+                const SizedBox(height: 16),
+                _buildAnimeList(animeList),
+              ],
+            );
+          } else if (state is AnimeError) {
+            return Center(
+              child: Text(
+                'Ups, anime tidak ditemukan (｡•́︿•̀｡)',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            );
+          }
+          return const Center(child: Text('Welcome to Anime Dashboard'));
+        },
+      ),
+    );
+  }
+
+  // 🧭 HEADER (Title + Filter Buttons)
+  Widget _buildHeader(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
+    if (isMobile) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Top Rated Anime',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _filterButton(
+                  icon: Icons.filter_list,
+                  label: 'Genre',
+                  color: const Color(0xFFE1BEE7),
+                  onPressed: () => _showGenreFilter(context),
+                ),
+                _filterButton(
+                  icon: Icons.star,
+                  label: 'Rating',
+                  color: const Color(0xFFBBDEFB),
+                  onPressed: () => _showRatingFilter(context),
+                ),
+                _filterButton(
+                  icon: Icons.sort,
+                  label: 'Sort',
+                  color: const Color(0xFFC8E6C9),
+                  onPressed: () => _toggleSort(context),
+                ),
+                _filterButton(
+                  icon: Icons.refresh,
+                  label: 'Reset',
+                  color: Colors.grey,
+                  onPressed: () => _resetFilters(context),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Text(
+            'Top Rated Anime',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const Spacer(),
+          Wrap(
+            spacing: 10,
+            children: [
+              _filterButton(
+                icon: Icons.filter_list,
+                label: 'Genre',
+                color: const Color(0xFFE1BEE7),
+                onPressed: () => _showGenreFilter(context),
+              ),
+              _filterButton(
+                icon: Icons.star,
+                label: 'Rating',
+                color: const Color(0xFFBBDEFB),
+                onPressed: () => _showRatingFilter(context),
+              ),
+              _filterButton(
+                icon: Icons.sort,
+                label: 'Sort',
+                color: const Color(0xFFC8E6C9),
+                onPressed: () => _toggleSort(context),
+              ),
+              _filterButton(
+                icon: Icons.refresh,
+                label: 'Reset',
+                color: Colors.grey,
+                onPressed: () => _resetFilters(context),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🎞️ ANIME LIST (horizontal scroll)
+  Widget _buildAnimeList(List<Anime> animeList) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
+    if (isMobile) {
+      return Expanded(
+        child: GridView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+            childAspectRatio: 0.7,
+          ),
+          itemCount: animeList.length,
+          itemBuilder: (context, index) {
+            final anime = animeList[index];
+            return AnimeCard(
+              title: anime.title,
+              imageUrl: anime.imageUrl,
+              score: anime.score,
+              year: anime.year,
+              onTap: () => context.go('/detail', extra: anime),
+            );
+          },
+        ),
+      );
+    }
+
+    return Expanded(
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: animeList.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 15),
+        itemBuilder: (context, index) {
+          final anime = animeList[index];
+          return AnimeCard(
+            title: anime.title,
+            imageUrl: anime.imageUrl,
+            score: anime.score,
+            year: anime.year,
+            onTap: () => context.go('/detail', extra: anime),
+          );
+        },
+      ),
+    );
+  }
+
+  // 🔘 Filter Button Builder
+  Widget _filterButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      ),
+    );
+  }
+
+  // 🧩 FILTER / SORT FUNCTIONS
+  void _showGenreFilter(BuildContext context) {
+    final genres = [
+      'Action',
+      'Adventure',
+      'Comedy',
+      'Drama',
+      'Fantasy',
+      'Horror',
+      'Mystery',
+      'Romance',
+      'Sci-Fi',
+      'Slice of Life',
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Filter by Genre'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            itemCount: genres.length,
+            itemBuilder: (context, index) {
+              final genre = genres[index];
+              return ListTile(
+                title: Text(genre),
+                onTap: () {
+                  context.read<AnimeBloc>().add(FilterByGenreEvent(genre));
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Filter diterapkan: $genre'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRatingFilter(BuildContext context) {
+    final ratings = [7.0, 8.0, 9.0];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Filter by Minimum Rating'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            itemCount: ratings.length,
+            itemBuilder: (context, index) {
+              final rating = ratings[index];
+              return ListTile(
+                title: Text('Rating ${rating}+'),
+                onTap: () {
+                  context.read<AnimeBloc>().add(FilterByRatingEvent(rating));
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Filter rating minimum: $rating'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _toggleSort(BuildContext context) {
+    final currentState = context.read<AnimeBloc>().state;
+    if (currentState is AnimeLoaded) {
+      final ascending = currentState.sortAscending;
+      context.read<AnimeBloc>().add(SortByRatingEvent(!ascending));
+    }
+  }
+
+  void _resetFilters(BuildContext context) {
+    context.read<AnimeBloc>().add(ResetFilterEvent());
+  }
+
+  void _showMobileDrawer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildMenuItem(context, Icons.dashboard, 'Dashboard', '/dashboard'),
+            _buildMenuItem(context, Icons.star, 'Anime Populer', '/popular'),
+            _buildMenuItem(context, Icons.favorite, 'Favorit', '/favorite'),
+            _buildMenuItem(context, Icons.history, 'Riwayat', '/history'),
+            _buildMenuItem(context, Icons.settings, 'Pengaturan', '/settings'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String route,
+  ) {
+    return ListTile(
+      leading: Icon(icon, color: const Color(0xFFE1BEE7)),
+      title: Text(title),
+      onTap: () {
+        Navigator.pop(context);
+        context.go(route);
+      },
+    );
+  }
+}
