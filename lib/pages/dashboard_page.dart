@@ -59,7 +59,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       body: Row(
         children: [
-          if (!isTablet) const Sidebar(selectedPage: ''),
+          if (!isTablet) const Sidebar(selectedPage: 'Dashboard'),
           Expanded(
             child: Column(
               children: [
@@ -304,7 +304,7 @@ class _DashboardPageState extends State<DashboardPage> {
               imageUrl: anime.imageUrl,
               score: anime.score,
               year: anime.year,
-              onTap: () => context.go('/detail', extra: anime),
+              onTap: () => context.push('/detail', extra: anime),
             );
           },
         ),
@@ -324,7 +324,7 @@ class _DashboardPageState extends State<DashboardPage> {
             imageUrl: anime.imageUrl,
             score: anime.score,
             year: anime.year,
-            onTap: () => context.go('/detail', extra: anime),
+            onTap: () => context.push('/detail', extra: anime),
           );
         },
       ),
@@ -460,7 +460,13 @@ class _DashboardPageState extends State<DashboardPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildMenuItem(context, Icons.dashboard, 'Dashboard', '/dashboard'),
+            _buildMenuItem(
+              context,
+              Icons.dashboard,
+              'Dashboard',
+              '/dashboard',
+              resetToTop: true,
+            ),
             _buildMenuItem(context, Icons.star, 'Anime Populer', '/popular'),
             _buildMenuItem(context, Icons.favorite, 'Favorit', '/favorite'),
             _buildMenuItem(context, Icons.history, 'Riwayat', '/history'),
@@ -475,13 +481,17 @@ class _DashboardPageState extends State<DashboardPage> {
     BuildContext context,
     IconData icon,
     String title,
-    String route,
-  ) {
+    String route, {
+    bool resetToTop = false,
+  }) {
     return ListTile(
       leading: Icon(icon, color: const Color(0xFFE1BEE7)),
       title: Text(title),
       onTap: () {
         Navigator.pop(context);
+        if (resetToTop) {
+          context.read<AnimeBloc>().add(FetchTopAnimeEvent(resetToTop: true));
+        }
         context.go(route);
       },
     );

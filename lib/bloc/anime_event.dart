@@ -11,7 +11,11 @@ abstract class AnimeEvent extends Equatable {
 
 /// Event untuk mengambil daftar anime populer.
 class FetchTopAnimeEvent extends AnimeEvent {
-  const FetchTopAnimeEvent();
+  final bool resetToTop;
+  const FetchTopAnimeEvent({this.resetToTop = false});
+
+  @override
+  List<Object?> get props => [resetToTop];
 }
 
 /// Event untuk mencari anime berdasarkan query teks.

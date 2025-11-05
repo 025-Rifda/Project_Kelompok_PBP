@@ -6,6 +6,7 @@ import 'anime_state.dart';
 class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   final Dio dio;
   List<dynamic> _animeList = [];
+  List<dynamic> _topAnimeList = [];
   List<dynamic> _favorites = [];
   List<Map<String, dynamic>> _searchHistory = [];
 
@@ -42,10 +43,20 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     FetchTopAnimeEvent event,
     Emitter<AnimeState> emit,
   ) async {
-    await _executeFetch(
-      emit,
-      () async => _fetchAnimeData(endpoint: 'top/anime'),
-    );
+    emit(AnimeLoading());
+    try {
+      _topAnimeList = await _fetchAnimeData(endpoint: 'top/anime');
+      _animeList = _topAnimeList;
+      emit(
+        AnimeLoaded(
+          _animeList,
+          favorites: _favorites,
+          searchHistory: _searchHistory,
+        ),
+      );
+    } catch (e) {
+      emit(AnimeError('Gagal memuat data: $e'));
+    }
   }
 
   // 🔸 Cari anime berdasarkan nama

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../bloc/anime_bloc.dart';
+import '../bloc/anime_event.dart';
 
 // State Cubit untuk mengatur mode terang/gelap
 class ThemeCubit extends Cubit<bool> {
@@ -64,6 +66,7 @@ class Sidebar extends StatelessWidget {
             'Dashboard',
             selectedPage == 'Dashboard',
             '/dashboard',
+            resetToTop: true,
           ),
           _buildMenuItem(
             context,
@@ -129,8 +132,9 @@ class Sidebar extends StatelessWidget {
     IconData icon,
     String title,
     bool isSelected,
-    String route,
-  ) {
+    String route, {
+    bool resetToTop = false,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: isSelected
@@ -157,6 +161,11 @@ class Sidebar extends StatelessWidget {
         ),
         onTap: () {
           if (!isSelected) {
+            if (resetToTop) {
+              context.read<AnimeBloc>().add(
+                FetchTopAnimeEvent(resetToTop: true),
+              );
+            }
             context.go(route);
           }
         },

@@ -24,7 +24,7 @@ class DetailPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => context.go('/dashboard'),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           anime.title,
