@@ -11,7 +11,7 @@ import '../models/anime_model.dart';
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/dashboard',
-    routerNeglect: true,
+    routerNeglect: false,
     routes: [
       GoRoute(
         path: '/dashboard',
