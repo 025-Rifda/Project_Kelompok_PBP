@@ -9,3 +9,7 @@
 - [x] Update dashboard_page.dart untuk navigasi ke detail page menggunakan GoRouter
 - [x] Update detail_page.dart untuk back navigation menggunakan GoRouter
 - [x] Test semua navigasi untuk memastikan berfungsi dengan baik
+
+## Fix Back Button on Detail Page
+
+- [x] Update back button in detail_page.dart to navigate to '/dashboard' explicitly
