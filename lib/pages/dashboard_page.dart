@@ -53,10 +53,13 @@ class _DashboardPageState extends State<DashboardPage> {
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFFE1BEE7),
+          backgroundColor: const Color.fromARGB(255, 209, 132, 218),
           title: const Text(
             'AnimeList+',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: const Color.fromARGB(255, 168, 128, 176),
+              fontWeight: FontWeight.bold,
+            ),
           ),
           actions: [
             IconButton(
@@ -107,7 +110,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             return ListTile(
                               leading: const Icon(
                                 Icons.search,
-                                color: Color(0xFFE1BEE7),
+                                color: const Color.fromARGB(255, 168, 128, 176),
                               ),
                               title: Text(query),
                               onTap: () {
@@ -181,7 +184,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           return ListTile(
                             leading: const Icon(
                               Icons.search,
-                              color: Color(0xFFE1BEE7),
+                              color: const Color.fromARGB(255, 168, 128, 176),
                             ),
                             title: Text(query),
                             onTap: () {
@@ -213,14 +216,24 @@ class _DashboardPageState extends State<DashboardPage> {
       child: TextField(
         controller: _searchController,
         focusNode: _searchFocusNode,
+        cursorColor: const Color.fromARGB(255, 168, 128, 176),
         decoration: InputDecoration(
           hintText: 'Cari anime kesukaanmu...',
+          hintStyle: const TextStyle(
+            color: const Color.fromARGB(255, 168, 128, 176),
+          ),
           filled: true,
-          fillColor: const Color(0xFFF8F4FF),
-          prefixIcon: const Icon(Icons.search, color: Color(0xFFE1BEE7)),
+          fillColor: const Color.fromARGB(255, 241, 222, 249),
+          prefixIcon: const Icon(
+            Icons.search,
+            color: const Color.fromARGB(255, 168, 128, 176),
+          ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, color: Color(0xFFE1BEE7)),
+                  icon: const Icon(
+                    Icons.clear,
+                    color: const Color.fromARGB(255, 168, 128, 176),
+                  ),
                   onPressed: () {
                     _searchController.clear();
                     context.read<AnimeBloc>().add(FetchTopAnimeEvent());
@@ -334,13 +347,15 @@ class _DashboardPageState extends State<DashboardPage> {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Top Rated Anime',
+              textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
+                color: const Color.fromARGB(255, 168, 128, 176),
               ),
             ),
             const SizedBox(height: 16),
@@ -373,9 +388,10 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Text(
             'Top Rated Anime',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: const Color.fromARGB(255, 168, 128, 176),
+            ),
           ),
           const Spacer(),
           Wrap(
@@ -587,7 +603,7 @@ class _DashboardPageState extends State<DashboardPage> {
     bool resetToTop = false,
   }) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFFE1BEE7)),
+      leading: Icon(icon, color: const Color.fromARGB(255, 168, 128, 176)),
       title: Text(title),
       onTap: () {
         Navigator.pop(context);

@@ -42,17 +42,23 @@ class _FavoritePageState extends State<FavoritePage> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            icon: const Icon(
+              Icons.arrow_back,
+              color: const Color.fromARGB(255, 168, 128, 176),
+            ),
             onPressed: () => context.go('/dashboard'),
           ),
-          Text(
-            'Anime Favorit',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFFE1BEE7),
+          Expanded(
+            child: Center(
+              child: Text(
+                'Anime Favorit',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 168, 128, 176),
+                ),
+              ),
             ),
           ),
-          const Spacer(),
         ],
       ),
     );
@@ -137,7 +143,7 @@ class _FavoritePageState extends State<FavoritePage> {
             'Filter Favorit',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color(0xFFE1BEE7),
+              color: const Color.fromARGB(255, 168, 128, 176),
             ),
           ),
           const Spacer(),

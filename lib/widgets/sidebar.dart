@@ -46,12 +46,20 @@ class Sidebar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.tv, color: Colors.white, size: isTablet ? 25 : 30),
+              Icon(
+                Icons.tv,
+                color: isDark
+                    ? Colors.white
+                    : const Color.fromARGB(255, 5, 56, 107),
+                size: isTablet ? 25 : 30,
+              ),
               const SizedBox(width: 8),
               Text(
                 'AnimeList+',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
+                  color: isDark
+                      ? Colors.white
+                      : const Color.fromARGB(255, 5, 56, 107),
                   fontWeight: FontWeight.bold,
                   fontSize: isTablet ? 18 : null,
                 ),
@@ -66,6 +74,8 @@ class Sidebar extends StatelessWidget {
             'Dashboard',
             selectedPage == 'Dashboard',
             '/dashboard',
+            isDark,
+            isTablet,
             resetToTop: true,
           ),
           _buildMenuItem(
@@ -74,6 +84,8 @@ class Sidebar extends StatelessWidget {
             'Anime Populer',
             selectedPage == 'Anime Populer',
             '/popular',
+            isDark,
+            isTablet,
           ),
           _buildMenuItem(
             context,
@@ -81,6 +93,8 @@ class Sidebar extends StatelessWidget {
             'Favorit',
             selectedPage == 'Favorit',
             '/favorite',
+            isDark,
+            isTablet,
           ),
           _buildMenuItem(
             context,
@@ -88,6 +102,8 @@ class Sidebar extends StatelessWidget {
             'Riwayat',
             selectedPage == 'Riwayat',
             '/history',
+            isDark,
+            isTablet,
           ),
           _buildMenuItem(
             context,
@@ -95,6 +111,8 @@ class Sidebar extends StatelessWidget {
             'Pengaturan',
             selectedPage == 'Pengaturan',
             '/settings',
+            isDark,
+            isTablet,
           ),
 
           const Spacer(),
@@ -104,12 +122,17 @@ class Sidebar extends StatelessWidget {
           ListTile(
             leading: Icon(
               isDark ? Icons.dark_mode : Icons.light_mode,
-              color: Colors.white,
+              color: isDark
+                  ? Colors.white
+                  : const Color.fromARGB(255, 5, 56, 107),
+              size: isTablet ? 25 : 30,
             ),
             title: Text(
               isDark ? 'Dark Mode' : 'Light Mode',
               style: TextStyle(
-                color: Colors.white,
+                color: isDark
+                    ? Colors.white
+                    : const Color.fromARGB(255, 5, 56, 107),
                 fontWeight: FontWeight.w500,
                 fontSize: isTablet ? 14 : null,
               ),
@@ -132,18 +155,20 @@ class Sidebar extends StatelessWidget {
     IconData icon,
     String title,
     bool isSelected,
-    String route, {
+    String route,
+    bool isDark,
+    bool isTablet, {
     bool resetToTop = false,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: isSelected
           ? BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withOpacity(0.5),
               borderRadius: BorderRadius.circular(15),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withOpacity(0.6),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -151,11 +176,17 @@ class Sidebar extends StatelessWidget {
             )
           : null,
       child: ListTile(
-        leading: Icon(icon, color: Colors.white),
+        leading: Icon(
+          icon,
+          color: isDark ? Colors.white : const Color.fromARGB(255, 5, 56, 107),
+          size: isTablet ? 25 : 30,
+        ),
         title: Text(
           title,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: isDark
+                ? Colors.white
+                : const Color.fromARGB(255, 5, 56, 107),
             fontWeight: FontWeight.w500,
           ),
         ),
