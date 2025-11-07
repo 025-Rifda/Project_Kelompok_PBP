@@ -17,6 +17,8 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  bool _isSearching = false;
   Set<String> _selectedGenres = {};
   double? _selectedRating;
 
@@ -24,6 +26,21 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     context.read<AnimeBloc>().add(FetchTopAnimeEvent());
+    _searchFocusNode.addListener(() {
+      setState(() {
+        _isSearching = _searchFocusNode.hasFocus;
+      });
+    });
+    _searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -47,23 +64,9 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ],
         ),
-        body: Column(
+        body: Stack(
           children: [
-            _buildSearchBar(),
-            _buildBanner(context),
-            const SizedBox(height: 20),
-            _buildContentArea(),
-          ],
-        ),
-      );
-    }
-
-    return Scaffold(
-      body: Row(
-        children: [
-          if (!isTablet) const Sidebar(selectedPage: 'Dashboard'),
-          Expanded(
-            child: Column(
+            Column(
               children: [
                 _buildSearchBar(),
                 _buildBanner(context),
@@ -71,7 +74,118 @@ class _DashboardPageState extends State<DashboardPage> {
                 _buildContentArea(),
               ],
             ),
+            if (_isSearching)
+              Positioned(
+                top: 80, // Position below search bar
+                left: 20, // Align with search bar padding
+                right: 20,
+                child: BlocBuilder<AnimeBloc, AnimeState>(
+                  builder: (context, state) {
+                    if (state is AnimeLoaded && state.searchHistory.isNotEmpty) {
+                      return Container(
+                        width: double.infinity, // Full width within positioned
+                        constraints: const BoxConstraints(maxHeight: 200),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: state.searchHistory.take(5).length,
+                          itemBuilder: (context, index) {
+                            final history = state.searchHistory[index];
+                            final query = history['query'] as String;
+                            return ListTile(
+                              leading: const Icon(Icons.search, color: Color(0xFFE1BEE7)),
+                              title: Text(query),
+                              onTap: () {
+                                _searchController.text = query;
+                                _searchFocusNode.unfocus();
+                                context.read<AnimeBloc>().add(SearchAnimeEvent(query));
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+          ],
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          Row(
+            children: [
+              if (!isTablet) const Sidebar(selectedPage: 'Dashboard'),
+              Expanded(
+                child: Column(
+                  children: [
+                    _buildSearchBar(),
+                    _buildBanner(context),
+                    const SizedBox(height: 20),
+                    _buildContentArea(),
+                  ],
+                ),
+              ),
+            ],
           ),
+          if (_isSearching)
+            Positioned(
+              top: 80, // Position below search bar
+              left: isTablet ? 20 : 270, // Align with text area after search icon
+              right: 20,
+              child: BlocBuilder<AnimeBloc, AnimeState>(
+                builder: (context, state) {
+                  if (state is AnimeLoaded && state.searchHistory.isNotEmpty) {
+                    return Container(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: state.searchHistory.take(5).length,
+                        itemBuilder: (context, index) {
+                          final history = state.searchHistory[index];
+                          final query = history['query'] as String;
+                          return ListTile(
+                            leading: const Icon(Icons.search, color: Color(0xFFE1BEE7)),
+                            title: Text(query),
+                            onTap: () {
+                              _searchController.text = query;
+                              _searchFocusNode.unfocus();
+                              context.read<AnimeBloc>().add(SearchAnimeEvent(query));
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
         ],
       ),
     );
@@ -84,11 +198,21 @@ class _DashboardPageState extends State<DashboardPage> {
       color: Colors.white,
       child: TextField(
         controller: _searchController,
+        focusNode: _searchFocusNode,
         decoration: InputDecoration(
           hintText: 'Cari anime kesukaanmu...',
           filled: true,
           fillColor: const Color(0xFFF8F4FF),
           prefixIcon: const Icon(Icons.search, color: Color(0xFFE1BEE7)),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear, color: Color(0xFFE1BEE7)),
+                  onPressed: () {
+                    _searchController.clear();
+                    context.read<AnimeBloc>().add(FetchTopAnimeEvent());
+                  },
+                )
+              : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(25),
             borderSide: BorderSide.none,
@@ -98,6 +222,9 @@ class _DashboardPageState extends State<DashboardPage> {
           context.read<AnimeBloc>().add(
             query.isEmpty ? FetchTopAnimeEvent() : SearchAnimeEvent(query),
           );
+        },
+        onChanged: (value) {
+          setState(() {}); // To update the suffix icon visibility
         },
       ),
     );
