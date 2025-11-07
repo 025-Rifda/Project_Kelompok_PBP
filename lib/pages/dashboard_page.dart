@@ -218,12 +218,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   onPressed: () => _showRatingFilter(context),
                 ),
                 _filterButton(
-                  icon: Icons.sort,
-                  label: 'Sort',
-                  color: const Color(0xFFC8E6C9),
-                  onPressed: () => _toggleSort(context),
-                ),
-                _filterButton(
                   icon: Icons.refresh,
                   label: 'Reset',
                   color: Colors.grey,
@@ -261,12 +255,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 label: 'Rating',
                 color: const Color(0xFFBBDEFB),
                 onPressed: () => _showRatingFilter(context),
-              ),
-              _filterButton(
-                icon: Icons.sort,
-                label: 'Sort',
-                color: const Color(0xFFC8E6C9),
-                onPressed: () => _toggleSort(context),
               ),
               _filterButton(
                 icon: Icons.refresh,

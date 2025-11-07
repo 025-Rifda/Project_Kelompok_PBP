@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
 import '../bloc/anime_state.dart';
@@ -40,6 +41,10 @@ class _PopularPageState extends State<PopularPage> {
       color: Colors.white,
       child: Row(
         children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            onPressed: () => context.go('/dashboard'),
+          ),
           Text(
             'Anime Populer',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(

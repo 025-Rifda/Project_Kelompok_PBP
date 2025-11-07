@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
@@ -32,6 +33,10 @@ class _HistoryPageState extends State<HistoryPage> {
       color: Colors.white,
       child: Row(
         children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            onPressed: () => context.go('/dashboard'),
+          ),
           Text(
             'Riwayat Pencarian',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(

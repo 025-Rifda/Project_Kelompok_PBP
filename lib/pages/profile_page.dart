@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -25,12 +26,20 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(20),
       color: Colors.white,
-      child: Text(
-        'Profil',
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: const Color(0xFFE1BEE7),
-        ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            onPressed: () => context.go('/settings'),
+          ),
+          Text(
+            'Profil',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFFE1BEE7),
+            ),
+          ),
+        ],
       ),
     );
   }

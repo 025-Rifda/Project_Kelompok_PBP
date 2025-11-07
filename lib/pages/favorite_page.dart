@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
 import '../widgets/anime_card.dart';
 import '../bloc/anime_bloc.dart';
@@ -37,6 +38,10 @@ class _FavoritePageState extends State<FavoritePage> {
       color: Colors.white,
       child: Row(
         children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            onPressed: () => context.go('/dashboard'),
+          ),
           Text(
             'Anime Favorit',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
-import 'profile_page.dart';
-import 'about_page.dart';
-import 'help_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -31,12 +29,20 @@ class _SettingsPageState extends State<SettingsPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       color: Colors.white,
-      child: Text(
-        'Pengaturan',
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: const Color(0xFFE1BEE7),
-        ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            onPressed: () => context.go('/dashboard'),
+          ),
+          Text(
+            'Pengaturan',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFFE1BEE7),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -66,10 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icons.person,
               title: 'Profil',
               subtitle: 'Kelola informasi profil Anda',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfilePage()),
-              ),
+              onTap: () => context.go('/settings/profile'),
             ),
             _buildSettingItem(
               icon: Icons.notifications,
@@ -85,19 +88,13 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icons.info,
               title: 'Tentang',
               subtitle: 'Versi aplikasi dan informasi lainnya',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AboutPage()),
-              ),
+              onTap: () => context.go('/settings/about'),
             ),
             _buildSettingItem(
               icon: Icons.help,
               title: 'Bantuan',
               subtitle: 'Panduan dan dukungan',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const HelpPage()),
-              ),
+              onTap: () => context.go('/settings/help'),
             ),
           ],
         ),
