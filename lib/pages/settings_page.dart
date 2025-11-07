@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/sidebar.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
@@ -34,7 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
           IconButton(
             icon: const Icon(
               Icons.arrow_back,
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Color.fromARGB(255, 168, 128, 176),
             ),
             onPressed: () => context.go('/dashboard'),
           ),
@@ -85,9 +86,7 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icons.notifications,
               title: 'Notifikasi',
               subtitle: 'Atur preferensi notifikasi',
-              onTap: () {
-                // Navigate to notification settings
-              },
+              onTap: () {},
             ),
             const SizedBox(height: 20),
             _buildSectionTitle('Aplikasi'),
@@ -102,6 +101,31 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'Bantuan',
               subtitle: 'Panduan dan dukungan',
               onTap: () => context.go('/settings/help'),
+            ),
+            const SizedBox(height: 30),
+
+            // 🔹 Tombol Logout dengan konfirmasi
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: _showLogoutConfirmation,
+                icon: const Icon(Icons.logout),
+                label: const Text('Logout'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -159,7 +183,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _resetSettings(BuildContext context) {
-    context.read<ThemeCubit>().emit(false); // Reset to light mode
+    context.read<ThemeCubit>().emit(false); // Reset ke mode terang
     context.read<AnimeBloc>().add(ResetSettingsEvent());
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -199,5 +223,56 @@ class _SettingsPageState extends State<SettingsPage> {
         onTap: onTap,
       ),
     );
+  }
+
+  // 🔹 Tampilkan dialog konfirmasi sebelum logout
+  void _showLogoutConfirmation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin logout dari aplikasi?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text('Tidak', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog dulu
+                _logout(); // Lanjut logout
+              },
+              child: const Text(
+                'Ya',
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Hapus data pengguna
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Berhasil logout'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+
+      await Future.delayed(const Duration(milliseconds: 500));
+      context.go('/login');
+    }
   }
 }

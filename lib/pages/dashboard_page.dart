@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
 import '../bloc/anime_state.dart';
@@ -22,10 +23,12 @@ class _DashboardPageState extends State<DashboardPage> {
   Set<String> _selectedGenres = {};
   double? selectedRating;
   bool? _sortRatingAscending;
+  String _username = 'Pengguna';
 
   @override
   void initState() {
     super.initState();
+    _loadUsername();
     context.read<AnimeBloc>().add(FetchTopAnimeEvent());
     _searchFocusNode.addListener(() {
       setState(() {
@@ -34,6 +37,13 @@ class _DashboardPageState extends State<DashboardPage> {
     });
     _searchController.addListener(() {
       setState(() {});
+    });
+  }
+
+  Future<void> _loadUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _username = prefs.getString('username') ?? 'Pengguna';
     });
   }
 
@@ -81,15 +91,15 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             if (_isSearching)
               Positioned(
-                top: 80, // Position below search bar
-                left: 20, // Align with search bar padding
+                top: 80,
+                left: 20,
                 right: 20,
                 child: BlocBuilder<AnimeBloc, AnimeState>(
                   builder: (context, state) {
                     if (state is AnimeLoaded &&
                         state.searchHistory.isNotEmpty) {
                       return Container(
-                        width: double.infinity, // Full width within positioned
+                        width: double.infinity,
                         constraints: const BoxConstraints(maxHeight: 200),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -210,7 +220,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 🔍 SEARCH BAR
+  // SEARCH BAR
   Widget _buildSearchBar() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -253,13 +263,13 @@ class _DashboardPageState extends State<DashboardPage> {
           );
         },
         onChanged: (value) {
-          setState(() {}); // To update the suffix icon visibility
+          setState(() {});
         },
       ),
     );
   }
 
-  // 🏷️ BANNER
+  //  BANNER
   Widget _buildBanner(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -277,7 +287,7 @@ class _DashboardPageState extends State<DashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hai Rifda 💕!',
+                  'Hai $_username 💕!',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -297,7 +307,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 🎬 CONTENT AREA (LIST + FILTERS)
+  //  CONTENT AREA (LIST + FILTERS)
   Widget _buildContentArea() {
     return Expanded(
       child: BlocConsumer<AnimeBloc, AnimeState>(
@@ -340,7 +350,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 🧭 HEADER (Title + Filter Buttons)
+  //  HEADER (Title + Filter Buttons)
   Widget _buildHeader(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
@@ -418,7 +428,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 🎞️ ANIME LIST (horizontal scroll)
+  // ANIME LIST (horizontal scroll)
   Widget _buildAnimeList(List<Anime> animeList) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
@@ -468,7 +478,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 🔘 Filter Button Builder
+  //  Filter Button Builder
   Widget _filterButton({
     required IconData icon,
     required String label,
@@ -487,7 +497,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // 🧩 FILTER / SORT FUNCTIONS
+  //  FILTER / SORT FUNCTIONS
 
   void _showRatingFilter(BuildContext context) {
     showDialog(

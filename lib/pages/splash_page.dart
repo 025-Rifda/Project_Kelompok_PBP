@@ -44,7 +44,7 @@ class _SplashPageState extends State<SplashPage>
     );
 
     Future.delayed(const Duration(seconds: 4), () {
-      if (mounted) context.go('/dashboard');
+      if (mounted) context.go('/login');
     });
   }
 
@@ -91,7 +91,7 @@ class _SplashPageState extends State<SplashPage>
                     borderRadius: BorderRadius.circular(25),
                     color: Colors.black.withOpacity(0.6),
                     boxShadow: [
-                      // 1. Bayangan utama untuk kedalaman 3D (tetap ada)
+                      // 1. Bayangan utama untuk kedalaman 3D
                       BoxShadow(
                         color: Colors.black.withOpacity(0.7),
                         spreadRadius: 3,

@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import '../pages/splash_page.dart';
+import '../pages/login_page.dart';
+import '../pages/register_page.dart';
 import '../pages/dashboard_page.dart';
 import '../pages/popular_page.dart';
 import '../pages/favorite_page.dart';
@@ -19,6 +21,11 @@ class AppRouter {
     routerNeglect: false,
     routes: [
       GoRoute(path: '/', builder: (context, state) => const SplashPage()),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterPage(),
+      ),
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => const DashboardPage(),

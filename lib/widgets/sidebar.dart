@@ -42,7 +42,7 @@ class Sidebar extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 50),
-          // 🌸 Logo
+          //  Logo
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -67,7 +67,7 @@ class Sidebar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 40),
-          // 📜 Menu Items
+          //  Menu Items
           _buildMenuItem(
             context,
             Icons.dashboard,
@@ -127,7 +127,7 @@ class Sidebar extends StatelessWidget {
           const Spacer(),
           const Divider(color: Colors.white38, indent: 20, endIndent: 20),
 
-          // 🌙 Toggle Mode
+          //  Toggle Mode
           ListTile(
             leading: Icon(
               isDark ? Icons.dark_mode : Icons.light_mode,
@@ -158,7 +158,7 @@ class Sidebar extends StatelessWidget {
     );
   }
 
-  // 🧭 Menu Builder
+  //  Menu Builder
   Widget _buildMenuItem(
     BuildContext context,
     IconData icon,

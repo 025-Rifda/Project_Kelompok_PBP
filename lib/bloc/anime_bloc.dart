@@ -27,7 +27,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     on<ResetSettingsEvent>(_handleResetSettings);
   }
 
-  // 🔸 Fungsi umum untuk mengambil data dari API
+  // Fungsi umum untuk mengambil data dari API
   Future<List<dynamic>> _fetchAnimeData({
     required String endpoint,
     Map<String, dynamic>? query,
@@ -39,7 +39,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     return response.data['data'];
   }
 
-  // 🔸 Fetch anime terpopuler
+  // Fetch anime terpopuler
   Future<void> _handleFetchTopAnime(
     FetchTopAnimeEvent event,
     Emitter<AnimeState> emit,
@@ -60,7 +60,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     }
   }
 
-  // 🔸 Cari anime berdasarkan nama
+  // Cari anime berdasarkan nama
   Future<void> _handleSearchAnime(
     SearchAnimeEvent event,
     Emitter<AnimeState> emit,
@@ -76,7 +76,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     add(AddToHistoryEvent(event.query));
   }
 
-  // 🔸 Fungsi reusable untuk fetch (supaya tidak nulis try-catch berulang)
+  // Fungsi reusable untuk fetch (supaya tidak nulis try-catch berulang)
   Future<void> _executeFetch(
     Emitter<AnimeState> emit,
     Future<List<dynamic>> Function() fetchFunction,
@@ -96,7 +96,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     }
   }
 
-  // 🔸 Filter berdasarkan genre
+  // Filter berdasarkan genre
   void _handleFilterByGenre(
     FilterByGenreEvent event,
     Emitter<AnimeState> emit,
@@ -120,7 +120,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     );
   }
 
-  // 🔸 Filter berdasarkan rating minimum
+  // Filter berdasarkan rating minimum
   void _handleFilterByRating(
     FilterByRatingEvent event,
     Emitter<AnimeState> emit,
@@ -137,7 +137,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     );
   }
 
-  // 🔸 Urutkan berdasarkan rating
+  // Urutkan berdasarkan rating
   void _handleSortByRating(SortByRatingEvent event, Emitter<AnimeState> emit) {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
@@ -160,7 +160,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     );
   }
 
-  // 🔸 Urutkan favorit berdasarkan rating
+  // Urutkan favorit berdasarkan rating
   void _handleSortFavorites(
     SortFavoritesEvent event,
     Emitter<AnimeState> emit,
@@ -185,7 +185,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     );
   }
 
-  // 🔸 Tambah ke favorit
+  // Tambah ke favorit
   void _handleAddToFavorites(
     AddToFavoritesEvent event,
     Emitter<AnimeState> emit,
@@ -203,7 +203,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     }
   }
 
-  // 🔸 Hapus dari favorit
+  //  Hapus dari favorit
   void _handleRemoveFromFavorites(
     RemoveFromFavoritesEvent event,
     Emitter<AnimeState> emit,
@@ -215,7 +215,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     emit(currentState.copyWith(favorites: List.from(_favorites)));
   }
 
-  // 🔸 Ambil daftar favorit
+  //  Ambil daftar favorit
   void _handleFetchFavorites(
     FetchFavoritesEvent event,
     Emitter<AnimeState> emit,
@@ -225,7 +225,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     emit(currentState.copyWith(filteredList: _favorites));
   }
 
-  // 🔸 Tambah ke riwayat pencarian
+  //  Tambah ke riwayat pencarian
   void _handleAddToHistory(AddToHistoryEvent event, Emitter<AnimeState> emit) {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
@@ -243,14 +243,14 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     emit(currentState.copyWith(searchHistory: List.from(_searchHistory)));
   }
 
-  // 🔸 Ambil riwayat pencarian
+  //  Ambil riwayat pencarian
   void _handleFetchHistory(FetchHistoryEvent event, Emitter<AnimeState> emit) {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
     emit(currentState.copyWith(searchHistory: List.from(_searchHistory)));
   }
 
-  // 🔸 Hapus riwayat pencarian
+  // Hapus riwayat pencarian
   void _handleClearHistory(ClearHistoryEvent event, Emitter<AnimeState> emit) {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
@@ -259,7 +259,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     emit(currentState.copyWith(searchHistory: []));
   }
 
-  // 🔸 Reset filter dan urutan
+  //  Reset filter dan urutan
   void _handleReset(ResetFilterEvent event, Emitter<AnimeState> emit) {
     if (state is! AnimeLoaded) return;
     emit(
@@ -271,7 +271,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     );
   }
 
-  // 🔸 Reset semua pengaturan
+  //  Reset semua pengaturan
   void _handleResetSettings(
     ResetSettingsEvent event,
     Emitter<AnimeState> emit,

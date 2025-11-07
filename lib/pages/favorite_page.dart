@@ -43,7 +43,7 @@ class _FavoritePageState extends State<FavoritePage> {
           IconButton(
             icon: const Icon(
               Icons.arrow_back,
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Color.fromARGB(255, 168, 128, 176),
             ),
             onPressed: () => context.go('/dashboard'),
           ),

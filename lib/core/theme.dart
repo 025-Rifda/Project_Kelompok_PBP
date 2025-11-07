@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // 🎨 Warna dasar (bisa kamu ubah sesuai gaya aplikasimu)
+  //  Warna dasar
   static const Color primaryColor = Color(0xFFE1BEE7); // Ungu pastel
   static const Color backgroundColor = Color(0xFFF8F4FF); // Ungu lembut
   static const Color textPrimary = Color(0xFF3E3A59); // Ungu gelap
   static const Color accentColor = Color(0xFF9575CD); // Ungu medium
 
-  // 🩵 Tema terang (Light)
+  // Tema terang (Light)
   static final ThemeData lightTheme = ThemeData(
     colorScheme: const ColorScheme.light(
       primary: primaryColor,
@@ -61,7 +61,7 @@ class AppTheme {
     ),
   );
 
-  // 🌙 Tema gelap (Dark)
+  //  Tema gelap (Dark)
   static final ThemeData darkTheme = ThemeData(
     colorScheme: const ColorScheme.dark(
       primary: accentColor,
