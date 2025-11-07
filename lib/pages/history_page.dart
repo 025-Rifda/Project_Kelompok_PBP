@@ -17,7 +17,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   List<Map<String, dynamic>> _history = [];
-  Set<String> _selectedGenres = {};
+  bool? _sortRatingAscending;
   bool _sortNewestFirst = true;
 
   @override
@@ -38,21 +38,25 @@ class _HistoryPageState extends State<HistoryPage> {
   ) {
     List<Map<String, dynamic>> filtered = history;
 
-    // Filter by genre
-    if (_selectedGenres.isNotEmpty) {
-      filtered = filtered.where((item) {
-        final genres = item['genres'] as List<dynamic>?;
-        return genres != null &&
-            genres.any((genre) => _selectedGenres.contains(genre));
-      }).toList();
+    // Sort by rating if specified
+    if (_sortRatingAscending != null) {
+      filtered.sort((a, b) {
+        final aScore = a['score']?.toDouble() ?? 0.0;
+        final bScore = b['score']?.toDouble() ?? 0.0;
+        return _sortRatingAscending!
+            ? aScore.compareTo(bScore)
+            : bScore.compareTo(aScore);
+      });
+    } else {
+      // Sort by timestamp
+      filtered.sort((a, b) {
+        final aTime = DateTime.parse(a['timestamp']);
+        final bTime = DateTime.parse(b['timestamp']);
+        return _sortNewestFirst
+            ? bTime.compareTo(aTime)
+            : aTime.compareTo(bTime);
+      });
     }
-
-    // Sort by timestamp
-    filtered.sort((a, b) {
-      final aTime = DateTime.parse(a['timestamp']);
-      final bTime = DateTime.parse(b['timestamp']);
-      return _sortNewestFirst ? bTime.compareTo(aTime) : aTime.compareTo(bTime);
-    });
 
     return filtered;
   }
@@ -213,10 +217,10 @@ class _HistoryPageState extends State<HistoryPage> {
             spacing: 10,
             children: [
               _filterButton(
-                icon: Icons.filter_list,
-                label: 'Genre',
-                color: const Color(0xFFE1BEE7),
-                onPressed: () => _showGenreFilter(context),
+                icon: Icons.star,
+                label: 'Rating',
+                color: const Color(0xFFBBDEFB),
+                onPressed: () => _showRatingFilter(context),
               ),
               _filterButton(
                 icon: Icons.sort,
@@ -252,71 +256,6 @@ class _HistoryPageState extends State<HistoryPage> {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         textStyle: const TextStyle(fontSize: 12),
-      ),
-    );
-  }
-
-  void _showGenreFilter(BuildContext context) {
-    final genres = [
-      'Action',
-      'Adventure',
-      'Comedy',
-      'Drama',
-      'Fantasy',
-      'Horror',
-      'Mystery',
-      'Romance',
-      'Sci-Fi',
-      'Slice of Life',
-    ];
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter Riwayat by Genre'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            itemCount: genres.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return CheckboxListTile(
-                  title: const Text('Semua'),
-                  value: _selectedGenres.isEmpty,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        _selectedGenres.clear();
-                      }
-                    });
-                    _loadHistory();
-                  },
-                );
-              }
-              final genre = genres[index - 1];
-              return CheckboxListTile(
-                title: Text(genre),
-                value: _selectedGenres.contains(genre),
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedGenres.add(genre);
-                    } else {
-                      _selectedGenres.remove(genre);
-                    }
-                  });
-                  _loadHistory();
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
       ),
     );
   }
@@ -377,6 +316,72 @@ class _HistoryPageState extends State<HistoryPage> {
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showRatingFilter(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Urutkan Berdasarkan Rating'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('Low -> High'),
+                  leading: Radio<bool?>(
+                    value: true,
+                    groupValue: _sortRatingAscending,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _sortRatingAscending = value;
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text('High -> Low'),
+                  leading: Radio<bool?>(
+                    value: false,
+                    groupValue: _sortRatingAscending,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _sortRatingAscending = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                _loadHistory();
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      _sortRatingAscending!
+                          ? 'Diurutkan rating dari terendah'
+                          : 'Diurutkan rating dari tertinggi',
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       ),
     );
   }

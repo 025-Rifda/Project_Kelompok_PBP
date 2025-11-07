@@ -20,7 +20,8 @@ class _DashboardPageState extends State<DashboardPage> {
   final FocusNode _searchFocusNode = FocusNode();
   bool _isSearching = false;
   Set<String> _selectedGenres = {};
-  double? _selectedRating;
+  double? selectedRating;
+  bool? _sortRatingAscending;
 
   @override
   void initState() {
@@ -81,7 +82,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 right: 20,
                 child: BlocBuilder<AnimeBloc, AnimeState>(
                   builder: (context, state) {
-                    if (state is AnimeLoaded && state.searchHistory.isNotEmpty) {
+                    if (state is AnimeLoaded &&
+                        state.searchHistory.isNotEmpty) {
                       return Container(
                         width: double.infinity, // Full width within positioned
                         constraints: const BoxConstraints(maxHeight: 200),
@@ -103,12 +105,17 @@ class _DashboardPageState extends State<DashboardPage> {
                             final history = state.searchHistory[index];
                             final query = history['query'] as String;
                             return ListTile(
-                              leading: const Icon(Icons.search, color: Color(0xFFE1BEE7)),
+                              leading: const Icon(
+                                Icons.search,
+                                color: Color(0xFFE1BEE7),
+                              ),
                               title: Text(query),
                               onTap: () {
                                 _searchController.text = query;
                                 _searchFocusNode.unfocus();
-                                context.read<AnimeBloc>().add(SearchAnimeEvent(query));
+                                context.read<AnimeBloc>().add(
+                                  SearchAnimeEvent(query),
+                                );
                               },
                             );
                           },
@@ -145,7 +152,9 @@ class _DashboardPageState extends State<DashboardPage> {
           if (_isSearching)
             Positioned(
               top: 80, // Position below search bar
-              left: isTablet ? 20 : 270, // Align with text area after search icon
+              left: isTablet
+                  ? 20
+                  : 270, // Align with text area after search icon
               right: 20,
               child: BlocBuilder<AnimeBloc, AnimeState>(
                 builder: (context, state) {
@@ -170,12 +179,17 @@ class _DashboardPageState extends State<DashboardPage> {
                           final history = state.searchHistory[index];
                           final query = history['query'] as String;
                           return ListTile(
-                            leading: const Icon(Icons.search, color: Color(0xFFE1BEE7)),
+                            leading: const Icon(
+                              Icons.search,
+                              color: Color(0xFFE1BEE7),
+                            ),
                             title: Text(query),
                             onTap: () {
                               _searchController.text = query;
                               _searchFocusNode.unfocus();
-                              context.read<AnimeBloc>().add(SearchAnimeEvent(query));
+                              context.read<AnimeBloc>().add(
+                                SearchAnimeEvent(query),
+                              );
                             },
                           );
                         },
@@ -335,12 +349,6 @@ class _DashboardPageState extends State<DashboardPage> {
               runSpacing: 8,
               children: [
                 _filterButton(
-                  icon: Icons.filter_list,
-                  label: 'Genre',
-                  color: const Color(0xFFE1BEE7),
-                  onPressed: () => _showGenreFilter(context),
-                ),
-                _filterButton(
                   icon: Icons.star,
                   label: 'Rating',
                   color: const Color(0xFFBBDEFB),
@@ -373,12 +381,6 @@ class _DashboardPageState extends State<DashboardPage> {
           Wrap(
             spacing: 10,
             children: [
-              _filterButton(
-                icon: Icons.filter_list,
-                label: 'Genre',
-                color: const Color(0xFFE1BEE7),
-                onPressed: () => _showGenreFilter(context),
-              ),
               _filterButton(
                 icon: Icons.star,
                 label: 'Rating',
@@ -468,177 +470,62 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // 🧩 FILTER / SORT FUNCTIONS
-  void _showGenreFilter(BuildContext context) {
-    final genres = [
-      'Action',
-      'Adventure',
-      'Comedy',
-      'Drama',
-      'Fantasy',
-      'Horror',
-      'Mystery',
-      'Romance',
-      'Sci-Fi',
-      'Slice of Life',
-    ];
-
-    // Create a temporary set for dialog state
-    Set<String> tempSelectedGenres = Set.from(_selectedGenres);
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('Filter by Genre'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView.builder(
-              itemCount: genres.length + 1, // +1 for "Semua" option
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return CheckboxListTile(
-                    title: const Text('Semua'),
-                    value: tempSelectedGenres.isEmpty,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          tempSelectedGenres.clear();
-                        }
-                      });
-                    },
-                  );
-                }
-                final genre = genres[index - 1];
-                return CheckboxListTile(
-                  title: Text(genre),
-                  value: tempSelectedGenres.contains(genre),
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        tempSelectedGenres.add(genre);
-                      } else {
-                        tempSelectedGenres.remove(genre);
-                      }
-                    });
-                  },
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Reset to "Semua" when cancelled
-                tempSelectedGenres.clear();
-                Navigator.pop(context);
-              },
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Apply filters
-                _selectedGenres = Set.from(tempSelectedGenres);
-                if (_selectedGenres.isEmpty) {
-                  context.read<AnimeBloc>().add(ResetFilterEvent());
-                } else {
-                  // For now, apply first selected genre (since BLoC only supports single genre)
-                  context.read<AnimeBloc>().add(
-                    FilterByGenreEvent(_selectedGenres.first),
-                  );
-                }
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      _selectedGenres.isEmpty
-                          ? 'Filter direset'
-                          : 'Filter diterapkan',
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   void _showRatingFilter(BuildContext context) {
-    final ratings = [7.0, 8.0, 9.0];
-
-    // Create a temporary rating for dialog state
-    double? tempSelectedRating = _selectedRating;
-
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Filter by Minimum Rating'),
+          title: const Text('Urutkan Berdasarkan Rating'),
           content: SizedBox(
             width: double.maxFinite,
-            child: ListView.builder(
-              itemCount: ratings.length + 1, // +1 for "Semua" option
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return CheckboxListTile(
-                    title: const Text('Semua'),
-                    value: tempSelectedRating == null,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('Low -> High'),
+                  leading: Radio<bool?>(
+                    value: true,
+                    groupValue: _sortRatingAscending,
                     onChanged: (bool? value) {
                       setState(() {
-                        if (value == true) {
-                          tempSelectedRating = null;
-                        }
+                        _sortRatingAscending = value;
                       });
                     },
-                  );
-                }
-                final rating = ratings[index - 1];
-                return CheckboxListTile(
-                  title: Text('Rating ${rating}+'),
-                  value: tempSelectedRating == rating,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        tempSelectedRating = rating;
-                      } else {
-                        tempSelectedRating = null;
-                      }
-                    });
-                  },
-                );
-              },
+                  ),
+                ),
+                ListTile(
+                  title: const Text('High -> Low'),
+                  leading: Radio<bool?>(
+                    value: false,
+                    groupValue: _sortRatingAscending,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _sortRatingAscending = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                // Reset to "Semua" when cancelled
-                tempSelectedRating = null;
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
               child: const Text('Batal'),
             ),
             TextButton(
               onPressed: () {
-                // Apply filters
-                _selectedRating = tempSelectedRating;
-                if (_selectedRating == null) {
-                  context.read<AnimeBloc>().add(ResetFilterEvent());
-                } else {
-                  context.read<AnimeBloc>().add(
-                    FilterByRatingEvent(_selectedRating!),
-                  );
-                }
+                context.read<AnimeBloc>().add(
+                  SortByRatingEvent(_sortRatingAscending!),
+                );
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      _selectedRating == null
-                          ? 'Filter direset'
-                          : 'Filter rating minimum: $_selectedRating',
+                      _sortRatingAscending!
+                          ? 'Diurutkan rating dari terendah'
+                          : 'Diurutkan rating dari tertinggi',
                     ),
                     backgroundColor: Colors.green,
                   ),
@@ -662,8 +549,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void _resetFilters(BuildContext context) {
     setState(() {
-      _selectedGenres.clear();
-      _selectedRating = null;
+      _sortRatingAscending = null;
     });
     context.read<AnimeBloc>().add(ResetFilterEvent());
   }

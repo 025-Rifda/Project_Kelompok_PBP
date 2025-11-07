@@ -55,6 +55,16 @@ class SortByRatingEvent extends AnimeEvent {
   List<Object?> get props => [ascending];
 }
 
+/// Event untuk mengurutkan favorit berdasarkan rating.
+/// Jika [ascending] true, diurut dari rendah ke tinggi.
+class SortFavoritesEvent extends AnimeEvent {
+  final bool ascending;
+  const SortFavoritesEvent(this.ascending);
+
+  @override
+  List<Object?> get props => [ascending];
+}
+
 /// Event untuk menambah anime ke favorit.
 class AddToFavoritesEvent extends AnimeEvent {
   final dynamic anime;

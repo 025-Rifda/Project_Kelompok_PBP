@@ -16,6 +16,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     on<FilterByGenreEvent>(_handleFilterByGenre);
     on<FilterByRatingEvent>(_handleFilterByRating);
     on<SortByRatingEvent>(_handleSortByRating);
+    on<SortFavoritesEvent>(_handleSortFavorites);
     on<AddToFavoritesEvent>(_handleAddToFavorites);
     on<RemoveFromFavoritesEvent>(_handleRemoveFromFavorites);
     on<FetchFavoritesEvent>(_handleFetchFavorites);
@@ -155,6 +156,31 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
       currentState.copyWith(
         filteredList: sorted,
         sortAscending: event.ascending,
+      ),
+    );
+  }
+
+  // 🔸 Urutkan favorit berdasarkan rating
+  void _handleSortFavorites(
+    SortFavoritesEvent event,
+    Emitter<AnimeState> emit,
+  ) {
+    if (state is! AnimeLoaded) return;
+    final currentState = state as AnimeLoaded;
+
+    final sortedFavorites = List<dynamic>.from(_favorites)
+      ..sort((a, b) {
+        final aScore = (a['score'] ?? 0.0).toDouble();
+        final bScore = (b['score'] ?? 0.0).toDouble();
+        return event.ascending
+            ? aScore.compareTo(bScore)
+            : bScore.compareTo(aScore);
+      });
+
+    emit(
+      currentState.copyWith(
+        favorites: sortedFavorites,
+        sortFavoritesAscending: event.ascending,
       ),
     );
   }

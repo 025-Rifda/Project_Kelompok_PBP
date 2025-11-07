@@ -5,6 +5,7 @@ import '../widgets/sidebar.dart';
 import '../widgets/anime_card.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_state.dart';
+import '../bloc/anime_event.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -14,13 +15,12 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
-  Set<String> _selectedGenres = {};
-  double? _selectedRating;
+  bool? _sortRatingAscending;
 
   @override
   void initState() {
     super.initState();
-    // Load favorites if needed
+    context.read<AnimeBloc>().add(FetchFavoritesEvent());
   }
 
   @override
@@ -95,29 +95,6 @@ class _FavoritePageState extends State<FavoritePage> {
                     );
                   }
 
-                  // Apply filters
-                  List<Map<String, dynamic>> filteredFavorites = favorites
-                      .cast<Map<String, dynamic>>();
-
-                  // Filter by genre
-                  if (_selectedGenres.isNotEmpty) {
-                    filteredFavorites = filteredFavorites.where((anime) {
-                      final genres = anime['genres'] as List<dynamic>?;
-                      return genres != null &&
-                          genres.any(
-                            (genre) => _selectedGenres.contains(genre),
-                          );
-                    }).toList();
-                  }
-
-                  // Filter by rating
-                  if (_selectedRating != null) {
-                    filteredFavorites = filteredFavorites.where((anime) {
-                      final score = anime['score']?.toDouble() ?? 0.0;
-                      return score >= _selectedRating!;
-                    }).toList();
-                  }
-
                   return GridView.builder(
                     padding: const EdgeInsets.all(20),
                     gridDelegate:
@@ -127,9 +104,9 @@ class _FavoritePageState extends State<FavoritePage> {
                           mainAxisSpacing: 20,
                           childAspectRatio: 0.7,
                         ),
-                    itemCount: filteredFavorites.length,
+                    itemCount: favorites.length,
                     itemBuilder: (context, index) {
-                      final anime = filteredFavorites[index];
+                      final anime = favorites[index];
                       return AnimeCard(
                         title: anime['title'] ?? 'No Title',
                         imageUrl: anime['images']['jpg']['image_url'] ?? '',
@@ -168,12 +145,6 @@ class _FavoritePageState extends State<FavoritePage> {
             spacing: 10,
             children: [
               _filterButton(
-                icon: Icons.filter_list,
-                label: 'Genre',
-                color: const Color(0xFFE1BEE7),
-                onPressed: () => _showGenreFilter(context),
-              ),
-              _filterButton(
                 icon: Icons.star,
                 label: 'Rating',
                 color: const Color(0xFFBBDEFB),
@@ -211,138 +182,87 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
-  void _showGenreFilter(BuildContext context) {
-    final genres = [
-      'Action',
-      'Adventure',
-      'Comedy',
-      'Drama',
-      'Fantasy',
-      'Horror',
-      'Mystery',
-      'Romance',
-      'Sci-Fi',
-      'Slice of Life',
-    ];
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter Favorit by Genre'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            itemCount: genres.length + 1, // +1 for "Semua" option
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return CheckboxListTile(
-                  title: const Text('Semua'),
-                  value: _selectedGenres.isEmpty,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        _selectedGenres.clear();
-                      }
-                    });
-                    _loadFavorites();
-                  },
-                );
-              }
-              final genre = genres[index - 1];
-              return CheckboxListTile(
-                title: Text(genre),
-                value: _selectedGenres.contains(genre),
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedGenres.add(genre);
-                    } else {
-                      _selectedGenres.remove(genre);
-                    }
-                  });
-                  _loadFavorites();
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _loadFavorites() {
-    setState(() {});
-  }
-
   void _showRatingFilter(BuildContext context) {
-    final ratings = [7.0, 8.0, 9.0];
+    final currentState = context.read<AnimeBloc>().state as AnimeLoaded;
+    bool? selectedSort = currentState.sortFavoritesAscending;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter Favorit by Minimum Rating'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            itemCount: ratings.length + 1, // +1 for "Semua" option
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return CheckboxListTile(
-                  title: const Text('Semua'),
-                  value: _selectedRating == null,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        _selectedRating = null;
-                      }
-                    });
-                    _loadFavorites();
-                  },
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Urutkan Berdasarkan Rating'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('Low -> High'),
+                  leading: Radio<bool?>(
+                    value: true,
+                    groupValue: selectedSort,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        selectedSort = value;
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text('High -> Low'),
+                  leading: Radio<bool?>(
+                    value: false,
+                    groupValue: selectedSort,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        selectedSort = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (selectedSort != null) {
+                  context.read<AnimeBloc>().add(
+                    SortFavoritesEvent(selectedSort!),
+                  );
+                }
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      selectedSort == true
+                          ? 'Diurutkan rating dari terendah'
+                          : 'Diurutkan rating dari tertinggi',
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
                 );
-              }
-              final rating = ratings[index - 1];
-              return CheckboxListTile(
-                title: Text('Rating ${rating}+'),
-                value: _selectedRating == rating,
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedRating = rating;
-                    } else {
-                      _selectedRating = null;
-                    }
-                  });
-                  _loadFavorites();
-                },
-              );
-            },
-          ),
+              },
+              child: const Text('OK'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
       ),
     );
   }
 
   void _resetFilters(BuildContext context) {
     setState(() {
-      _selectedGenres.clear();
-      _selectedRating = null;
+      _sortRatingAscending = null;
     });
-    _loadFavorites();
+    context.read<AnimeBloc>().add(ResetFilterEvent());
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Filter direset'),
+        content: Text('Sorting direset'),
         backgroundColor: Colors.green,
       ),
     );

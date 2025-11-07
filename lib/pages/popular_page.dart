@@ -17,8 +17,7 @@ class PopularPage extends StatefulWidget {
 }
 
 class _PopularPageState extends State<PopularPage> {
-  Set<String> _selectedGenres = {};
-  double? _selectedRating;
+  bool? _sortRatingAscending;
 
   @override
   void initState() {
@@ -68,26 +67,7 @@ class _PopularPageState extends State<PopularPage> {
           if (state is AnimeLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is AnimeLoaded) {
-            List<Map<String, dynamic>> animeList = state.displayList
-                .cast<Map<String, dynamic>>();
-
-            // Apply filters and sorting
-            if (_selectedGenres.isNotEmpty) {
-              animeList = animeList.where((anime) {
-                final genres = anime['genres'] as List<dynamic>?;
-                return genres != null &&
-                    genres.any((genre) => _selectedGenres.contains(genre));
-              }).toList();
-            }
-
-            if (_selectedRating != null) {
-              animeList = animeList.where((anime) {
-                final score = anime['score']?.toDouble() ?? 0.0;
-                return score >= _selectedRating!;
-              }).toList();
-            }
-
-            final displayList = animeList
+            final displayList = state.displayList
                 .map((json) => Anime.fromJson(json))
                 .toList();
 
@@ -156,12 +136,6 @@ class _PopularPageState extends State<PopularPage> {
             spacing: 10,
             children: [
               _filterButton(
-                icon: Icons.filter_list,
-                label: 'Genre',
-                color: const Color(0xFFE1BEE7),
-                onPressed: () => _showGenreFilter(context),
-              ),
-              _filterButton(
                 icon: Icons.star,
                 label: 'Rating',
                 color: const Color(0xFFBBDEFB),
@@ -199,138 +173,86 @@ class _PopularPageState extends State<PopularPage> {
     );
   }
 
-  void _showGenreFilter(BuildContext context) {
-    final genres = [
-      'Action',
-      'Adventure',
-      'Comedy',
-      'Drama',
-      'Fantasy',
-      'Horror',
-      'Mystery',
-      'Romance',
-      'Sci-Fi',
-      'Slice of Life',
-    ];
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter by Genre'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            itemCount: genres.length + 1, // +1 for "Semua" option
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return CheckboxListTile(
-                  title: const Text('Semua'),
-                  value: _selectedGenres.isEmpty,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        _selectedGenres.clear();
-                      }
-                    });
-                    _loadPopular();
-                  },
-                );
-              }
-              final genre = genres[index - 1];
-              return CheckboxListTile(
-                title: Text(genre),
-                value: _selectedGenres.contains(genre),
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedGenres.add(genre);
-                    } else {
-                      _selectedGenres.remove(genre);
-                    }
-                  });
-                  _loadPopular();
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _loadPopular() {
-    setState(() {});
-  }
-
   void _showRatingFilter(BuildContext context) {
-    final ratings = [7.0, 8.0, 9.0];
+    bool? selectedSort;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter by Minimum Rating'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            itemCount: ratings.length + 1, // +1 for "Semua" option
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return CheckboxListTile(
-                  title: const Text('Semua'),
-                  value: _selectedRating == null,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        _selectedRating = null;
-                      }
-                    });
-                    _loadPopular();
-                  },
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Urutkan Berdasarkan Rating'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('Low -> High'),
+                  leading: Radio<bool?>(
+                    value: true,
+                    groupValue: selectedSort,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        selectedSort = value;
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text('High -> Low'),
+                  leading: Radio<bool?>(
+                    value: false,
+                    groupValue: selectedSort,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        selectedSort = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (selectedSort != null) {
+                  context.read<AnimeBloc>().add(
+                    SortByRatingEvent(selectedSort!),
+                  );
+                }
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      selectedSort == true
+                          ? 'Diurutkan rating dari terendah'
+                          : 'Diurutkan rating dari tertinggi',
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
                 );
-              }
-              final rating = ratings[index - 1];
-              return CheckboxListTile(
-                title: Text('Rating ${rating}+'),
-                value: _selectedRating == rating,
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedRating = rating;
-                    } else {
-                      _selectedRating = null;
-                    }
-                  });
-                  _loadPopular();
-                },
-              );
-            },
-          ),
+              },
+              child: const Text('OK'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
       ),
     );
   }
 
   void _resetFilters(BuildContext context) {
     setState(() {
-      _selectedGenres.clear();
-      _selectedRating = null;
+      _sortRatingAscending = null;
     });
-    _loadPopular();
+    context.read<AnimeBloc>().add(ResetFilterEvent());
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Filter direset'),
+        content: Text('Sorting direset'),
         backgroundColor: Colors.green,
       ),
     );

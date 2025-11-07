@@ -1,8 +1,19 @@
-- [x] Add import for go_router in lib/pages/settings_page.dart
-- [x] Modify _buildHeader in SettingsPage to include back button icon that navigates to dashboard
-- [x] Add import for go_router in lib/pages/profile_page.dart
-- [x] Modify _buildHeader in ProfilePage to include back button icon that navigates to settings
-- [x] Add import for go_router in lib/pages/about_page.dart
-- [x] Modify _buildHeader in AboutPage to include back button icon that navigates to settings
-- [x] Add import for go_router in lib/pages/help_page.dart
-- [x] Modify _buildHeader in HelpPage to include back button icon that navigates to settings
+# TODO: Perbaikan Filter pada Halaman Popular dan Favorit
+
+## Langkah-langkah yang akan dilakukan:
+1. Tambahkan event SortFavoritesEvent di anime_event.dart untuk mengurutkan favorit.
+2. Tambahkan properti sortFavoritesAscending di AnimeState untuk menyimpan status urutan favorit.
+3. Tambahkan handler untuk SortFavoritesEvent di AnimeBloc.
+4. Perbarui popular_page.dart untuk menggunakan BLoC untuk sorting (hapus sorting lokal, gunakan SortByRatingEvent).
+5. Perbarui favorite_page.dart untuk menggunakan BLoC untuk sorting favorit (hapus sorting lokal, gunakan SortFavoritesEvent).
+6. Perbarui fungsi reset untuk menggunakan event BLoC yang sesuai.
+7. Test filter setelah perubahan.
+
+## Status:
+- [ ] Tambah SortFavoritesEvent
+- [ ] Tambah sortFavoritesAscending ke AnimeState
+- [ ] Tambah handler di AnimeBloc
+- [ ] Update popular_page.dart
+- [ ] Update favorite_page.dart
+- [ ] Update reset functions
+- [ ] Test filter

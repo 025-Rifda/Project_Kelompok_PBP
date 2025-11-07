@@ -25,6 +25,7 @@ class AnimeLoaded extends AnimeState {
   final Set<String> selectedGenres; // Genre yang sedang diterapkan (multiple)
   final double? minRating; // Rating minimum yang diterapkan
   final bool sortAscending; // Urutan rating (default true)
+  final bool sortFavoritesAscending; // Urutan rating favorit (default true)
   final List<dynamic> favorites; // Daftar anime favorit
   final List<Map<String, dynamic>>
   searchHistory; // Riwayat pencarian dengan timestamp
@@ -35,6 +36,7 @@ class AnimeLoaded extends AnimeState {
     this.selectedGenres = const {},
     this.minRating,
     this.sortAscending = true,
+    this.sortFavoritesAscending = true,
     this.favorites = const [],
     this.searchHistory = const [],
   });
@@ -49,6 +51,7 @@ class AnimeLoaded extends AnimeState {
     Set<String>? selectedGenres,
     double? minRating,
     bool? sortAscending,
+    bool? sortFavoritesAscending,
     List<dynamic>? favorites,
     List<Map<String, dynamic>>? searchHistory,
   }) {
@@ -58,6 +61,8 @@ class AnimeLoaded extends AnimeState {
       selectedGenres: selectedGenres ?? this.selectedGenres,
       minRating: minRating ?? this.minRating,
       sortAscending: sortAscending ?? this.sortAscending,
+      sortFavoritesAscending:
+          sortFavoritesAscending ?? this.sortFavoritesAscending,
       favorites: favorites ?? this.favorites,
       searchHistory: searchHistory ?? this.searchHistory,
     );
@@ -70,6 +75,7 @@ class AnimeLoaded extends AnimeState {
     selectedGenres,
     minRating,
     sortAscending,
+    sortFavoritesAscending,
     favorites,
     searchHistory,
   ];
