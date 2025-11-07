@@ -112,7 +112,10 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     }).toList();
 
     emit(
-      currentState.copyWith(filteredList: filtered, currentGenre: event.genre),
+      currentState.copyWith(
+        filteredList: filtered,
+        selectedGenres: {event.genre},
+      ),
     );
   }
 

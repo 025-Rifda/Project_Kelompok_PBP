@@ -5,7 +5,8 @@ import '../widgets/sidebar.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
 import '../bloc/anime_state.dart';
-import '../pages/dashboard_page.dart';
+import '../services/history_service.dart';
+import '../models/anime_model.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -15,6 +16,47 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
+  List<Map<String, dynamic>> _history = [];
+  Set<String> _selectedGenres = {};
+  bool _sortNewestFirst = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
+  }
+
+  Future<void> _loadHistory() async {
+    final history = await HistoryService.getHistory();
+    setState(() {
+      _history = _applyFiltersAndSort(history);
+    });
+  }
+
+  List<Map<String, dynamic>> _applyFiltersAndSort(
+    List<Map<String, dynamic>> history,
+  ) {
+    List<Map<String, dynamic>> filtered = history;
+
+    // Filter by genre
+    if (_selectedGenres.isNotEmpty) {
+      filtered = filtered.where((item) {
+        final genres = item['genres'] as List<dynamic>?;
+        return genres != null &&
+            genres.any((genre) => _selectedGenres.contains(genre));
+      }).toList();
+    }
+
+    // Sort by timestamp
+    filtered.sort((a, b) {
+      final aTime = DateTime.parse(a['timestamp']);
+      final bTime = DateTime.parse(b['timestamp']);
+      return _sortNewestFirst ? bTime.compareTo(aTime) : aTime.compareTo(bTime);
+    });
+
+    return filtered;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,17 +80,13 @@ class _HistoryPageState extends State<HistoryPage> {
             onPressed: () => context.go('/dashboard'),
           ),
           Text(
-            'Riwayat Pencarian',
+            'Riwayat Kunjungan',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: const Color(0xFFE1BEE7),
             ),
           ),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.clear_all, color: Color(0xFFE1BEE7)),
-            onPressed: () => _clearHistory(context),
-          ),
         ],
       ),
     );
@@ -60,76 +98,97 @@ class _HistoryPageState extends State<HistoryPage> {
         children: [
           _buildFilterBar(context),
           Expanded(
-            child: BlocBuilder<AnimeBloc, AnimeState>(
-              builder: (context, state) {
-                if (state is AnimeLoaded) {
-                  final history = state.searchHistory;
-                  if (history.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.history,
-                            size: 100,
-                            color: Colors.grey.withValues(alpha: 0.5),
-                          ),
-                          const SizedBox(height: 20),
-                          Text(
-                            'Belum ada riwayat pencarian',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(color: Colors.grey),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Riwayat pencarian akan muncul di sini',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: history.length,
-                      itemBuilder: (context, index) {
-                        final item = history[index];
-                        final query = item['query'] as String;
-                        final timestamp = DateTime.parse(item['timestamp']);
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          child: ListTile(
-                            leading: const Icon(
-                              Icons.search,
-                              color: Color(0xFFE1BEE7),
+            child: _history.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.history,
+                          size: 100,
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Belum ada riwayat kunjungan',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge?.copyWith(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Riwayat anime yang dikunjungi akan muncul di sini',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(20),
+                    itemCount: _history.length,
+                    itemBuilder: (context, index) {
+                      final item = _history[index];
+                      final title = item['title'] as String;
+                      final imageUrl = item['image_url'] as String;
+                      final score = item['score'] as double?;
+                      final timestamp = DateTime.parse(item['timestamp']);
+                      final malId = item['mal_id'] as int;
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: ListTile(
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              imageUrl,
+                              width: 50,
+                              height: 70,
+                              fit: BoxFit.cover,
                             ),
-                            title: Text(query),
-                            subtitle: Text(
-                              'Dicari pada: ${timestamp.toLocal().toString().split('.')[0]}',
-                            ),
-                            onTap: () {
-                              // Search again with this query
-                              context.read<AnimeBloc>().add(
-                                SearchAnimeEvent(query),
-                              );
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const DashboardPage(),
-                                ),
-                              );
-                            },
                           ),
-                        );
-                      },
-                    );
-                  }
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
+                          title: Text(title),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text('${score?.toStringAsFixed(1) ?? 'N/A'}'),
+                                ],
+                              ),
+                              Text(
+                                'Dikunjungi: ${timestamp.toLocal().toString().split('.')[0]}',
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _removeFromHistory(context, malId),
+                          ),
+                          onTap: () {
+                            // Navigate to detail page
+                            final anime = Anime(
+                              malId: malId,
+                              title: title,
+                              imageUrl: imageUrl,
+                              score: score,
+                              year: item['year'] as int?,
+                              synopsis: '', // Placeholder
+                            );
+                            context.push('/detail', extra: anime);
+                          },
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -162,7 +221,7 @@ class _HistoryPageState extends State<HistoryPage> {
               _filterButton(
                 icon: Icons.sort,
                 label: 'Tanggal',
-                color: const Color(0xFFBBDEFB),
+                color: const Color(0xFF81C784),
                 onPressed: () => _toggleSort(context),
               ),
               _filterButton(
@@ -218,22 +277,35 @@ class _HistoryPageState extends State<HistoryPage> {
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
-            itemCount: genres.length,
+            itemCount: genres.length + 1,
             itemBuilder: (context, index) {
-              final genre = genres[index];
-              return ListTile(
+              if (index == 0) {
+                return CheckboxListTile(
+                  title: const Text('Semua'),
+                  value: _selectedGenres.isEmpty,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedGenres.clear();
+                      }
+                    });
+                    _loadHistory();
+                  },
+                );
+              }
+              final genre = genres[index - 1];
+              return CheckboxListTile(
                 title: Text(genre),
-                onTap: () {
-                  // TODO: Implement history filtering
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Filter riwayat: $genre (belum diimplementasi)',
-                      ),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
+                value: _selectedGenres.contains(genre),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedGenres.add(genre);
+                    } else {
+                      _selectedGenres.remove(genre);
+                    }
+                  });
+                  _loadHistory();
                 },
               );
             },
@@ -242,7 +314,7 @@ class _HistoryPageState extends State<HistoryPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+            child: const Text('Tutup'),
           ),
         ],
       ),
@@ -250,18 +322,31 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   void _toggleSort(BuildContext context) {
-    // Sort history by timestamp (newest first or oldest first)
     setState(() {
-      // For now, just show a message since sorting is not fully implemented
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Sort riwayat berdasarkan tanggal belum diimplementasi',
-          ),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      _sortNewestFirst = !_sortNewestFirst;
     });
+    _loadHistory();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _sortNewestFirst
+              ? 'Diurutkan dari terbaru'
+              : 'Diurutkan dari terlama',
+        ),
+        backgroundColor: Colors.blue,
+      ),
+    );
+  }
+
+  void _removeFromHistory(BuildContext context, int malId) async {
+    await HistoryService.removeFromHistory(malId);
+    _loadHistory(); // Reload history
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Anime dihapus dari riwayat'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   void _clearHistory(BuildContext context) {
@@ -270,7 +355,7 @@ class _HistoryPageState extends State<HistoryPage> {
       builder: (context) => AlertDialog(
         title: const Text('Hapus Riwayat'),
         content: const Text(
-          'Apakah Anda yakin ingin menghapus semua riwayat pencarian?',
+          'Apakah Anda yakin ingin menghapus semua riwayat kunjungan?',
         ),
         actions: [
           TextButton(
@@ -278,12 +363,13 @@ class _HistoryPageState extends State<HistoryPage> {
             child: const Text('Batal'),
           ),
           TextButton(
-            onPressed: () {
-              context.read<AnimeBloc>().add(ClearHistoryEvent());
+            onPressed: () async {
+              await HistoryService.clearHistory();
+              _loadHistory(); // Reload history
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Riwayat pencarian telah dihapus'),
+                  content: Text('Riwayat kunjungan telah dihapus'),
                   backgroundColor: Colors.green,
                 ),
               );

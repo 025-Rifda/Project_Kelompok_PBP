@@ -14,6 +14,9 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
+  Set<String> _selectedGenres = {};
+  double? _selectedRating;
+
   @override
   void initState() {
     super.initState();
@@ -50,12 +53,6 @@ class _FavoritePageState extends State<FavoritePage> {
             ),
           ),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFFE1BEE7)),
-            onPressed: () {
-              // Refresh favorites
-            },
-          ),
         ],
       ),
     );
@@ -97,6 +94,30 @@ class _FavoritePageState extends State<FavoritePage> {
                       ),
                     );
                   }
+
+                  // Apply filters
+                  List<Map<String, dynamic>> filteredFavorites = favorites
+                      .cast<Map<String, dynamic>>();
+
+                  // Filter by genre
+                  if (_selectedGenres.isNotEmpty) {
+                    filteredFavorites = filteredFavorites.where((anime) {
+                      final genres = anime['genres'] as List<dynamic>?;
+                      return genres != null &&
+                          genres.any(
+                            (genre) => _selectedGenres.contains(genre),
+                          );
+                    }).toList();
+                  }
+
+                  // Filter by rating
+                  if (_selectedRating != null) {
+                    filteredFavorites = filteredFavorites.where((anime) {
+                      final score = anime['score']?.toDouble() ?? 0.0;
+                      return score >= _selectedRating!;
+                    }).toList();
+                  }
+
                   return GridView.builder(
                     padding: const EdgeInsets.all(20),
                     gridDelegate:
@@ -106,9 +127,9 @@ class _FavoritePageState extends State<FavoritePage> {
                           mainAxisSpacing: 20,
                           childAspectRatio: 0.7,
                         ),
-                    itemCount: favorites.length,
+                    itemCount: filteredFavorites.length,
                     itemBuilder: (context, index) {
-                      final anime = favorites[index];
+                      final anime = filteredFavorites[index];
                       return AnimeCard(
                         title: anime['title'] ?? 'No Title',
                         imageUrl: anime['images']['jpg']['image_url'] ?? '',
@@ -153,10 +174,10 @@ class _FavoritePageState extends State<FavoritePage> {
                 onPressed: () => _showGenreFilter(context),
               ),
               _filterButton(
-                icon: Icons.sort,
+                icon: Icons.star,
                 label: 'Rating',
                 color: const Color(0xFFBBDEFB),
-                onPressed: () => _toggleSort(context),
+                onPressed: () => _showRatingFilter(context),
               ),
               _filterButton(
                 icon: Icons.refresh,
@@ -211,22 +232,35 @@ class _FavoritePageState extends State<FavoritePage> {
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
-            itemCount: genres.length,
+            itemCount: genres.length + 1, // +1 for "Semua" option
             itemBuilder: (context, index) {
-              final genre = genres[index];
-              return ListTile(
+              if (index == 0) {
+                return CheckboxListTile(
+                  title: const Text('Semua'),
+                  value: _selectedGenres.isEmpty,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedGenres.clear();
+                      }
+                    });
+                    _loadFavorites();
+                  },
+                );
+              }
+              final genre = genres[index - 1];
+              return CheckboxListTile(
                 title: Text(genre),
-                onTap: () {
-                  // TODO: Implement favorite filtering
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Filter favorit: $genre (belum diimplementasi)',
-                      ),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
+                value: _selectedGenres.contains(genre),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedGenres.add(genre);
+                    } else {
+                      _selectedGenres.remove(genre);
+                    }
+                  });
+                  _loadFavorites();
                 },
               );
             },
@@ -235,29 +269,81 @@ class _FavoritePageState extends State<FavoritePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+            child: const Text('Tutup'),
           ),
         ],
       ),
     );
   }
 
-  void _toggleSort(BuildContext context) {
-    // TODO: Implement favorite sorting
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sort favorit belum diimplementasi'),
-        backgroundColor: Colors.orange,
+  void _loadFavorites() {
+    setState(() {});
+  }
+
+  void _showRatingFilter(BuildContext context) {
+    final ratings = [7.0, 8.0, 9.0];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Filter Favorit by Minimum Rating'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            itemCount: ratings.length + 1, // +1 for "Semua" option
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return CheckboxListTile(
+                  title: const Text('Semua'),
+                  value: _selectedRating == null,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedRating = null;
+                      }
+                    });
+                    _loadFavorites();
+                  },
+                );
+              }
+              final rating = ratings[index - 1];
+              return CheckboxListTile(
+                title: Text('Rating ${rating}+'),
+                value: _selectedRating == rating,
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedRating = rating;
+                    } else {
+                      _selectedRating = null;
+                    }
+                  });
+                  _loadFavorites();
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
       ),
     );
   }
 
   void _resetFilters(BuildContext context) {
-    // TODO: Implement reset filters for favorites
+    setState(() {
+      _selectedGenres.clear();
+      _selectedRating = null;
+    });
+    _loadFavorites();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Reset filter favorit belum diimplementasi'),
-        backgroundColor: Colors.orange,
+        content: Text('Filter direset'),
+        backgroundColor: Colors.green,
       ),
     );
   }

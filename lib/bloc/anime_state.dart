@@ -22,7 +22,7 @@ class AnimeLoading extends AnimeState {
 class AnimeLoaded extends AnimeState {
   final List<dynamic> animeList; // Data utama dari API
   final List<dynamic>? filteredList; // Data hasil filter (optional)
-  final String? currentGenre; // Genre yang sedang diterapkan
+  final Set<String> selectedGenres; // Genre yang sedang diterapkan (multiple)
   final double? minRating; // Rating minimum yang diterapkan
   final bool sortAscending; // Urutan rating (default true)
   final List<dynamic> favorites; // Daftar anime favorit
@@ -32,7 +32,7 @@ class AnimeLoaded extends AnimeState {
   const AnimeLoaded(
     this.animeList, {
     this.filteredList,
-    this.currentGenre,
+    this.selectedGenres = const {},
     this.minRating,
     this.sortAscending = true,
     this.favorites = const [],
@@ -46,7 +46,7 @@ class AnimeLoaded extends AnimeState {
   AnimeLoaded copyWith({
     List<dynamic>? animeList,
     List<dynamic>? filteredList,
-    String? currentGenre,
+    Set<String>? selectedGenres,
     double? minRating,
     bool? sortAscending,
     List<dynamic>? favorites,
@@ -55,7 +55,7 @@ class AnimeLoaded extends AnimeState {
     return AnimeLoaded(
       animeList ?? this.animeList,
       filteredList: filteredList ?? this.filteredList,
-      currentGenre: currentGenre ?? this.currentGenre,
+      selectedGenres: selectedGenres ?? this.selectedGenres,
       minRating: minRating ?? this.minRating,
       sortAscending: sortAscending ?? this.sortAscending,
       favorites: favorites ?? this.favorites,
@@ -67,7 +67,7 @@ class AnimeLoaded extends AnimeState {
   List<Object?> get props => [
     animeList,
     filteredList,
-    currentGenre,
+    selectedGenres,
     minRating,
     sortAscending,
     favorites,

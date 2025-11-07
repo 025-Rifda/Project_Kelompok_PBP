@@ -17,6 +17,9 @@ class PopularPage extends StatefulWidget {
 }
 
 class _PopularPageState extends State<PopularPage> {
+  Set<String> _selectedGenres = {};
+  double? _selectedRating;
+
   @override
   void initState() {
     super.initState();
@@ -53,11 +56,6 @@ class _PopularPageState extends State<PopularPage> {
             ),
           ),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFFE1BEE7)),
-            onPressed: () =>
-                context.read<AnimeBloc>().add(FetchTopAnimeEvent()),
-          ),
         ],
       ),
     );
@@ -70,9 +68,29 @@ class _PopularPageState extends State<PopularPage> {
           if (state is AnimeLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is AnimeLoaded) {
-            final animeList = state.displayList
+            List<Map<String, dynamic>> animeList = state.displayList
+                .cast<Map<String, dynamic>>();
+
+            // Apply filters and sorting
+            if (_selectedGenres.isNotEmpty) {
+              animeList = animeList.where((anime) {
+                final genres = anime['genres'] as List<dynamic>?;
+                return genres != null &&
+                    genres.any((genre) => _selectedGenres.contains(genre));
+              }).toList();
+            }
+
+            if (_selectedRating != null) {
+              animeList = animeList.where((anime) {
+                final score = anime['score']?.toDouble() ?? 0.0;
+                return score >= _selectedRating!;
+              }).toList();
+            }
+
+            final displayList = animeList
                 .map((json) => Anime.fromJson(json))
                 .toList();
+
             return Column(
               children: [
                 _buildFilterBar(context),
@@ -86,9 +104,9 @@ class _PopularPageState extends State<PopularPage> {
                           mainAxisSpacing: 20,
                           childAspectRatio: 0.7,
                         ),
-                    itemCount: animeList.length,
+                    itemCount: displayList.length,
                     itemBuilder: (context, index) {
-                      final anime = animeList[index];
+                      final anime = displayList[index];
                       return AnimeCard(
                         title: anime.title,
                         imageUrl: anime.imageUrl,
@@ -127,7 +145,7 @@ class _PopularPageState extends State<PopularPage> {
       child: Row(
         children: [
           Text(
-            'Filter & Sort',
+            'Filter',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: const Color(0xFFE1BEE7),
@@ -144,10 +162,10 @@ class _PopularPageState extends State<PopularPage> {
                 onPressed: () => _showGenreFilter(context),
               ),
               _filterButton(
-                icon: Icons.sort,
+                icon: Icons.star,
                 label: 'Rating',
                 color: const Color(0xFFBBDEFB),
-                onPressed: () => _toggleSort(context),
+                onPressed: () => _showRatingFilter(context),
               ),
               _filterButton(
                 icon: Icons.refresh,
@@ -202,20 +220,35 @@ class _PopularPageState extends State<PopularPage> {
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
-            itemCount: genres.length,
+            itemCount: genres.length + 1, // +1 for "Semua" option
             itemBuilder: (context, index) {
-              final genre = genres[index];
-              return ListTile(
+              if (index == 0) {
+                return CheckboxListTile(
+                  title: const Text('Semua'),
+                  value: _selectedGenres.isEmpty,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedGenres.clear();
+                      }
+                    });
+                    _loadPopular();
+                  },
+                );
+              }
+              final genre = genres[index - 1];
+              return CheckboxListTile(
                 title: Text(genre),
-                onTap: () {
-                  context.read<AnimeBloc>().add(FilterByGenreEvent(genre));
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Filter diterapkan: $genre'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                value: _selectedGenres.contains(genre),
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedGenres.add(genre);
+                    } else {
+                      _selectedGenres.remove(genre);
+                    }
+                  });
+                  _loadPopular();
                 },
               );
             },
@@ -224,22 +257,82 @@ class _PopularPageState extends State<PopularPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+            child: const Text('Tutup'),
           ),
         ],
       ),
     );
   }
 
-  void _toggleSort(BuildContext context) {
-    final currentState = context.read<AnimeBloc>().state;
-    if (currentState is AnimeLoaded) {
-      final ascending = currentState.sortAscending;
-      context.read<AnimeBloc>().add(SortByRatingEvent(!ascending));
-    }
+  void _loadPopular() {
+    setState(() {});
+  }
+
+  void _showRatingFilter(BuildContext context) {
+    final ratings = [7.0, 8.0, 9.0];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Filter by Minimum Rating'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            itemCount: ratings.length + 1, // +1 for "Semua" option
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return CheckboxListTile(
+                  title: const Text('Semua'),
+                  value: _selectedRating == null,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedRating = null;
+                      }
+                    });
+                    _loadPopular();
+                  },
+                );
+              }
+              final rating = ratings[index - 1];
+              return CheckboxListTile(
+                title: Text('Rating ${rating}+'),
+                value: _selectedRating == rating,
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedRating = rating;
+                    } else {
+                      _selectedRating = null;
+                    }
+                  });
+                  _loadPopular();
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _resetFilters(BuildContext context) {
-    context.read<AnimeBloc>().add(ResetFilterEvent());
+    setState(() {
+      _selectedGenres.clear();
+      _selectedRating = null;
+    });
+    _loadPopular();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Filter direset'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 }

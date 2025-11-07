@@ -17,6 +17,8 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final TextEditingController _searchController = TextEditingController();
+  Set<String> _selectedGenres = {};
+  double? _selectedRating;
 
   @override
   void initState() {
@@ -353,38 +355,86 @@ class _DashboardPageState extends State<DashboardPage> {
       'Slice of Life',
     ];
 
+    // Create a temporary set for dialog state
+    Set<String> tempSelectedGenres = Set.from(_selectedGenres);
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter by Genre'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            itemCount: genres.length,
-            itemBuilder: (context, index) {
-              final genre = genres[index];
-              return ListTile(
-                title: Text(genre),
-                onTap: () {
-                  context.read<AnimeBloc>().add(FilterByGenreEvent(genre));
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Filter diterapkan: $genre'),
-                      backgroundColor: Colors.green,
-                    ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Filter by Genre'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              itemCount: genres.length + 1, // +1 for "Semua" option
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return CheckboxListTile(
+                    title: const Text('Semua'),
+                    value: tempSelectedGenres.isEmpty,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          tempSelectedGenres.clear();
+                        }
+                      });
+                    },
                   );
-                },
-              );
-            },
+                }
+                final genre = genres[index - 1];
+                return CheckboxListTile(
+                  title: Text(genre),
+                  value: tempSelectedGenres.contains(genre),
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        tempSelectedGenres.add(genre);
+                      } else {
+                        tempSelectedGenres.remove(genre);
+                      }
+                    });
+                  },
+                );
+              },
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Reset to "Semua" when cancelled
+                tempSelectedGenres.clear();
+                Navigator.pop(context);
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Apply filters
+                _selectedGenres = Set.from(tempSelectedGenres);
+                if (_selectedGenres.isEmpty) {
+                  context.read<AnimeBloc>().add(ResetFilterEvent());
+                } else {
+                  // For now, apply first selected genre (since BLoC only supports single genre)
+                  context.read<AnimeBloc>().add(
+                    FilterByGenreEvent(_selectedGenres.first),
+                  );
+                }
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      _selectedGenres.isEmpty
+                          ? 'Filter direset'
+                          : 'Filter diterapkan',
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              child: const Text('OK'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-        ],
       ),
     );
   }
@@ -392,38 +442,85 @@ class _DashboardPageState extends State<DashboardPage> {
   void _showRatingFilter(BuildContext context) {
     final ratings = [7.0, 8.0, 9.0];
 
+    // Create a temporary rating for dialog state
+    double? tempSelectedRating = _selectedRating;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter by Minimum Rating'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            itemCount: ratings.length,
-            itemBuilder: (context, index) {
-              final rating = ratings[index];
-              return ListTile(
-                title: Text('Rating ${rating}+'),
-                onTap: () {
-                  context.read<AnimeBloc>().add(FilterByRatingEvent(rating));
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Filter rating minimum: $rating'),
-                      backgroundColor: Colors.green,
-                    ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Filter by Minimum Rating'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              itemCount: ratings.length + 1, // +1 for "Semua" option
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return CheckboxListTile(
+                    title: const Text('Semua'),
+                    value: tempSelectedRating == null,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          tempSelectedRating = null;
+                        }
+                      });
+                    },
                   );
-                },
-              );
-            },
+                }
+                final rating = ratings[index - 1];
+                return CheckboxListTile(
+                  title: Text('Rating ${rating}+'),
+                  value: tempSelectedRating == rating,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        tempSelectedRating = rating;
+                      } else {
+                        tempSelectedRating = null;
+                      }
+                    });
+                  },
+                );
+              },
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Reset to "Semua" when cancelled
+                tempSelectedRating = null;
+                Navigator.pop(context);
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Apply filters
+                _selectedRating = tempSelectedRating;
+                if (_selectedRating == null) {
+                  context.read<AnimeBloc>().add(ResetFilterEvent());
+                } else {
+                  context.read<AnimeBloc>().add(
+                    FilterByRatingEvent(_selectedRating!),
+                  );
+                }
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      _selectedRating == null
+                          ? 'Filter direset'
+                          : 'Filter rating minimum: $_selectedRating',
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              child: const Text('OK'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-        ],
       ),
     );
   }
@@ -437,6 +534,10 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void _resetFilters(BuildContext context) {
+    setState(() {
+      _selectedGenres.clear();
+      _selectedRating = null;
+    });
     context.read<AnimeBloc>().add(ResetFilterEvent());
   }
 

@@ -5,6 +5,7 @@ class Anime {
   final double? score;
   final int? year;
   final String? synopsis;
+  final List<String>? genres;
 
   Anime({
     required this.malId,
@@ -13,6 +14,7 @@ class Anime {
     this.score,
     this.year,
     this.synopsis,
+    this.genres,
   });
 
   factory Anime.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,9 @@ class Anime {
       score: (json['score'] != null) ? (json['score'] as num).toDouble() : null,
       year: json['year'],
       synopsis: json['synopsis'],
+      genres: (json['genres'] as List<dynamic>?)
+          ?.map((g) => g['name'] as String)
+          .toList(),
     );
   }
 
@@ -36,6 +41,7 @@ class Anime {
       'score': score,
       'year': year,
       'synopsis': synopsis,
+      'genres': genres,
     };
   }
 }

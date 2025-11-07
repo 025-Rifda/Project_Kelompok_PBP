@@ -5,6 +5,7 @@ import '../models/anime_model.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_state.dart';
 import '../bloc/anime_event.dart';
+import '../services/history_service.dart';
 
 class DetailPage extends StatelessWidget {
   final Anime anime;
@@ -13,6 +14,11 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Tambah ke history saat halaman dibuka
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      HistoryService.addToHistory(anime);
+    });
+
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
     final isTablet = screenWidth >= 600 && screenWidth < 1200;
