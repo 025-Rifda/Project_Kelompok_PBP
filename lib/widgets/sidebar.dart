@@ -107,6 +107,15 @@ class Sidebar extends StatelessWidget {
           ),
           _buildMenuItem(
             context,
+            Icons.shuffle,
+            'Anime Random',
+            selectedPage == 'Anime Random',
+            '/random',
+            isDark,
+            isTablet,
+          ),
+          _buildMenuItem(
+            context,
             Icons.settings,
             'Pengaturan',
             selectedPage == 'Pengaturan',

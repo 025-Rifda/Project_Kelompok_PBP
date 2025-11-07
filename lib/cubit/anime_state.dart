@@ -1,9 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-abstract class AnimeState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+abstract class AnimeState {}
 
 class AnimeInitial extends AnimeState {}
 
@@ -13,14 +8,10 @@ class AnimeLoaded extends AnimeState {
   final List<dynamic> animeList;
   AnimeLoaded(this.animeList);
 
-  @override
-  List<Object?> get props => [animeList];
+  dynamic get animeData => animeList.isNotEmpty ? animeList.first : null;
 }
 
 class AnimeError extends AnimeState {
   final String message;
   AnimeError(this.message);
-
-  @override
-  List<Object?> get props => [message];
 }

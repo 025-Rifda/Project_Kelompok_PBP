@@ -7,7 +7,6 @@ import '../bloc/anime_state.dart';
 import '../models/anime_model.dart';
 import '../widgets/sidebar.dart';
 import '../widgets/anime_card.dart';
-import '../pages/detail_page.dart';
 
 class PopularPage extends StatefulWidget {
   const PopularPage({super.key});
@@ -17,8 +16,6 @@ class PopularPage extends StatefulWidget {
 }
 
 class _PopularPageState extends State<PopularPage> {
-  bool? _sortRatingAscending;
-
   @override
   void initState() {
     super.initState();
@@ -98,12 +95,7 @@ class _PopularPageState extends State<PopularPage> {
                         imageUrl: anime.imageUrl,
                         score: anime.score,
                         year: anime.year,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailPage(anime: anime),
-                          ),
-                        ),
+                        onTap: () => context.push('/detail', extra: anime),
                       );
                     },
                   ),
@@ -252,9 +244,7 @@ class _PopularPageState extends State<PopularPage> {
   }
 
   void _resetFilters(BuildContext context) {
-    setState(() {
-      _sortRatingAscending = null;
-    });
+    setState(() {});
     context.read<AnimeBloc>().add(ResetFilterEvent());
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

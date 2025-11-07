@@ -21,7 +21,6 @@ class DetailPage extends StatelessWidget {
 
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
-    final isTablet = screenWidth >= 600 && screenWidth < 1200;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F4FF),
@@ -104,7 +103,10 @@ class DetailPage extends StatelessWidget {
                   _infoRow('Tahun Rilis', anime.year?.toString() ?? '-'),
                   _infoRow('Skor', anime.score?.toStringAsFixed(1) ?? '-'),
                   _infoRow('Status', 'Completed'), // Placeholder
-                  _infoRow('Genre', 'Action, Adventure'), // Placeholder
+                  _infoRow(
+                    'Genre',
+                    anime.genres?.join(', ') ?? 'Tidak tersedia',
+                  ),
                 ],
               ),
             ),

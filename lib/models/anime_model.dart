@@ -19,11 +19,15 @@ class Anime {
 
   factory Anime.fromJson(Map<String, dynamic> json) {
     return Anime(
-      malId: json['mal_id'] ?? 0,
+      malId: json['mal_id'] is int
+          ? json['mal_id']
+          : int.tryParse(json['mal_id'].toString()) ?? 0,
       title: json['title'] ?? 'No Title',
-      imageUrl: json['images']['jpg']['image_url'] ?? '',
+      imageUrl: json['images']?['jpg']?['image_url'] ?? json['imageUrl'] ?? '',
       score: (json['score'] != null) ? (json['score'] as num).toDouble() : null,
-      year: json['year'],
+      year: json['year'] is int
+          ? json['year']
+          : int.tryParse(json['year']?.toString() ?? ''),
       synopsis: json['synopsis'],
       genres: (json['genres'] as List<dynamic>?)
           ?.map((g) => g['name'] as String)

@@ -6,6 +6,7 @@ import '../widgets/anime_card.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_state.dart';
 import '../bloc/anime_event.dart';
+import '../models/anime_model.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -15,8 +16,6 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
-  bool? _sortRatingAscending;
-
   @override
   void initState() {
     super.initState();
@@ -117,8 +116,10 @@ class _FavoritePageState extends State<FavoritePage> {
                         title: anime['title'] ?? 'No Title',
                         imageUrl: anime['images']['jpg']['image_url'] ?? '',
                         score: anime['score']?.toDouble() ?? 0.0,
+                        year: anime['year'],
                         onTap: () {
-                          // Navigate to detail page if needed
+                          final animeModel = Anime.fromJson(anime);
+                          context.push('/detail', extra: animeModel);
                         },
                       );
                     },
@@ -262,9 +263,7 @@ class _FavoritePageState extends State<FavoritePage> {
   }
 
   void _resetFilters(BuildContext context) {
-    setState(() {
-      _sortRatingAscending = null;
-    });
+    setState(() {});
     context.read<AnimeBloc>().add(ResetFilterEvent());
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

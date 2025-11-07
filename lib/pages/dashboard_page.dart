@@ -75,6 +75,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 _buildSearchBar(),
                 _buildBanner(context),
                 const SizedBox(height: 20),
+
                 _buildContentArea(),
               ],
             ),
@@ -146,6 +147,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     _buildSearchBar(),
                     _buildBanner(context),
                     const SizedBox(height: 20),
+
                     _buildContentArea(),
                   ],
                 ),
@@ -587,6 +589,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             _buildMenuItem(context, Icons.star, 'Anime Populer', '/popular'),
             _buildMenuItem(context, Icons.favorite, 'Favorit', '/favorite'),
+            _buildMenuItem(context, Icons.shuffle, 'Anime Random', '/random'),
             _buildMenuItem(context, Icons.history, 'Riwayat', '/history'),
             _buildMenuItem(context, Icons.settings, 'Pengaturan', '/settings'),
           ],

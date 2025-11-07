@@ -10,6 +10,7 @@ import '../pages/profile_page.dart';
 import '../pages/about_page.dart';
 import '../pages/help_page.dart';
 import '../pages/detail_page.dart';
+import '../pages/random_anime_page.dart';
 import '../models/anime_model.dart';
 
 class AppRouter {
@@ -50,9 +51,22 @@ class AppRouter {
         ],
       ),
       GoRoute(
+        path: '/random',
+        builder: (context, state) => const RandomAnimePage(),
+      ),
+      GoRoute(
         path: '/detail',
         builder: (context, state) {
-          final anime = state.extra as Anime?;
+          final extra = state.extra;
+          Anime? anime;
+
+          if (extra is Anime) {
+            anime = extra;
+          } else if (extra is Map<String, dynamic>) {
+            // Handle Map data from favorites
+            anime = Anime.fromJson(extra);
+          }
+
           if (anime == null) {
             return const Scaffold(
               body: Center(child: Text('Anime data not found')),
