@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import '../pages/splash_page.dart';
 import '../pages/dashboard_page.dart';
 import '../pages/popular_page.dart';
 import '../pages/favorite_page.dart';
@@ -13,9 +14,10 @@ import '../models/anime_model.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/dashboard',
+    initialLocation: '/',
     routerNeglect: false,
     routes: [
+      GoRoute(path: '/', builder: (context, state) => const SplashPage()),
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => const DashboardPage(),
