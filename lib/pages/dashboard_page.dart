@@ -112,28 +112,60 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                           ],
                         ),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.searchHistory.take(5).length,
-                          itemBuilder: (context, index) {
-                            final history = state.searchHistory[index];
-                            final query = history['query'] as String;
-                            return ListTile(
-                              leading: const Icon(
-                                Icons.search,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: state.searchHistory.take(5).length,
+                        itemBuilder: (context, index) {
+                          final history = state.searchHistory[index];
+                          final query = history['query'] as String;
+                          return ListTile(
+                            title: Text(query),
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.close,
                                 color: const Color.fromARGB(255, 168, 128, 176),
                               ),
-                              title: Text(query),
-                              onTap: () {
-                                _searchController.text = query;
-                                _searchFocusNode.unfocus();
-                                context.read<AnimeBloc>().add(
-                                  SearchAnimeEvent(query),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext dialogContext) {
+                                    return AlertDialog(
+                                      title: const Text('Hapus pencarian ini dari histori Anda?'),
+                                      content: Text(
+                                        'Anda telah mencari sebelumnya. Menghapus "$query" dari histori akan menghapusnya secara permanen dari akun Anda di semua perangkat.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                          },
+                                          child: const Text('Batal'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            context.read<AnimeBloc>().add(
+                                              RemoveHistoryItemEvent(query),
+                                            );
+                                            Navigator.of(dialogContext).pop();
+                                          },
+                                          child: const Text('Hapus'),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                        ),
+                            ),
+                            onTap: () {
+                              _searchController.text = query;
+                              _searchFocusNode.unfocus();
+                              context.read<AnimeBloc>().add(
+                                SearchAnimeEvent(query),
+                              );
+                            },
+                          );
+                        },
+                      ),
                       );
                     }
                     return const SizedBox.shrink();
@@ -194,11 +226,43 @@ class _DashboardPageState extends State<DashboardPage> {
                           final history = state.searchHistory[index];
                           final query = history['query'] as String;
                           return ListTile(
-                            leading: const Icon(
-                              Icons.search,
-                              color: const Color.fromARGB(255, 168, 128, 176),
-                            ),
                             title: Text(query),
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.close,
+                                color: const Color.fromARGB(255, 168, 128, 176),
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext dialogContext) {
+                                    return AlertDialog(
+                                      title: const Text('Hapus pencarian ini dari histori Anda?'),
+                                      content: Text(
+                                        'Anda telah mencari sebelumnya. Menghapus "$query" dari histori akan menghapusnya secara permanen dari akun Anda di semua perangkat.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                          },
+                                          child: const Text('Batal'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            context.read<AnimeBloc>().add(
+                                              RemoveHistoryItemEvent(query),
+                                            );
+                                            Navigator.of(dialogContext).pop();
+                                          },
+                                          child: const Text('Hapus'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                             onTap: () {
                               _searchController.text = query;
                               _searchFocusNode.unfocus();

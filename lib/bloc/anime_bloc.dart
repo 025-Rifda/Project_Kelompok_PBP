@@ -23,6 +23,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     on<AddToHistoryEvent>(_handleAddToHistory);
     on<FetchHistoryEvent>(_handleFetchHistory);
     on<ClearHistoryEvent>(_handleClearHistory);
+    on<RemoveHistoryItemEvent>(_handleRemoveHistoryItem);
     on<ResetFilterEvent>(_handleReset);
     on<ResetSettingsEvent>(_handleResetSettings);
   }
@@ -269,6 +270,18 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
         searchHistory: _searchHistory,
       ),
     );
+  }
+
+  // Hapus item riwayat pencarian tertentu
+  void _handleRemoveHistoryItem(
+    RemoveHistoryItemEvent event,
+    Emitter<AnimeState> emit,
+  ) {
+    if (state is! AnimeLoaded) return;
+    final currentState = state as AnimeLoaded;
+
+    _searchHistory.removeWhere((item) => item['query'] == event.query);
+    emit(currentState.copyWith(searchHistory: List.from(_searchHistory)));
   }
 
   //  Reset semua pengaturan

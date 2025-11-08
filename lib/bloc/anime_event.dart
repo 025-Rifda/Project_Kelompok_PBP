@@ -107,6 +107,15 @@ class ClearHistoryEvent extends AnimeEvent {
   const ClearHistoryEvent();
 }
 
+/// Event untuk menghapus item riwayat pencarian tertentu.
+class RemoveHistoryItemEvent extends AnimeEvent {
+  final String query;
+  const RemoveHistoryItemEvent(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}
+
 /// Event untuk mereset filter dan urutan ke data awal.
 class ResetFilterEvent extends AnimeEvent {
   const ResetFilterEvent();
