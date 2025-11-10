@@ -29,9 +29,13 @@ class Anime {
           ? json['year']
           : int.tryParse(json['year']?.toString() ?? ''),
       synopsis: json['synopsis'],
-      genres: (json['genres'] as List<dynamic>?)
-          ?.map((g) => g['name'] as String)
-          .toList(),
+      genres: (json['genres'] as List<dynamic>?)?.map((g) {
+        if (g is Map<String, dynamic>) {
+          final name = g['name'];
+          return name?.toString() ?? '';
+        }
+        return g.toString();
+      }).toList(),
     );
   }
 

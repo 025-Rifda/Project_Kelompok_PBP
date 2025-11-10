@@ -106,11 +106,15 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     final currentState = state as AnimeLoaded;
     final filtered = _animeList.where((anime) {
       final genres = anime['genres'] as List<dynamic>?;
-      return genres?.any(
-            (g) =>
-                g['name'].toString().toLowerCase() == event.genre.toLowerCase(),
-          ) ??
-          false;
+      if (genres == null) return false;
+      return genres.any((g) {
+        if (g is Map<String, dynamic>) {
+          final name = g['name']?.toString().toLowerCase();
+          return name == event.genre.toLowerCase();
+        }
+        // If genre is already a plain string
+        return g.toString().toLowerCase() == event.genre.toLowerCase();
+      });
     }).toList();
 
     emit(
