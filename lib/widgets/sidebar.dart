@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
+import 'rating_dialog.dart';
 
 // State Cubit untuk mengatur mode terang/gelap
 class ThemeCubit extends Cubit<bool> {
@@ -156,10 +157,11 @@ class Sidebar extends StatelessWidget {
                 fontSize: isTablet ? 14 : null,
               ),
             ),
-            onTap: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.clear();
-              context.go('/');
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => const RatingDialog(),
+              );
             },
           ),
           const SizedBox(height: 20),
