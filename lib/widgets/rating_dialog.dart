@@ -15,11 +15,25 @@ class _RatingDialogState extends State<RatingDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Rate Our App'),
+      title: const Text(
+        'Rate Our App',
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('How would you rate your experience?'),
+          const Text(
+            'How would you rate your experience?',
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -39,13 +53,23 @@ class _RatingDialogState extends State<RatingDialog> {
             }),
           ),
           const SizedBox(height: 20),
-          Text('Rating: $_rating/5'),
+          Text(
+            'Rating: $_rating/5',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+          ),
         ),
         TextButton(
           onPressed: () async {
@@ -57,7 +81,10 @@ class _RatingDialogState extends State<RatingDialog> {
             Navigator.of(context).pop();
             _showLogoutConfirmation(context);
           },
-          child: const Text('Rate & Logout'),
+          child: const Text(
+            'Rate & Logout',
+            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+          ),
         ),
       ],
     );
@@ -67,12 +94,29 @@ class _RatingDialogState extends State<RatingDialog> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: const Text(
+          'Confirm Logout',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        content: const Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -82,7 +126,10 @@ class _RatingDialogState extends State<RatingDialog> {
                 context.go('/');
               }
             },
-            child: const Text('Logout'),
+            child: const Text(
+              'Logout',
+              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
