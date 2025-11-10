@@ -32,10 +32,14 @@ class _RegisterPageState extends State<RegisterPage> {
   void _register() async {
     if (_formKey.currentState!.validate()) {
       final prefs = await SharedPreferences.getInstance();
-      final registeredUsers = prefs.getStringList('registered_users') ?? [];
+
+      // Simpan data pendaftaran sebagai Map di SharedPreferences
+      final String username = _usernameController.text;
+      final String email = _emailController.text;
+      final String password = _passwordController.text;
 
       // Cek apakah username sudah terdaftar
-      if (registeredUsers.contains(_usernameController.text)) {
+      if (prefs.containsKey('user_password_$username')) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -47,9 +51,9 @@ class _RegisterPageState extends State<RegisterPage> {
         return;
       }
 
-      // Tambahkan username ke daftar pengguna terdaftar
-      registeredUsers.add(_usernameController.text);
-      await prefs.setStringList('registered_users', registeredUsers);
+      // Simpan Password dan Email berdasarkan Username (Simulasi database lokal)
+      await prefs.setString('user_password_$username', password);
+      await prefs.setString('user_email_$username', email);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -57,17 +61,23 @@ class _RegisterPageState extends State<RegisterPage> {
           backgroundColor: Colors.green,
         ),
       );
+      // Pindah ke halaman login setelah berhasil daftar
       context.go('/login');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Definisi warna yang konsisten
+    const Color darkPurple = Color(0xFF1E0E3D);
+    const Color lightAccent = Color(0xFFE0BBE4);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1E0E3D), Color(0xFF4C1D95), Color(0xFF6A5ACD)],
+            // Menggunakan 3 warna gradien yang konsisten
+            colors: [darkPurple, Color(0xFF4C1D95), Color(0xFF6A5ACD)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -93,6 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           blurRadius: 25,
                           offset: const Offset(5, 10),
                         ),
+                        // BoxShadow yang disesuaikan
                         BoxShadow(
                           color: const Color(0xFFD8BFD8).withOpacity(0.8),
                           spreadRadius: 2,
@@ -100,9 +111,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           offset: const Offset(0, 0),
                         ),
                         BoxShadow(
-                          color: Colors.white.withOpacity(1.0),
-                          spreadRadius: 4,
-                          blurRadius: 25,
+                          // Glow Putih/Terang yang dikurangi intensitasnya untuk konsistensi
+                          color: Colors.white.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 10,
                           offset: const Offset(0, 0),
                         ),
                       ],
@@ -119,23 +131,32 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 30),
 
-                  // Judul
-                  Text(
-                    'Daftar ke NekoFeed',
-                    style: GoogleFonts.audiowide(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Bergabunglah dengan komunitas anime!',
-                    style: GoogleFonts.poppins(
-                      color: const Color(0xFFE0BBE4),
-                      fontSize: 16,
-                    ),
+                  // Judul dan Subjudul (Disesuaikan untuk Stabilitas dan Perataan)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Daftar ke NekoFeed',
+                        style: GoogleFonts.audiowide(
+                          fontSize: 24, // Dikecilkan
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: 1, // Dikurangi
+                        ),
+                        textAlign: TextAlign
+                            .center, // DIPERBAIKI: Memastikan perataan tengah
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Bergabunglah dengan komunitas anime!',
+                        style: GoogleFonts.poppins(
+                          color: lightAccent,
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign
+                            .center, // DIPERBAIKI: Memastikan perataan tengah
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 40),
 
@@ -331,8 +352,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   ElevatedButton(
                     onPressed: _register,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE0BBE4),
-                      foregroundColor: const Color(0xFF1E0E3D),
+                      backgroundColor: lightAccent,
+                      foregroundColor: darkPurple,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 50,
                         vertical: 15,
@@ -358,7 +379,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Text(
                       'Sudah punya akun? Masuk di sini',
                       style: GoogleFonts.poppins(
-                        color: const Color(0xFFE0BBE4),
+                        color: lightAccent,
                         fontSize: 14,
                       ),
                     ),
