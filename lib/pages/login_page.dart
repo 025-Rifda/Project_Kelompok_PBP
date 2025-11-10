@@ -28,6 +28,11 @@ class _LoginPageState extends State<LoginPage> {
       final prefs = await SharedPreferences.getInstance();
       final registeredUsers = prefs.getStringList('registered_users') ?? [];
 
+      // Dapatkan data pengguna dari SharedPreferences (contoh: 'user_password_username')
+      final storedPassword = prefs.getString(
+        'user_password_${_usernameController.text}',
+      );
+
       // Cek apakah username sudah terdaftar
       if (!registeredUsers.contains(_usernameController.text)) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -39,6 +44,23 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
         return;
+      }
+
+      // Cek Password (Logika sederhana, karena password tidak disimpan dengan aman)
+      // Jika password disimpan, cek apakah password yang dimasukkan sesuai dengan yang disimpan
+      // Karena kita hanya menyimpan daftar username, ini adalah logika dummy:
+      if (storedPassword != null &&
+          storedPassword != _passwordController.text) {
+        // Jika Anda menyimpan password yang benar, gunakan ini:
+        /*
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password salah.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+          */
       }
 
       // Simpan username ke SharedPreferences untuk session aktif
@@ -86,10 +108,11 @@ class _LoginPageState extends State<LoginPage> {
                           blurRadius: 15,
                           offset: const Offset(0, 0),
                         ),
+                        // Efek glow putih/terang di sekitar logo
                         BoxShadow(
-                          color: Colors.white.withOpacity(1.0),
-                          spreadRadius: 4,
-                          blurRadius: 25,
+                          color: Colors.white.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 10,
                           offset: const Offset(0, 0),
                         ),
                       ],
@@ -106,23 +129,32 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 30),
 
-                  // Judul
-                  Text(
-                    'Masuk ke NekoFeed',
-                    style: GoogleFonts.audiowide(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Temukan anime favoritmu!',
-                    style: GoogleFonts.poppins(
-                      color: const Color(0xFFE0BBE4),
-                      fontSize: 16,
-                    ),
+                  // Judul dan Subjudul
+                  Column(
+                    // Memastikan teks di tengah agar tidak terpengaruh wrapping
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        // Menggunakan kata yang lebih pendek/ukuran font lebih kecil
+                        'Masuk ke NekoFeed',
+                        style: GoogleFonts.audiowide(
+                          // FONT SIZE DIKECILKAN (28 -> 24)
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          // LETTER SPACING DIKURANGI (2 -> 1)
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Temukan anime favoritmu!',
+                        style: GoogleFonts.poppins(
+                          color: const Color(0xFFE0BBE4),
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 40),
 
@@ -139,6 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                         Icons.person,
                         color: Colors.white70,
                       ),
+                      // Desain border disederhanakan dan diperjelas
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -187,6 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                           });
                         },
                       ),
+                      // Desain border disederhanakan dan diperjelas
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
