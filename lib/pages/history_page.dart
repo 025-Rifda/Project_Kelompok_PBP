@@ -63,11 +63,36 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    if (isMobile) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 209, 132, 218),
+          title: const Text(
+            'Riwayat Kunjungan',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.go('/dashboard'),
+          ),
+        ),
+        body: _buildContent(),
+      );
+    }
+
     return Scaffold(
       body: Row(
         children: [
           const Sidebar(selectedPage: 'Riwayat'),
-          Expanded(child: Column(children: [_buildHeader(), _buildContent()])),
+          Expanded(
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(child: _buildContent()),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -103,12 +128,11 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Widget _buildContent() {
-    return Expanded(
-      child: Column(
-        children: [
-          _buildFilterBar(context),
-          Expanded(
-            child: _history.isEmpty
+    return Column(
+      children: [
+        _buildFilterBar(context),
+        Expanded(
+          child: _history.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -193,15 +217,14 @@ class _HistoryPageState extends State<HistoryPage> {
                               year: item['year'] as int?,
                               synopsis: '', // Placeholder
                             );
-                            context.push('/detail', extra: anime);
+                            context.push('/detail/${anime.malId}');
                           },
                         ),
                       );
                     },
                   ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

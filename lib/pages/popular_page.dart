@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// Removed GetWidget import to restore default AppBar and buttons on this page
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../bloc/anime_bloc.dart';
@@ -24,11 +25,36 @@ class _PopularPageState extends State<PopularPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    if (isMobile) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 209, 132, 218),
+          title: const Text(
+            'Anime Populer',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.go('/dashboard'),
+          ),
+        ),
+        body: _buildContent(),
+      );
+    }
+
     return Scaffold(
       body: Row(
         children: [
           const Sidebar(selectedPage: 'Anime Populer'),
-          Expanded(child: Column(children: [_buildHeader(), _buildContent()])),
+          Expanded(
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(child: _buildContent()),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -64,8 +90,7 @@ class _PopularPageState extends State<PopularPage> {
   }
 
   Widget _buildContent() {
-    return Expanded(
-      child: BlocBuilder<AnimeBloc, AnimeState>(
+    return BlocBuilder<AnimeBloc, AnimeState>(
         builder: (context, state) {
           if (state is AnimeLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -74,9 +99,9 @@ class _PopularPageState extends State<PopularPage> {
                 .map((json) => Anime.fromJson(json))
                 .toList();
 
-            return Column(
-              children: [
-                _buildFilterBar(context),
+             return Column(
+               children: [
+                 _buildFilterBar(context),
                 Expanded(
                   child: GridView.builder(
                     padding: const EdgeInsets.all(20),
@@ -92,7 +117,7 @@ class _PopularPageState extends State<PopularPage> {
                       final anime = displayList[index];
                       return MediaCard(
                         item: anime,
-                        onTap: () => context.push('/detail', extra: anime),
+                        onTap: () => context.push('/detail/${anime.malId}'),
                       );
                     },
                   ),
@@ -109,8 +134,7 @@ class _PopularPageState extends State<PopularPage> {
           }
           return const Center(child: Text('Welcome to Popular Anime'));
         },
-      ),
-    );
+      );
   }
 
   Widget _buildFilterBar(BuildContext context) {

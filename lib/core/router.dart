@@ -13,6 +13,8 @@ import '../pages/about_page.dart';
 import '../pages/help_page.dart';
 import '../pages/detail_page.dart';
 import '../pages/random_anime_page.dart';
+import '../pages/webview_page.dart';
+import '../pages/detail_loader_page.dart';
 import '../models/anime_model.dart';
 
 class AppRouter {
@@ -61,25 +63,44 @@ class AppRouter {
         path: '/random',
         builder: (context, state) => const RandomAnimePage(),
       ),
+      // Compatible route when navigating with extra payload
       GoRoute(
         path: '/detail',
         builder: (context, state) {
           final extra = state.extra;
           Anime? anime;
-
           if (extra is Anime) {
             anime = extra;
           } else if (extra is Map<String, dynamic>) {
-            // Handle Map data from favorites
             anime = Anime.fromJson(extra);
           }
-
           if (anime == null) {
             return const Scaffold(
               body: Center(child: Text('Anime data not found')),
             );
           }
           return DetailPage(anime: anime);
+        },
+      ),
+      // New sharable route: /detail/:id
+      GoRoute(
+        path: '/detail/:id',
+        builder: (context, state) {
+          final idStr = state.pathParameters['id'];
+          final id = int.tryParse(idStr ?? '');
+          if (id == null) {
+            return const Scaffold(
+              body: Center(child: Text('Invalid anime ID')),
+            );
+          }
+          return DetailLoaderPage(id: id);
+        },
+      ),
+      GoRoute(
+        path: '/webview',
+        builder: (context, state) {
+          final url = state.extra as String?;
+          return WebViewPage(url: url ?? 'https://myanimelist.net/');
         },
       ),
     ],

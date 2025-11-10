@@ -137,54 +137,88 @@ class DetailPage extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // Tombol favorit
-            BlocBuilder<AnimeBloc, AnimeState>(
-              builder: (context, state) {
-                final isFavorite =
-                    state is AnimeLoaded &&
-                    state.favorites.any((fav) => fav['mal_id'] == anime.malId);
-                return ElevatedButton.icon(
+            // Tombol-tombol aksi
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Tombol WebView MyAnimeList
+                ElevatedButton.icon(
                   onPressed: () {
-                    if (isFavorite) {
-                      context.read<AnimeBloc>().add(
-                        RemoveFromFavoritesEvent(anime.malId.toString()),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Dihapus dari favorit'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    } else {
-                      context.read<AnimeBloc>().add(
-                        AddToFavoritesEvent(anime.toJson()),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Ditambahkan ke favorit'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
+                    context.push(
+                      '/webview',
+                      extra: 'https://myanimelist.net/anime/${anime.malId}',
+                    );
                   },
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                  ),
-                  label: Text(
-                    isFavorite ? 'Hapus dari Favorit' : 'Tambahkan ke Favorit',
-                  ),
+                  icon: const Icon(Icons.web),
+                  label: const Text('Lihat di MyAnimeList'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFB3BA), // Pink lembut
+                    backgroundColor: const Color(
+                      0xFF2E51A2,
+                    ), // Biru MyAnimeList
                     padding: EdgeInsets.symmetric(
-                      horizontal: isMobile ? 20 : 30,
-                      vertical: 15,
+                      horizontal: isMobile ? 15 : 20,
+                      vertical: 12,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                );
-              },
+                ),
+                const SizedBox(width: 10),
+                // Tombol favorit
+                BlocBuilder<AnimeBloc, AnimeState>(
+                  builder: (context, state) {
+                    final isFavorite =
+                        state is AnimeLoaded &&
+                        state.favorites.any(
+                          (fav) => fav['mal_id'] == anime.malId,
+                        );
+                    return ElevatedButton.icon(
+                      onPressed: () {
+                        if (isFavorite) {
+                          context.read<AnimeBloc>().add(
+                            RemoveFromFavoritesEvent(anime.malId.toString()),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Dihapus dari favorit'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } else {
+                          context.read<AnimeBloc>().add(
+                            AddToFavoritesEvent(anime.toJson()),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Ditambahkan ke favorit'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                      ),
+                      label: Text(
+                        isFavorite
+                            ? 'Hapus dari Favorit'
+                            : 'Tambahkan ke Favorit',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFFB3BA), // Pink lembut
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isMobile ? 15 : 20,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

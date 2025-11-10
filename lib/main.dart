@@ -29,7 +29,9 @@ class AplikasiAnime extends StatelessWidget {
             BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
             BlocProvider<AnimeBloc>(
               create: (context) =>
-                  AnimeBloc(context.read<Dio>())..add(FetchTopAnimeEvent()),
+                  AnimeBloc(context.read<Dio>())
+                    ..add(FetchTopAnimeEvent())
+                    ..add(const LoadFavoritesEvent()),
             ),
             BlocProvider<AnimeCubit>(
               create: (context) => AnimeCubit(context.read<Dio>()),

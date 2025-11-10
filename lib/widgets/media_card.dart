@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import '../models/media_item.dart';
 
 class MediaCard extends StatelessWidget {
@@ -46,49 +47,22 @@ class MediaCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: isMobile ? 16 : 14,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: GFListTile(
+                margin: EdgeInsets.zero,
+                title: Text(
+                  item.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: isMobile ? 16 : 14,
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, color: Colors.amber, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        item.scoreLabel(),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      if (item.year != null) ...[
-                        const SizedBox(width: 8),
-                        Text(
-                          item.year.toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    item.type,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
-                  ),
-                ],
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subTitle: Text(
+                  '⭐ ${item.scoreLabel()}${item.year != null ? ' · ${item.year}' : ''}',
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
               ),
             ),
           ],
@@ -97,4 +71,3 @@ class MediaCard extends StatelessWidget {
     );
   }
 }
-

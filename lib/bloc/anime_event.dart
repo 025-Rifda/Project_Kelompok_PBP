@@ -88,6 +88,11 @@ class FetchFavoritesEvent extends AnimeEvent {
   const FetchFavoritesEvent();
 }
 
+/// Event untuk memuat favorit dari penyimpanan lokal.
+class LoadFavoritesEvent extends AnimeEvent {
+  const LoadFavoritesEvent();
+}
+
 /// Event untuk menambah ke riwayat pencarian.
 class AddToHistoryEvent extends AnimeEvent {
   final String query;

@@ -67,7 +67,7 @@ class _DashboardPageState extends State<DashboardPage> {
           title: const Text(
             'Nekofeed',
             style: TextStyle(
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Color.fromARGB(255, 168, 128, 176),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -519,10 +519,10 @@ class _DashboardPageState extends State<DashboardPage> {
           itemCount: animeList.length,
           itemBuilder: (context, index) {
             final anime = animeList[index];
-            return MediaCard(
-              item: anime,
-              onTap: () => context.push('/detail', extra: anime),
-            );
+                      return MediaCard(
+                        item: anime,
+                        onTap: () => context.push('/detail/${anime.malId}'),
+                      );
           },
         ),
       );
@@ -538,7 +538,7 @@ class _DashboardPageState extends State<DashboardPage> {
           final anime = animeList[index];
           return MediaCard(
             item: anime,
-            onTap: () => context.push('/detail', extra: anime),
+            onTap: () => context.push('/detail/${anime.malId}'),
           );
         },
       ),

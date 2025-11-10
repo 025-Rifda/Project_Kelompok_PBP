@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'anime_event.dart';
 import 'anime_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   final Dio dio;
@@ -20,12 +22,26 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     on<AddToFavoritesEvent>(_handleAddToFavorites);
     on<RemoveFromFavoritesEvent>(_handleRemoveFromFavorites);
     on<FetchFavoritesEvent>(_handleFetchFavorites);
+    on<LoadFavoritesEvent>(_handleLoadFavorites);
     on<AddToHistoryEvent>(_handleAddToHistory);
     on<FetchHistoryEvent>(_handleFetchHistory);
     on<ClearHistoryEvent>(_handleClearHistory);
     on<RemoveHistoryItemEvent>(_handleRemoveHistoryItem);
     on<ResetFilterEvent>(_handleReset);
     on<ResetSettingsEvent>(_handleResetSettings);
+  }
+
+  // Persist favorites to local storage
+  Future<void> _saveFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = _favorites.map((e) => jsonEncode(e)).toList();
+    await prefs.setStringList('favorites', list);
+  }
+
+  Future<void> _loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList('favorites') ?? [];
+    _favorites = list.map((s) => jsonDecode(s) as Map<String, dynamic>).toList();
   }
 
   // Fungsi umum untuk mengambil data dari API
@@ -205,6 +221,8 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     if (!exists) {
       _favorites.add(event.anime);
       emit(currentState.copyWith(favorites: List.from(_favorites)));
+      // persist
+      _saveFavorites();
     }
   }
 
@@ -218,6 +236,8 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
 
     _favorites.removeWhere((fav) => fav['mal_id'].toString() == event.animeId);
     emit(currentState.copyWith(favorites: List.from(_favorites)));
+    // persist
+    _saveFavorites();
   }
 
   //  Ambil daftar favorit
@@ -227,7 +247,28 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   ) {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
-    emit(currentState.copyWith(filteredList: _favorites));
+    emit(currentState.copyWith(favorites: List.from(_favorites)));
+  }
+
+  // Muat favorit dari SharedPreferences
+  Future<void> _handleLoadFavorites(
+    LoadFavoritesEvent event,
+    Emitter<AnimeState> emit,
+  ) async {
+    await _loadFavorites();
+    if (state is AnimeLoaded) {
+      final currentState = state as AnimeLoaded;
+      emit(currentState.copyWith(favorites: List.from(_favorites)));
+    } else {
+      // Pastikan ada state yang memuat daftar favorit agar halaman Favorit bisa tampil
+      emit(
+        AnimeLoaded(
+          _animeList,
+          favorites: List.from(_favorites),
+          searchHistory: _searchHistory,
+        ),
+      );
+    }
   }
 
   //  Tambah ke riwayat pencarian
@@ -295,6 +336,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   ) {
     _favorites.clear();
     _searchHistory.clear();
+    _saveFavorites();
     emit(AnimeLoaded(_animeList, favorites: [], searchHistory: []));
   }
 }
