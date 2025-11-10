@@ -46,21 +46,16 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      // Cek Password (Logika sederhana, karena password tidak disimpan dengan aman)
-      // Jika password disimpan, cek apakah password yang dimasukkan sesuai dengan yang disimpan
-      // Karena kita hanya menyimpan daftar username, ini adalah logika dummy:
-      if (storedPassword != null &&
+      // Cek Password
+      if (storedPassword == null ||
           storedPassword != _passwordController.text) {
-        // Jika Anda menyimpan password yang benar, gunakan ini:
-        /*
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Password salah.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-          */
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password salah.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
       }
 
       // Simpan username ke SharedPreferences untuk session aktif

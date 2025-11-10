@@ -55,6 +55,11 @@ class _RegisterPageState extends State<RegisterPage> {
       await prefs.setString('user_password_$username', password);
       await prefs.setString('user_email_$username', email);
 
+      // Tambahkan username ke list registered_users
+      final registeredUsers = prefs.getStringList('registered_users') ?? [];
+      registeredUsers.add(username);
+      await prefs.setStringList('registered_users', registeredUsers);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Akun berhasil dibuat! Silakan login.'),
