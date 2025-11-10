@@ -18,13 +18,13 @@ class RandomAnimePage extends StatelessWidget {
       create: (context) => AnimeCubit(context.read<Dio>())..fetchRandomAnime(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 209, 132, 218),
-          title: const Text(
+          backgroundColor: Colors.black,
+          title: Text(
             'Anime Random',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/dashboard'),
           ),
         ),
@@ -91,12 +91,7 @@ class RandomAnimePage extends StatelessWidget {
                       icon: const Icon(Icons.refresh),
                       label: const Text('Generate Lagi'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(
-                          255,
-                          209,
-                          132,
-                          218,
-                        ),
+                        backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
