@@ -64,7 +64,7 @@ class RandomAnimePage extends StatelessWidget {
                                 return MediaCard(
                                   item: anime,
                                   onTap: () =>
-                                      context.push('/detail/${anime.malId}'),
+                                      context.go('/detail/${anime.malId}'),
                                 );
                               },
                             )
@@ -77,7 +77,7 @@ class RandomAnimePage extends StatelessWidget {
                                     child: MediaCard(
                                       item: anime,
                                       onTap: () =>
-                                          context.push('/detail/${anime.malId}'),
+                                          context.go('/detail/${anime.malId}'),
                                     ),
                                   ),
                                 );

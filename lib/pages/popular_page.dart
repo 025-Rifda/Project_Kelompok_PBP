@@ -117,7 +117,7 @@ class _PopularPageState extends State<PopularPage> {
                       final anime = displayList[index];
                       return MediaCard(
                         item: anime,
-                        onTap: () => context.push('/detail/${anime.malId}'),
+                        onTap: () => context.go('/detail/${anime.malId}'),
                       );
                     },
                   ),

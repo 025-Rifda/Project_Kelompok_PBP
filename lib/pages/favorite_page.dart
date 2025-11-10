@@ -116,7 +116,7 @@ class _FavoritePageState extends State<FavoritePage> {
                       return MediaCard(
                         item: animeModel,
                         onTap: () {
-                          context.push('/detail', extra: animeModel);
+                          context.go('/detail/${animeModel.malId}');
                         },
                       );
                     },

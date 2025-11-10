@@ -29,7 +29,15 @@ class DetailPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              context.pop();
+            } else {
+              // Fallback jika tidak ada stack untuk dipop (mis. dinavigasi dengan context.go)
+              context.go('/dashboard');
+            }
+          },
         ),
         title: Text(
           anime.title,

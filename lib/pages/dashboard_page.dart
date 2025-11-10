@@ -453,7 +453,7 @@ class _DashboardPageState extends State<DashboardPage> {
             final anime = animeList[index];
                       return MediaCard(
                         item: anime,
-                        onTap: () => context.push('/detail/${anime.malId}'),
+                        onTap: () => context.go('/detail/${anime.malId}'),
                       );
           },
         ),
@@ -470,7 +470,7 @@ class _DashboardPageState extends State<DashboardPage> {
           final anime = animeList[index];
           return MediaCard(
             item: anime,
-            onTap: () => context.push('/detail/${anime.malId}'),
+            onTap: () => context.go('/detail/${anime.malId}'),
           );
         },
       ),

@@ -217,7 +217,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               year: item['year'] as int?,
                               synopsis: '', // Placeholder
                             );
-                            context.push('/detail/${anime.malId}');
+                            context.go('/detail/${anime.malId}');
                           },
                         ),
                       );
