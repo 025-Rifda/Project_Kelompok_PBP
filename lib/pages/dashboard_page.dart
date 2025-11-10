@@ -65,7 +65,7 @@ class _DashboardPageState extends State<DashboardPage> {
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 209, 132, 218),
           title: const Text(
-            'AnimeList+',
+            'Nekofeed',
             style: TextStyle(
               color: const Color.fromARGB(255, 168, 128, 176),
               fontWeight: FontWeight.bold,
@@ -374,7 +374,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
-          const Icon(Icons.tv, color: Colors.white, size: 60),
+          Image.asset('assets/splash.png', height: 90, width: 90),
         ],
       ),
     );

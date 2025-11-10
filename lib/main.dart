@@ -38,7 +38,7 @@ class AplikasiAnime extends StatelessWidget {
           child: BlocBuilder<ThemeCubit, bool>(
             builder: (context, isDark) {
               return MaterialApp.router(
-                title: 'AnimeList+',
+                title: 'Nekofeed',
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.lightTheme,
                 darkTheme: AppTheme.darkTheme,

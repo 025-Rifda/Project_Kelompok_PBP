@@ -56,7 +56,7 @@ class Sidebar extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'AnimeList+',
+                'Nekofeed',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: isDark
                       ? Colors.white

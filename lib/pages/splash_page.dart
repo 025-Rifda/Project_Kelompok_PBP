@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -28,7 +29,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       vsync: this,
     )..forward();
 
-    // Efek Scale In dengan memantul (menarik)
     _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
     );
@@ -41,14 +41,13 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    // Teks mulai setelah logo muncul
+
     _logoController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _textController.forward();
       }
     });
 
-    // Jarak slide teks dibuat LEBIH JAUH (0.4) agar animasi terlihat dramatis
     _textSlideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.4), end: Offset.zero).animate(
           CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic),
@@ -73,21 +72,19 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // WARNA GRADIENT TIGA WARNA DARI PERMINTAAN ANDA
-    const Color color1 = Color(0xFF1E0E3D); // Ungu gelap
-    const Color color2 = Color(0xFF4C1D95); // Ungu sedang
-    const Color color3 = Color(0xFF6A5ACD); // Ungu terang (Lavender)
+    // Warna tema
+    const Color color1 = Color(0xFF1E0E3D);
+    const Color color2 = Color(0xFF4C1D95);
+    const Color color3 = Color(0xFF6A5ACD);
 
-    // Warna teks tetap serasi dengan tema futuristik
     const Color primaryTextColor = Colors.white;
-    const Color accentColor = Color(0xFF03DAC6); // Biru-Hijau terang
-    const Color secondaryAccentColor = Color(0xFFBB86FC); // Ungu elektrik
+    const Color accentColor = Color(0xFF03DAC6);
+    const Color secondaryAccentColor = Color(0xFFBB86FC);
 
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            // MENGGUNAKAN TIGA WARNA BARU
             colors: [color1, color2, color3],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -98,13 +95,13 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // LOGO (Kucing + 4 TV)
+              // LOGO
               FadeTransition(
                 opacity: _logoFadeAnimation,
                 child: ScaleTransition(
                   scale: _logoScaleAnimation,
                   child: Image.asset(
-                    'assets/splash.png', // Logo transparan Anda
+                    'assets/splash.png',
                     height: 250,
                     width: 250,
                     fit: BoxFit.contain,
@@ -112,10 +109,9 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 ),
               ),
 
-              // Jarak antara logo dan teks SANGAT RAPAT (2 piksel)
               const SizedBox(height: 2),
 
-              // TEKS "NekoFeed" & Jepang (Dengan Animasi Menonjol)
+              // TEKS NekoFeed + Jepang
               FadeTransition(
                 opacity: _textFadeAnimation,
                 child: SlideTransition(
@@ -138,10 +134,9 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
-                      // Jarak antara judul & subjudul
                       const SizedBox(height: 5),
                       Text(
-                        "アエメキース", // Teks Jepang
+                        "アエメキース",
                         style: GoogleFonts.poppins(
                           color: secondaryAccentColor.withOpacity(0.9),
                           fontWeight: FontWeight.w600,
@@ -156,6 +151,33 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // === LOADING ANIMATION ===
+              FadeTransition(
+                opacity: _textFadeAnimation,
+                child: LoadingAnimationWidget.staggeredDotsWave(
+                  color: accentColor,
+                  size: 60,
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              // === NAMA KELOMPOK ===
+              FadeTransition(
+                opacity: _textFadeAnimation,
+                child: Text(
+                  "By Kelompok 4",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white.withOpacity(0.9),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    letterSpacing: 1,
                   ),
                 ),
               ),
