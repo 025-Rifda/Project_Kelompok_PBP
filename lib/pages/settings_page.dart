@@ -102,6 +102,12 @@ class _SettingsPageState extends State<SettingsPage> {
               subtitle: 'Panduan dan dukungan',
               onTap: () => context.go('/settings/help'),
             ),
+            _buildSettingItem(
+              icon: Icons.devices,
+              title: 'Informasi Perangkat',
+              subtitle: 'Lihat detail perangkat Anda',
+              onTap: () => context.go('/settings/device-info'),
+            ),
             const SizedBox(height: 30),
 
             // 🔹 Tombol Logout dengan konfirmasi

@@ -11,6 +11,7 @@ import '../pages/settings_page.dart';
 import '../pages/profile_page.dart';
 import '../pages/about_page.dart';
 import '../pages/help_page.dart';
+import '../pages/device_info_page.dart';
 import '../pages/detail_page.dart';
 import '../pages/random_anime_page.dart';
 import '../models/anime_model.dart';
@@ -55,6 +56,10 @@ class AppRouter {
             builder: (context, state) => const AboutPage(),
           ),
           GoRoute(path: 'help', builder: (context, state) => const HelpPage()),
+          GoRoute(
+            path: 'device-info',
+            builder: (context, state) => const DeviceInfoPage(),
+          ),
         ],
       ),
       GoRoute(
