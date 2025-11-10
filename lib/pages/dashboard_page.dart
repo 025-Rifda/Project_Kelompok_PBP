@@ -79,6 +79,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
         body: Stack(
+          clipBehavior: Clip.none,
           children: [
             Column(
               children: [
@@ -91,7 +92,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             if (_isSearching)
               Positioned(
-                top: 80,
+                top: 100,
                 left: 20,
                 right: 20,
                 child: BlocBuilder<AnimeBloc, AnimeState>(
@@ -118,58 +119,21 @@ class _DashboardPageState extends State<DashboardPage> {
                           itemBuilder: (context, index) {
                             final history = state.searchHistory[index];
                             final query = history['query'] as String;
-                            return ListTile(
-                              title: Text(query),
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    168,
-                                    128,
-                                    176,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext dialogContext) {
-                                      return AlertDialog(
-                                        title: const Text(
-                                          'Hapus pencarian ini dari histori Anda?',
-                                        ),
-                                        content: Text(
-                                          'Anda telah mencari sebelumnya. Menghapus "$query" dari histori akan menghapusnya secara permanen dari akun Anda di semua perangkat.',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(dialogContext).pop();
-                                            },
-                                            child: const Text('Batal'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              context.read<AnimeBloc>().add(
-                                                RemoveHistoryItemEvent(query),
-                                              );
-                                              Navigator.of(dialogContext).pop();
-                                            },
-                                            child: const Text('Hapus'),
-                                          ),
-                                        ],
-                                      );
-                                    },
+                            return Container(
+                              color: Colors.transparent,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _searchController.text = query;
+                                  _searchFocusNode.unfocus();
+                                  context.read<AnimeBloc>().add(
+                                    SearchAnimeEvent(query),
                                   );
                                 },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                  child: Text(query),
+                                ),
                               ),
-                              onTap: () {
-                                _searchController.text = query;
-                                _searchFocusNode.unfocus();
-                                context.read<AnimeBloc>().add(
-                                  SearchAnimeEvent(query),
-                                );
-                              },
                             );
                           },
                         ),
@@ -232,53 +196,21 @@ class _DashboardPageState extends State<DashboardPage> {
                         itemBuilder: (context, index) {
                           final history = state.searchHistory[index];
                           final query = history['query'] as String;
-                          return ListTile(
-                            title: Text(query),
-                            trailing: IconButton(
-                              icon: const Icon(
-                                Icons.close,
-                                color: const Color.fromARGB(255, 168, 128, 176),
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext dialogContext) {
-                                    return AlertDialog(
-                                      title: const Text(
-                                        'Hapus pencarian ini dari histori Anda?',
-                                      ),
-                                      content: Text(
-                                        'Anda telah mencari sebelumnya. Menghapus "$query" dari histori akan menghapusnya secara permanen dari akun Anda di semua perangkat.',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(dialogContext).pop();
-                                          },
-                                          child: const Text('Batal'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            context.read<AnimeBloc>().add(
-                                              RemoveHistoryItemEvent(query),
-                                            );
-                                            Navigator.of(dialogContext).pop();
-                                          },
-                                          child: const Text('Hapus'),
-                                        ),
-                                      ],
-                                    );
-                                  },
+                          return Container(
+                            color: Colors.transparent,
+                            child: GestureDetector(
+                              onTap: () {
+                                _searchController.text = query;
+                                _searchFocusNode.unfocus();
+                                context.read<AnimeBloc>().add(
+                                  SearchAnimeEvent(query),
                                 );
                               },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                child: Text(query),
+                              ),
                             ),
-                            onTap: () {
-                              _searchController.text = query;
-                              _searchFocusNode.unfocus();
-                              context.read<AnimeBloc>().add(
-                                SearchAnimeEvent(query),
-                              );
-                            },
                           );
                         },
                       ),
@@ -647,6 +579,38 @@ class _DashboardPageState extends State<DashboardPage> {
       _sortRatingAscending = null;
     });
     context.read<AnimeBloc>().add(ResetFilterEvent());
+  }
+
+  void _showDeleteHistoryDialog(BuildContext context, String query) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Hapus pencarian ini dari histori Anda?'),
+          content: Text(
+            'Anda telah mencari sebelumnya. Menghapus "$query" dari histori akan menghapusnya secara permanen dari akun Anda di semua perangkat.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<AnimeBloc>().add(RemoveHistoryItemEvent(query));
+                setState(() {
+                  _isSearching = false;
+                });
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showMobileDrawer(BuildContext context) {

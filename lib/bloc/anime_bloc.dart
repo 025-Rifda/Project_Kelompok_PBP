@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'anime_event.dart';
 import 'anime_state.dart';
+import '../services/search_history_service.dart';
 
 class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   final Dio dio;
@@ -9,6 +10,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   List<dynamic> _topAnimeList = [];
   List<dynamic> _favorites = [];
   List<Map<String, dynamic>> _searchHistory = [];
+  Set<String> _deletedQueries = {};
 
   AnimeBloc(this.dio) : super(AnimeInitial()) {
     on<FetchTopAnimeEvent>(_handleFetchTopAnime);
@@ -26,6 +28,12 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     on<RemoveHistoryItemEvent>(_handleRemoveHistoryItem);
     on<ResetFilterEvent>(_handleReset);
     on<ResetSettingsEvent>(_handleResetSettings);
+    _loadSearchHistory();
+  }
+
+  Future<void> _loadSearchHistory() async {
+    _searchHistory = await SearchHistoryService.getHistory();
+    _deletedQueries = await SearchHistoryService.getDeletedQueries();
   }
 
   // Fungsi umum untuk mengambil data dari API
@@ -231,18 +239,21 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   }
 
   //  Tambah ke riwayat pencarian
-  void _handleAddToHistory(AddToHistoryEvent event, Emitter<AnimeState> emit) {
+  Future<void> _handleAddToHistory(AddToHistoryEvent event, Emitter<AnimeState> emit) async {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
 
     // Hindari duplikat dan batasi jumlah riwayat
     _searchHistory.removeWhere((item) => item['query'] == event.query);
-    _searchHistory.insert(0, {
-      'query': event.query,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
-    if (_searchHistory.length > 10) {
-      _searchHistory = _searchHistory.sublist(0, 10);
+    if (!_deletedQueries.contains(event.query)) {
+      _searchHistory.insert(0, {
+        'query': event.query,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+      if (_searchHistory.length > 10) {
+        _searchHistory = _searchHistory.sublist(0, 10);
+      }
+      await SearchHistoryService.addQuery(event.query);
     }
 
     emit(currentState.copyWith(searchHistory: List.from(_searchHistory)));
@@ -256,11 +267,13 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   }
 
   // Hapus riwayat pencarian
-  void _handleClearHistory(ClearHistoryEvent event, Emitter<AnimeState> emit) {
+  Future<void> _handleClearHistory(ClearHistoryEvent event, Emitter<AnimeState> emit) async {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
 
     _searchHistory.clear();
+    _deletedQueries.clear();
+    await SearchHistoryService.clearHistory();
     emit(currentState.copyWith(searchHistory: []));
   }
 
@@ -277,24 +290,28 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   }
 
   // Hapus item riwayat pencarian tertentu
-  void _handleRemoveHistoryItem(
+  Future<void> _handleRemoveHistoryItem(
     RemoveHistoryItemEvent event,
     Emitter<AnimeState> emit,
-  ) {
+  ) async {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
 
     _searchHistory.removeWhere((item) => item['query'] == event.query);
+    _deletedQueries.add(event.query);
+    await SearchHistoryService.removeQuery(event.query);
     emit(currentState.copyWith(searchHistory: List.from(_searchHistory)));
   }
 
   //  Reset semua pengaturan
-  void _handleResetSettings(
+  Future<void> _handleResetSettings(
     ResetSettingsEvent event,
     Emitter<AnimeState> emit,
-  ) {
+  ) async {
     _favorites.clear();
     _searchHistory.clear();
+    _deletedQueries.clear();
+    await SearchHistoryService.clearHistory();
     emit(AnimeLoaded(_animeList, favorites: [], searchHistory: []));
   }
 }
