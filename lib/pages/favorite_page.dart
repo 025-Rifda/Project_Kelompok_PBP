@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
-import '../widgets/anime_card.dart';
+import '../widgets/media_card.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_state.dart';
 import '../bloc/anime_event.dart';
@@ -111,14 +111,11 @@ class _FavoritePageState extends State<FavoritePage> {
                         ),
                     itemCount: favorites.length,
                     itemBuilder: (context, index) {
-                      final anime = favorites[index];
-                      return AnimeCard(
-                        title: anime['title'] ?? 'No Title',
-                        imageUrl: anime['images']['jpg']['image_url'] ?? '',
-                        score: anime['score']?.toDouble() ?? 0.0,
-                        year: anime['year'],
+                      final raw = favorites[index];
+                      final animeModel = Anime.fromJson(raw);
+                      return MediaCard(
+                        item: animeModel,
                         onTap: () {
-                          final animeModel = Anime.fromJson(anime);
                           context.push('/detail', extra: animeModel);
                         },
                       );

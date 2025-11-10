@@ -6,7 +6,7 @@ import '../bloc/anime_event.dart';
 import '../bloc/anime_state.dart';
 import '../models/anime_model.dart';
 import '../widgets/sidebar.dart';
-import '../widgets/anime_card.dart';
+import '../widgets/media_card.dart';
 
 class PopularPage extends StatefulWidget {
   const PopularPage({super.key});
@@ -90,11 +90,8 @@ class _PopularPageState extends State<PopularPage> {
                     itemCount: displayList.length,
                     itemBuilder: (context, index) {
                       final anime = displayList[index];
-                      return AnimeCard(
-                        title: anime.title,
-                        imageUrl: anime.imageUrl,
-                        score: anime.score,
-                        year: anime.year,
+                      return MediaCard(
+                        item: anime,
                         onTap: () => context.push('/detail', extra: anime),
                       );
                     },

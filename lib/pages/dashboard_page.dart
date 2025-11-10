@@ -7,7 +7,7 @@ import '../bloc/anime_event.dart';
 import '../bloc/anime_state.dart';
 import '../models/anime_model.dart';
 import '../widgets/sidebar.dart';
-import '../widgets/anime_card.dart';
+import '../widgets/media_card.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -510,11 +510,8 @@ class _DashboardPageState extends State<DashboardPage> {
           itemCount: animeList.length,
           itemBuilder: (context, index) {
             final anime = animeList[index];
-            return AnimeCard(
-              title: anime.title,
-              imageUrl: anime.imageUrl,
-              score: anime.score,
-              year: anime.year,
+            return MediaCard(
+              item: anime,
               onTap: () => context.push('/detail', extra: anime),
             );
           },
@@ -530,11 +527,8 @@ class _DashboardPageState extends State<DashboardPage> {
         separatorBuilder: (_, __) => const SizedBox(width: 15),
         itemBuilder: (context, index) {
           final anime = animeList[index];
-          return AnimeCard(
-            title: anime.title,
-            imageUrl: anime.imageUrl,
-            score: anime.score,
-            year: anime.year,
+          return MediaCard(
+            item: anime,
             onTap: () => context.push('/detail', extra: anime),
           );
         },

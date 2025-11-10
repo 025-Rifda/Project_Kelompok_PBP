@@ -1,21 +1,26 @@
-class Anime {
-  final int malId;
-  final String title;
-  final String imageUrl;
-  final double? score;
-  final int? year;
-  final String? synopsis;
-  final List<String>? genres;
+import 'media_item.dart';
 
-  Anime({
-    required this.malId,
-    required this.title,
-    required this.imageUrl,
-    this.score,
-    this.year,
-    this.synopsis,
-    this.genres,
-  });
+class Anime extends MediaItem {
+  const Anime({
+    required int malId,
+    required String title,
+    required String imageUrl,
+    double? score,
+    int? year,
+    String? synopsis,
+    List<String>? genres,
+  }) : super(
+          id: malId,
+          title: title,
+          imageUrl: imageUrl,
+          score: score,
+          year: year,
+          synopsis: synopsis,
+          genres: genres,
+        );
+
+  // Keep existing external API: malId maps to base id
+  int get malId => id;
 
   factory Anime.fromJson(Map<String, dynamic> json) {
     return Anime(
@@ -38,6 +43,9 @@ class Anime {
       }).toList(),
     );
   }
+
+  @override
+  String get type => 'Anime';
 
   Map<String, dynamic> toJson() {
     return {

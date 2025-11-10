@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../cubit/anime_cubit.dart';
 import '../cubit/anime_state.dart';
 import '../models/anime_model.dart';
-import '../widgets/anime_card.dart';
+import '../widgets/media_card.dart';
 
 class RandomAnimePage extends StatelessWidget {
   const RandomAnimePage({super.key});
@@ -61,11 +61,8 @@ class RandomAnimePage extends StatelessWidget {
                                   ),
                               itemCount: 1,
                               itemBuilder: (context, index) {
-                                return AnimeCard(
-                                  title: anime.title,
-                                  imageUrl: anime.imageUrl,
-                                  score: anime.score,
-                                  year: anime.year,
+                                return MediaCard(
+                                  item: anime,
                                   onTap: () =>
                                       context.push('/detail', extra: anime),
                                 );
@@ -77,11 +74,8 @@ class RandomAnimePage extends StatelessWidget {
                                 return Center(
                                   child: SizedBox(
                                     width: 300,
-                                    child: AnimeCard(
-                                      title: anime.title,
-                                      imageUrl: anime.imageUrl,
-                                      score: anime.score,
-                                      year: anime.year,
+                                    child: MediaCard(
+                                      item: anime,
                                       onTap: () =>
                                           context.push('/detail', extra: anime),
                                     ),
