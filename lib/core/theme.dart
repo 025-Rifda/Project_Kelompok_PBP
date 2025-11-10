@@ -69,8 +69,11 @@ class AppTheme {
       background: Color(0xFF1E1B2E),
       onPrimary: Colors.white,
       onBackground: Colors.white,
+      surface: Color(0xFF2A2636), // Card color for dark mode
+      onSurface: Colors.white,
     ),
     scaffoldBackgroundColor: const Color(0xFF1E1B2E),
+    cardColor: const Color(0xFF2A2636), // Card background
     useMaterial3: true,
     textTheme: GoogleFonts.poppinsTextTheme().apply(
       bodyColor: Colors.white,
@@ -86,6 +89,31 @@ class AppTheme {
         fontWeight: FontWeight.bold,
       ),
       iconTheme: IconThemeData(color: Colors.white),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: accentColor,
+      foregroundColor: Colors.white,
+      elevation: 3,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: accentColor,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF2A2636),
+      hintStyle: TextStyle(color: Colors.grey[400]),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
+      ),
     ),
   );
 }

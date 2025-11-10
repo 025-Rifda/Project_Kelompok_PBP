@@ -63,17 +63,18 @@ class _DashboardPageState extends State<DashboardPage> {
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 209, 132, 218),
-          title: const Text(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
             'Nekofeed',
             style: TextStyle(
-              color: Color.fromARGB(255, 168, 128, 176),
+              color: Theme.of(context).colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
+              icon: const Icon(Icons.menu),
+              color: Theme.of(context).colorScheme.onPrimary,
               onPressed: () => _showMobileDrawer(context),
             ),
           ],
@@ -103,11 +104,11 @@ class _DashboardPageState extends State<DashboardPage> {
                         width: double.infinity,
                         constraints: const BoxConstraints(maxHeight: 200),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Theme.of(context).shadowColor.withOpacity(0.1),
                               blurRadius: 10,
                               offset: const Offset(0, 5),
                             ),
@@ -131,7 +132,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                  child: Text(query),
+                                  child: Text(query, style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
                                 ),
                               ),
                             );
@@ -180,11 +181,11 @@ class _DashboardPageState extends State<DashboardPage> {
                     return Container(
                       constraints: const BoxConstraints(maxHeight: 200),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Theme.of(context).shadowColor.withOpacity(0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
@@ -208,7 +209,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                child: Text(query),
+                                child: Text(query, style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
                               ),
                             ),
                           );
@@ -229,27 +230,27 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildSearchBar() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: TextField(
         controller: _searchController,
         focusNode: _searchFocusNode,
-        cursorColor: const Color.fromARGB(255, 168, 128, 176),
+        cursorColor: Theme.of(context).colorScheme.primary,
         decoration: InputDecoration(
           hintText: 'Cari anime kesukaanmu...',
-          hintStyle: const TextStyle(
-            color: const Color.fromARGB(255, 168, 128, 176),
+          hintStyle: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
           ),
           filled: true,
-          fillColor: const Color.fromARGB(255, 241, 222, 249),
-          prefixIcon: const Icon(
+          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+          prefixIcon: Icon(
             Icons.search,
-            color: const Color.fromARGB(255, 168, 128, 176),
+            color: Theme.of(context).colorScheme.primary,
           ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.clear,
-                    color: const Color.fromARGB(255, 168, 128, 176),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
                     _searchController.clear();
@@ -280,8 +281,11 @@ class _DashboardPageState extends State<DashboardPage> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFE1BEE7), Color(0xFFBBDEFB)],
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.secondary,
+          ],
         ),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -294,14 +298,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 Text(
                   'Hai $_username 💕!',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Hari ini ada banyak anime populer buat kamu tonton!',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 16),
                 ),
               ],
             ),
@@ -372,7 +376,7 @@ class _DashboardPageState extends State<DashboardPage> {
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                color: const Color.fromARGB(255, 168, 128, 176),
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 16),
@@ -407,7 +411,7 @@ class _DashboardPageState extends State<DashboardPage> {
             'Top Rated Anime',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),
@@ -653,7 +657,7 @@ class _DashboardPageState extends State<DashboardPage> {
     bool resetToTop = false,
   }) {
     return ListTile(
-      leading: Icon(icon, color: const Color.fromARGB(255, 168, 128, 176)),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
       onTap: () {
         Navigator.pop(context);

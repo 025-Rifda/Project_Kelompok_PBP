@@ -25,18 +25,18 @@ class _AboutPageState extends State<AboutPage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
             onPressed: () => context.go('/settings'),
           ),
           Text(
             'Tentang',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color(0xFFE1BEE7),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],

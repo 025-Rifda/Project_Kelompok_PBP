@@ -63,13 +63,13 @@ class _PopularPageState extends State<PopularPage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back,
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () => context.go('/dashboard'),
           ),
@@ -79,7 +79,7 @@ class _PopularPageState extends State<PopularPage> {
                 'Anime Populer',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 168, 128, 176),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -140,14 +140,14 @@ class _PopularPageState extends State<PopularPage> {
   Widget _buildFilterBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           Text(
             'Filter',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),

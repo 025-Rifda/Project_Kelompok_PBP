@@ -29,13 +29,13 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back,
-              color: Color.fromARGB(255, 168, 128, 176),
+              color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () => context.go('/dashboard'),
           ),
@@ -45,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 'Pengaturan',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 168, 128, 176),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -142,14 +142,14 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildFilterBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           Text(
             'Pengaturan',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),
@@ -206,7 +206,7 @@ class _SettingsPageState extends State<SettingsPage> {
         title,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-          color: const Color.fromARGB(255, 168, 128, 176),
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
     );
@@ -222,7 +222,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
-        leading: Icon(icon, color: const Color.fromARGB(255, 168, 128, 176)),
+        leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
         title: Text(title),
         subtitle: Text(subtitle),
         trailing: trailing,

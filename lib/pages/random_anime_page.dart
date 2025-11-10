@@ -44,7 +44,7 @@ class RandomAnimePage extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 168, 128, 176),
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                       textAlign: TextAlign.center,
                     ),

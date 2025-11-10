@@ -23,12 +23,12 @@ class DetailPage extends StatelessWidget {
     final isMobile = screenWidth < 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F4FF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE1BEE7),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: Theme.of(context).colorScheme.onPrimary),
           onPressed: () {
             final router = GoRouter.of(context);
             if (router.canPop()) {
@@ -41,8 +41,8 @@ class DetailPage extends StatelessWidget {
         ),
         title: Text(
           anime.title,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -74,7 +74,7 @@ class DetailPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: isMobile ? 20 : 24,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFFE1BEE7),
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 8),
@@ -85,7 +85,7 @@ class DetailPage extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   '${anime.score?.toStringAsFixed(1) ?? 'N/A'} / 10',
-                  style: const TextStyle(fontSize: 18, color: Colors.grey),
+                  style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
                 ),
               ],
             ),
@@ -96,11 +96,11 @@ class DetailPage extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(isMobile ? 16 : 20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.purple.withOpacity(0.1),
+                    color: Theme.of(context).shadowColor.withOpacity(0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -108,10 +108,11 @@ class DetailPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _infoRow('Tahun Rilis', anime.year?.toString() ?? '-'),
-                  _infoRow('Skor', anime.score?.toStringAsFixed(1) ?? '-'),
-                  _infoRow('Status', 'Completed'), // Placeholder
+                  _infoRow(context, 'Tahun Rilis', anime.year?.toString() ?? '-'),
+                  _infoRow(context, 'Skor', anime.score?.toStringAsFixed(1) ?? '-'),
+                  _infoRow(context, 'Status', 'Completed'), // Placeholder
                   _infoRow(
+                    context,
                     'Genre',
                     anime.genres?.join(', ') ?? 'Tidak tersedia',
                   ),
@@ -129,7 +130,7 @@ class DetailPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: isMobile ? 16 : 18,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFFE1BEE7).withOpacity(0.8),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
                 ),
               ),
             ),
@@ -139,7 +140,7 @@ class DetailPage extends StatelessWidget {
               textAlign: TextAlign.justify,
               style: TextStyle(
                 fontSize: isMobile ? 14 : 15,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
               ),
             ),
 
@@ -234,7 +235,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(String label, String value) {
+  Widget _infoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -242,9 +243,9 @@ class DetailPage extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).colorScheme.onBackground),
           ),
-          Text(value, style: const TextStyle(color: Colors.grey, fontSize: 16)),
+          Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6), fontSize: 16)),
         ],
       ),
     );

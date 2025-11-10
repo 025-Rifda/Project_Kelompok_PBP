@@ -67,13 +67,13 @@ class _HistoryPageState extends State<HistoryPage> {
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 209, 132, 218),
-          title: const Text(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
             'Riwayat Kunjungan',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onPrimary),
             onPressed: () => context.go('/dashboard'),
           ),
         ),
@@ -101,13 +101,13 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back,
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () => context.go('/dashboard'),
           ),
@@ -117,7 +117,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 'Riwayat Kunjungan',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 168, 128, 176),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -140,21 +140,21 @@ class _HistoryPageState extends State<HistoryPage> {
                         Icon(
                           Icons.history,
                           size: 100,
-                          color: Colors.grey.withOpacity(0.5),
+                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
                         ),
                         const SizedBox(height: 20),
                         Text(
                           'Belum ada riwayat kunjungan',
                           style: Theme.of(
                             context,
-                          ).textTheme.titleLarge?.copyWith(color: Colors.grey),
+                          ).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7)),
                         ),
                         const SizedBox(height: 10),
                         Text(
                           'Riwayat anime yang dikunjungi akan muncul di sini',
                           style: Theme.of(
                             context,
-                          ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                          ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
                         ),
                       ],
                     ),
@@ -170,8 +170,9 @@ class _HistoryPageState extends State<HistoryPage> {
                       final timestamp = DateTime.parse(item['timestamp']);
                       final malId = item['mal_id'] as int;
 
-                      return Card(
+                        Card(
                         margin: const EdgeInsets.only(bottom: 10),
+                        color: Theme.of(context).cardColor,
                         child: ListTile(
                           leading: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
@@ -182,7 +183,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               fit: BoxFit.cover,
                             ),
                           ),
-                          title: Text(title),
+                          title: Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -194,17 +195,17 @@ class _HistoryPageState extends State<HistoryPage> {
                                     size: 16,
                                   ),
                                   const SizedBox(width: 4),
-                                  Text('${score?.toStringAsFixed(1) ?? 'N/A'}'),
+                                  Text('${score?.toStringAsFixed(1) ?? 'N/A'}', style: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7))),
                                 ],
                               ),
                               Text(
                                 'Dikunjungi: ${timestamp.toLocal().toString().split('.')[0]}',
-                                style: const TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
                               ),
                             ],
                           ),
                           trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
                             onPressed: () => _removeFromHistory(context, malId),
                           ),
                           onTap: () {
@@ -231,14 +232,14 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget _buildFilterBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           Text(
             'Filter Riwayat',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color.fromARGB(255, 168, 128, 176),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),

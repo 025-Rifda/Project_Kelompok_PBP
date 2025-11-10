@@ -22,11 +22,11 @@ class MediaCard extends StatelessWidget {
           bottom: isMobile ? 16 : 0,
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.purple.withOpacity(0.1),
+              color: Theme.of(context).shadowColor.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

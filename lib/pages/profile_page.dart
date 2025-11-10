@@ -69,25 +69,25 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
             onPressed: () => context.go('/settings'),
           ),
           Text(
             'Profil',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: const Color(0xFFE1BEE7),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),
           IconButton(
             icon: Icon(
               _isEditing ? Icons.check_circle : Icons.edit,
-              color: const Color(0xFFE1BEE7),
+              color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () {
               if (_isEditing) {
@@ -109,23 +109,23 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 60,
-              backgroundColor: Color(0xFFE1BEE7),
-              child: Icon(Icons.person, size: 60, color: Colors.white),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: Icon(Icons.person, size: 60, color: Theme.of(context).colorScheme.onPrimary),
             ),
             const SizedBox(height: 20),
             Text(
               _username,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFFE1BEE7),
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Penggemar Anime',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
+              style: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6), fontSize: 16),
             ),
             const SizedBox(height: 30),
             _buildProfileItem(
