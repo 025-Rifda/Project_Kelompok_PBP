@@ -172,7 +172,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
               FadeTransition(
                 opacity: _textFadeAnimation,
                 child: Text(
-                  "By Kelompok 4",
+                  "By Kelompok 1",
                   style: GoogleFonts.poppins(
                     color: Colors.white.withOpacity(0.9),
                     fontWeight: FontWeight.w500,
