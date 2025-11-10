@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
 
@@ -123,21 +124,30 @@ class Sidebar extends StatelessWidget {
             isDark,
             isTablet,
           ),
+          _buildMenuItem(
+            context,
+            Icons.person,
+            'Profil',
+            selectedPage == 'Profil',
+            '/settings/profile',
+            isDark,
+            isTablet,
+          ),
 
           const Spacer(),
           const Divider(color: Colors.white38, indent: 20, endIndent: 20),
 
-          //  Toggle Mode
+          // Logout Button
           ListTile(
             leading: Icon(
-              isDark ? Icons.dark_mode : Icons.light_mode,
+              Icons.logout,
               color: isDark
                   ? Colors.white
                   : const Color.fromARGB(255, 5, 56, 107),
               size: isTablet ? 25 : 30,
             ),
             title: Text(
-              isDark ? 'Dark Mode' : 'Light Mode',
+              'Logout',
               style: TextStyle(
                 color: isDark
                     ? Colors.white
@@ -146,11 +156,11 @@ class Sidebar extends StatelessWidget {
                 fontSize: isTablet ? 14 : null,
               ),
             ),
-            trailing: Switch(
-              value: isDark,
-              activeColor: Colors.white,
-              onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
-            ),
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.clear();
+              context.go('/');
+            },
           ),
           const SizedBox(height: 20),
         ],
