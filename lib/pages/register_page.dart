@@ -54,6 +54,10 @@ class _RegisterPageState extends State<RegisterPage> {
       // Simpan Password dan Email berdasarkan Username (Simulasi database lokal)
       await prefs.setString('user_password_$username', password);
       await prefs.setString('user_email_$username', email);
+      await prefs.setString(
+        'user_join_date_$username',
+        DateTime.now().toIso8601String(),
+      );
 
       // Tambahkan username ke list registered_users
       final registeredUsers = prefs.getStringList('registered_users') ?? [];
