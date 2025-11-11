@@ -16,10 +16,10 @@ class _RatingDialogState extends State<RatingDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(
+      title: Text(
         'Rate Our App',
         style: TextStyle(
-          color: Colors.black,
+          color: Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),
@@ -27,10 +27,10 @@ class _RatingDialogState extends State<RatingDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'How would you rate your experience?',
             style: TextStyle(
-              color: Colors.black87,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.87),
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
@@ -56,8 +56,8 @@ class _RatingDialogState extends State<RatingDialog> {
           const SizedBox(height: 20),
           Text(
             'Rating: $_rating/5',
-            style: const TextStyle(
-              color: Colors.black,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -95,18 +95,18 @@ class _RatingDialogState extends State<RatingDialog> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(
+        title: Text(
           'Confirm Logout',
           style: TextStyle(
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you want to logout?',
           style: TextStyle(
-            color: Colors.black87,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.87),
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),

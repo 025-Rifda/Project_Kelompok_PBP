@@ -18,13 +18,13 @@ class RandomAnimePage extends StatelessWidget {
       create: (context) => AnimeCubit(context.read<Dio>())..fetchRandomAnime(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: Theme.of(context).cardColor,
           title: Text(
             'Anime Random',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
             onPressed: () => context.go('/dashboard'),
           ),
         ),
@@ -54,11 +54,11 @@ class RandomAnimePage extends StatelessWidget {
                           ? GridView.builder(
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 1,
-                                    crossAxisSpacing: 15,
-                                    mainAxisSpacing: 15,
-                                    childAspectRatio: 0.8,
-                                  ),
+                                crossAxisCount: 1,
+                                crossAxisSpacing: 15,
+                                mainAxisSpacing: 15,
+                                childAspectRatio: 0.8,
+                              ),
                               itemCount: 1,
                               itemBuilder: (context, index) {
                                 return MediaCard(
@@ -91,8 +91,8 @@ class RandomAnimePage extends StatelessWidget {
                       icon: const Icon(Icons.refresh),
                       label: const Text('Generate Lagi'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 12,
