@@ -7,11 +7,14 @@ import 'widgets/sidebar.dart';
 import 'bloc/anime_bloc.dart';
 import 'bloc/anime_event.dart';
 import 'cubit/anime_cubit.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'core/theme.dart';
 import 'core/router.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   usePathUrlStrategy();
   runApp(const AplikasiAnime());
 }
@@ -28,10 +31,9 @@ class AplikasiAnime extends StatelessWidget {
             RepositoryProvider<Dio>(create: (context) => Dio()),
             BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
             BlocProvider<AnimeBloc>(
-              create: (context) =>
-                  AnimeBloc(context.read<Dio>())
-                    ..add(FetchTopAnimeEvent())
-                    ..add(const LoadFavoritesEvent()),
+              create: (context) => AnimeBloc(context.read<Dio>())
+                ..add(FetchTopAnimeEvent())
+                ..add(const LoadFavoritesEvent()),
             ),
             BlocProvider<AnimeCubit>(
               create: (context) => AnimeCubit(context.read<Dio>()),

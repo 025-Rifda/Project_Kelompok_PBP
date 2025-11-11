@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,51 +18,84 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
 
   @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _checkLoggedInUser();
+  }
+
+  Future<void> _checkLoggedInUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Jika user masih login (token masih aktif)
+      await Future.delayed(const Duration(milliseconds: 500)); // biar smooth
+      if (mounted) context.go('/dashboard');
+    }
   }
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      final prefs = await SharedPreferences.getInstance();
-      final registeredUsers = prefs.getStringList('registered_users') ?? [];
+      try {
+        // Tampilkan loading sementara
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => const Center(child: CircularProgressIndicator()),
+        );
 
-      // Dapatkan data pengguna dari SharedPreferences (contoh: 'user_password_username')
-      final storedPassword = prefs.getString(
-        'user_password_${_usernameController.text}',
-      );
+        // Login dengan Firebase Auth
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _usernameController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
 
-      // Cek apakah username sudah terdaftar
-      if (!registeredUsers.contains(_usernameController.text)) {
+        // Tutup loading
+        if (context.mounted) Navigator.pop(context);
+
+        // Simpan data user ke SharedPreferences setelah login berhasil
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final prefs = await SharedPreferences.getInstance();
+          final username = user.displayName ?? 'Pengguna';
+          final email = user.email ?? _usernameController.text.trim();
+          final joinDate =
+              user.metadata.creationTime?.toIso8601String() ??
+              DateTime.now().toIso8601String();
+
+          await prefs.setString('username', username);
+          await prefs.setString('user_email_$username', email);
+          await prefs.setString('user_join_date_$username', joinDate);
+          // Only set default if not already set
+          if (prefs.getString('user_phone_$username') == null) {
+            await prefs.setString('user_phone_$username', '+62');
+          }
+          if (prefs.getString('user_address_$username') == null) {
+            await prefs.setString('user_address_$username', 'Belum diisi');
+          }
+        }
+
+        // Arahkan ke dashboard (misal)
+        context.go('/dashboard');
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Username belum terdaftar. Silakan daftar terlebih dahulu.',
-            ),
-            backgroundColor: Colors.red,
+            content: Text('Login berhasil!'),
+            backgroundColor: Colors.green,
           ),
         );
-        return;
-      }
+      } on FirebaseAuthException catch (e) {
+        if (context.mounted) Navigator.pop(context);
 
-      // Cek Password
-      if (storedPassword == null ||
-          storedPassword != _passwordController.text) {
+        String message = 'Password lama salah';
+        if (e.code == 'user-not-found') {
+          message = 'Pengguna tidak ditemukan. Silakan daftar dulu.';
+        } else if (e.code == 'wrong-password') {
+          message = 'Password lama salah';
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password salah.'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(message), backgroundColor: Colors.red),
         );
-        return;
       }
-
-      // Simpan username ke SharedPreferences untuk session aktif
-      await prefs.setString('username', _usernameController.text);
-
-      context.go('/dashboard');
     }
   }
 
@@ -153,12 +187,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 40),
 
-                  // Field Username
                   TextFormField(
                     controller: _usernameController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: 'Username',
+                      hintText: 'Email',
                       hintStyle: const TextStyle(color: Colors.white70),
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.1),
@@ -184,9 +217,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Username tidak boleh kosong';
+                        return 'Email tidak boleh kosong';
                       }
-                      return null;
+                      if (!value.contains('@')) {
+                        return 'Masukkan email yang valid';
+                      }
                     },
                   ),
                   const SizedBox(height: 20),

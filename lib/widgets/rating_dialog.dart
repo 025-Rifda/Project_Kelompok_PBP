@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RatingDialog extends StatefulWidget {
   const RatingDialog({super.key});
@@ -120,6 +121,7 @@ class _RatingDialogState extends State<RatingDialog> {
           ),
           TextButton(
             onPressed: () async {
+              await FirebaseAuth.instance.signOut();
               final prefs = await SharedPreferences.getInstance();
               await prefs.clear();
               if (context.mounted) {

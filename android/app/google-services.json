@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "857868084085",
+    "project_id": "kel-1-nekofeed",
+    "storage_bucket": "kel-1-nekofeed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857868084085:android:4d7af969f253fc7438693c",
+        "android_client_info": {
+          "package_name": "com.Kel1.NekoFeed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwOKkGcqwGok7yvQBEjpXF9pQNwszsauc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857868084085:android:2c1431748feb257838693c",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwOKkGcqwGok7yvQBEjpXF9pQNwszsauc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

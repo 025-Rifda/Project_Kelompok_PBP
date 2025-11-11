@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -31,47 +32,60 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _register() async {
     if (_formKey.currentState!.validate()) {
-      final prefs = await SharedPreferences.getInstance();
+      try {
+        // Daftar user ke Firebase Auth
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text.trim(),
+            );
 
-      // Simpan data pendaftaran sebagai Map di SharedPreferences
-      final String username = _usernameController.text;
-      final String email = _emailController.text;
-      final String password = _passwordController.text;
+        // Simpan username ke displayName
+        await userCredential.user?.updateDisplayName(_usernameController.text);
 
-      // Cek apakah username sudah terdaftar
-      if (prefs.containsKey('user_password_$username')) {
+        // Simpan data user ke SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        final username = _usernameController.text.trim();
+        final email = _emailController.text.trim();
+        final password = _passwordController.text.trim();
+        final joinDate = DateTime.now().toIso8601String();
+
+        await prefs.setString('username', username);
+        await prefs.setString('user_email_$username', email);
+        await prefs.setString('user_password_$username', password);
+        await prefs.setString('user_join_date_$username', joinDate);
+        await prefs.setString('user_phone_$username', '+62');
+        await prefs.setString('user_address_$username', 'Belum diisi');
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Username sudah terdaftar. Silakan gunakan username lain.',
-            ),
-            backgroundColor: Colors.red,
+            content: Text('Akun berhasil dibuat! Silakan login.'),
+            backgroundColor: Colors.green,
           ),
         );
-        return;
+
+        // Arahkan ke halaman login
+        context.go('/login');
+      } on FirebaseAuthException catch (e) {
+        String message;
+        if (e.code == 'email-already-in-use') {
+          message = 'Email sudah digunakan.';
+        } else if (e.code == 'invalid-email') {
+          message = 'Format email tidak valid.';
+        } else if (e.code == 'weak-password') {
+          message = 'Password terlalu lemah.';
+        } else {
+          message = 'Terjadi kesalahan. Coba lagi.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.red),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
       }
-
-      // Simpan Password dan Email berdasarkan Username (Simulasi database lokal)
-      await prefs.setString('user_password_$username', password);
-      await prefs.setString('user_email_$username', email);
-      await prefs.setString(
-        'user_join_date_$username',
-        DateTime.now().toIso8601String(),
-      );
-
-      // Tambahkan username ke list registered_users
-      final registeredUsers = prefs.getStringList('registered_users') ?? [];
-      registeredUsers.add(username);
-      await prefs.setStringList('registered_users', registeredUsers);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Akun berhasil dibuat! Silakan login.'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      // Pindah ke halaman login setelah berhasil daftar
-      context.go('/login');
     }
   }
 
