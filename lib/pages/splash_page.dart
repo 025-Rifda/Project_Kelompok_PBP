@@ -77,17 +77,16 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     const Color color2 = Color(0xFF4C1D95);
     const Color color3 = Color(0xFF6A5ACD);
 
-    const Color primaryTextColor = Colors.white;
-    const Color accentColor = Color(0xFF03DAC6);
+    const Color primaryTextColor = const Color.fromARGB(255, 136, 38, 151);
+    const Color accentColor = const Color.fromARGB(255, 136, 38, 151);
     const Color secondaryAccentColor = Color(0xFFBB86FC);
 
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [color1, color2, color3],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          image: DecorationImage(
+            image: AssetImage('assets/bg.jpeg'),
+            fit: BoxFit.cover,
           ),
         ),
         child: Center(
@@ -174,7 +173,12 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 child: Text(
                   "By Kelompok 1",
                   style: GoogleFonts.poppins(
-                    color: Colors.white.withOpacity(0.9),
+                    color: const Color.fromARGB(
+                      255,
+                      101,
+                      49,
+                      146,
+                    ).withOpacity(0.9),
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     letterSpacing: 1,

@@ -60,3 +60,5 @@ flutter:
   assets:
     - assets/logo.png
     - assets/splash.png
+    - assets/Background.jpeg
+    - assets/bg.jpeg
