@@ -70,10 +70,16 @@ class _HistoryPageState extends State<HistoryPage> {
           backgroundColor: Theme.of(context).colorScheme.primary,
           title: Text(
             'Riwayat Kunjungan',
-            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onPrimary),
+            icon: Icon(
+              Icons.arrow_back,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
             onPressed: () => context.go('/dashboard'),
           ),
         ),
@@ -133,97 +139,123 @@ class _HistoryPageState extends State<HistoryPage> {
         _buildFilterBar(context),
         Expanded(
           child: _history.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.history,
-                          size: 100,
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Belum ada riwayat kunjungan',
-                          style: Theme.of(
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.history,
+                        size: 100,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onBackground.withOpacity(0.5),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Belum ada riwayat kunjungan',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Theme.of(
                             context,
-                          ).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7)),
+                          ).colorScheme.onBackground.withOpacity(0.7),
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Riwayat anime yang dikunjungi akan muncul di sini',
-                          style: Theme.of(
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Riwayat anime yang dikunjungi akan muncul di sini',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(
                             context,
-                          ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
+                          ).colorScheme.onBackground.withOpacity(0.6),
                         ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(20),
-                    itemCount: _history.length,
-                    itemBuilder: (context, index) {
-                      final item = _history[index];
-                      final title = item['title'] as String;
-                      final imageUrl = item['image_url'] as String;
-                      final score = item['score'] as double?;
-                      final timestamp = DateTime.parse(item['timestamp']);
-                      final malId = item['mal_id'] as int;
-
-                        Card(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        color: Theme.of(context).cardColor,
-                        child: ListTile(
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              imageUrl,
-                              width: 50,
-                              height: 70,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          title: Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text('${score?.toStringAsFixed(1) ?? 'N/A'}', style: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7))),
-                                ],
-                              ),
-                              Text(
-                                'Dikunjungi: ${timestamp.toLocal().toString().split('.')[0]}',
-                                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
-                              ),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
-                            onPressed: () => _removeFromHistory(context, malId),
-                          ),
-                          onTap: () {
-                            // Navigate to detail page
-                            final anime = Anime(
-                              malId: malId,
-                              title: title,
-                              imageUrl: imageUrl,
-                              score: score,
-                              year: item['year'] as int?,
-                              synopsis: '', // Placeholder
-                            );
-                            context.go('/detail/${anime.malId}');
-                          },
-                        ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: _history.length,
+                  itemBuilder: (context, index) {
+                    final item = _history[index];
+                    final title = item['title'] as String;
+                    final imageUrl = item['image_url'] as String;
+                    final score = item['score'] as double?;
+                    final timestamp = DateTime.parse(item['timestamp']);
+                    final malId = item['mal_id'] as int;
+
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      color: Theme.of(context).cardColor,
+                      child: ListTile(
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            imageUrl,
+                            width: 50,
+                            height: 70,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        title: Text(
+                          title,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${score?.toStringAsFixed(1) ?? 'N/A'}',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onBackground.withOpacity(0.7),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              'Dikunjungi: ${timestamp.toLocal().toString().split('.')[0]}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onBackground.withOpacity(0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                          onPressed: () => _removeFromHistory(context, malId),
+                        ),
+                        onTap: () {
+                          // Navigate to detail page
+                          final anime = Anime(
+                            malId: malId,
+                            title: title,
+                            imageUrl: imageUrl,
+                            score: score,
+                            year: item['year'] as int?,
+                            synopsis: '', // Placeholder
+                          );
+                          context.go('/detail/${anime.malId}');
+                        },
+                      ),
+                    );
+                  },
+                ),
         ),
       ],
     );

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:badges/badges.dart' as badges;
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
+import '../bloc/anime_state.dart';
 import 'rating_dialog.dart';
 
 // State Cubit untuk mengatur mode terang/gelap
@@ -70,69 +72,81 @@ class Sidebar extends StatelessWidget {
           ),
           const SizedBox(height: 40),
           //  Menu Items
-          _buildMenuItem(
-            context,
-            Icons.dashboard,
-            'Dashboard',
-            selectedPage == 'Dashboard',
-            '/dashboard',
-            isDark,
-            isTablet,
-            resetToTop: true,
-          ),
-          _buildMenuItem(
-            context,
-            Icons.star,
-            'Anime Populer',
-            selectedPage == 'Anime Populer',
-            '/popular',
-            isDark,
-            isTablet,
-          ),
-          _buildMenuItem(
-            context,
-            Icons.favorite,
-            'Favorit',
-            selectedPage == 'Favorit',
-            '/favorite',
-            isDark,
-            isTablet,
-          ),
-          _buildMenuItem(
-            context,
-            Icons.history,
-            'Riwayat',
-            selectedPage == 'Riwayat',
-            '/history',
-            isDark,
-            isTablet,
-          ),
-          _buildMenuItem(
-            context,
-            Icons.shuffle,
-            'Anime Random',
-            selectedPage == 'Anime Random',
-            '/random',
-            isDark,
-            isTablet,
-          ),
-          _buildMenuItem(
-            context,
-            Icons.settings,
-            'Pengaturan',
-            selectedPage == 'Pengaturan',
-            '/settings',
-            isDark,
-            isTablet,
-          ),
-          _buildMenuItem(
-            context,
-            Icons.person,
-            'Profil',
-            selectedPage == 'Profil',
-            '/settings/profile',
-            isDark,
-            isTablet,
+          BlocBuilder<AnimeBloc, AnimeState>(
+            builder: (context, state) {
+              final favoriteCount = (state is AnimeLoaded)
+                  ? state.favorites.length
+                  : 0;
+              return Column(
+                children: [
+                  _buildMenuItem(
+                    context,
+                    Icons.dashboard,
+                    'Dashboard',
+                    selectedPage == 'Dashboard',
+                    '/dashboard',
+                    isDark,
+                    isTablet,
+                    resetToTop: true,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.star,
+                    'Anime Populer',
+                    selectedPage == 'Anime Populer',
+                    '/popular',
+                    isDark,
+                    isTablet,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.favorite,
+                    'Favorit',
+                    selectedPage == 'Favorit',
+                    '/favorite',
+                    isDark,
+                    isTablet,
+                    badgeCount: favoriteCount,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.history,
+                    'Riwayat',
+                    selectedPage == 'Riwayat',
+                    '/history',
+                    isDark,
+                    isTablet,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.shuffle,
+                    'Anime Random',
+                    selectedPage == 'Anime Random',
+                    '/random',
+                    isDark,
+                    isTablet,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.settings,
+                    'Pengaturan',
+                    selectedPage == 'Pengaturan',
+                    '/settings',
+                    isDark,
+                    isTablet,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.person,
+                    'Profil',
+                    selectedPage == 'Profil',
+                    '/settings/profile',
+                    isDark,
+                    isTablet,
+                  ),
+                ],
+              );
+            },
           ),
 
           const Spacer(),
@@ -180,6 +194,7 @@ class Sidebar extends StatelessWidget {
     bool isDark,
     bool isTablet, {
     bool resetToTop = false,
+    int badgeCount = 0,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -197,10 +212,27 @@ class Sidebar extends StatelessWidget {
             )
           : null,
       child: ListTile(
-        leading: Icon(
-          icon,
-          color: isDark ? Colors.white : const Color.fromARGB(255, 5, 56, 107),
-          size: isTablet ? 25 : 30,
+        leading: badges.Badge(
+          badgeContent: badgeCount > 0
+              ? Text(
+                  badgeCount.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              : null,
+          badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
+          position: badges.BadgePosition.topEnd(top: -5, end: -5),
+          showBadge: badgeCount > 0,
+          child: Icon(
+            icon,
+            color: isDark
+                ? Colors.white
+                : const Color.fromARGB(255, 5, 56, 107),
+            size: isTablet ? 25 : 30,
+          ),
         ),
         title: Text(
           title,

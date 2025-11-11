@@ -9,3 +9,10 @@
 - [ ] Update SettingsPage header and filter bar to use theme colors
 - [ ] Test dark mode toggle to ensure all parts change colors correctly
 - [ ] Ensure text visibility in dark mode (fonts should be white or appropriate contrast)
+
+# TODO: Add Badge to Favorite Icon in Sidebar
+
+## Tasks
+- [x] Modify lib/widgets/sidebar.dart to add badge on Favorite icon showing count of favorites
+- [ ] Test the badge functionality by adding/removing favorites and checking if badge updates
+- [ ] Ensure badge is visible and styled properly in both light and dark modes
