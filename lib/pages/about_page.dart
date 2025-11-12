@@ -29,7 +29,10 @@ class _AboutPageState extends State<AboutPage> {
       child: Row(
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
+            icon: Icon(
+              Icons.arrow_back,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             onPressed: () => context.go('/settings'),
           ),
           Text(
@@ -73,7 +76,7 @@ class _AboutPageState extends State<AboutPage> {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 30),
-            _buildAboutItem('Pengembang', 'Rifda'),
+            _buildAboutItem('Pengembang', 'Kelompok 1'),
             _buildAboutItem('Platform', 'Flutter'),
             _buildAboutItem('API', 'Jikan API (MyAnimeList)'),
             _buildAboutItem('Lisensi', 'Open Source'),
