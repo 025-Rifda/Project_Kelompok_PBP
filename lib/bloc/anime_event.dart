@@ -130,3 +130,8 @@ class ResetFilterEvent extends AnimeEvent {
 class ResetSettingsEvent extends AnimeEvent {
   const ResetSettingsEvent();
 }
+
+/// Event untuk mengambil anime acak.
+class FetchRandomAnimeEvent extends AnimeEvent {
+  const FetchRandomAnimeEvent();
+}

@@ -16,6 +16,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
 
   AnimeBloc(this.dio) : super(AnimeInitial()) {
     on<FetchTopAnimeEvent>(_handleFetchTopAnime);
+    on<FetchRandomAnimeEvent>(_handleFetchRandomAnime);
     on<SearchAnimeEvent>(_handleSearchAnime);
     on<FilterByGenreEvent>(_handleFilterByGenre);
     on<FilterByRatingEvent>(_handleFilterByRating);
@@ -75,6 +76,48 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     try {
       _topAnimeList = await _fetchAnimeData(endpoint: 'top/anime');
       _animeList = _topAnimeList;
+      emit(
+        AnimeLoaded(
+          _animeList,
+          favorites: _favorites,
+          searchHistory: _searchHistory,
+        ),
+      );
+    } catch (e) {
+      emit(AnimeError('Gagal memuat data: $e'));
+    }
+  }
+
+  // Fetch anime acak
+  Future<void> _handleFetchRandomAnime(
+    FetchRandomAnimeEvent event,
+    Emitter<AnimeState> emit,
+  ) async {
+    emit(AnimeLoading());
+    try {
+      List<dynamic> animeData = [];
+
+      // Loop sampai dapat 3 anime yang aman
+      while (animeData.length < 3) {
+        final response = await dio.get('https://api.jikan.moe/v4/random/anime');
+
+        final data = response.data['data'];
+
+        final rating = data['rating'] ?? '';
+
+        // Filter anime DEWASA
+        final bool isAdult = rating.contains('R+') || rating.contains('Rx');
+
+        // Jika rating dewasa → skip dan ambil lagi
+        if (isAdult) {
+          continue;
+        }
+
+        // Lolos filter → tambahkan
+        animeData.add(data);
+      }
+
+      _animeList = animeData;
       emit(
         AnimeLoaded(
           _animeList,
