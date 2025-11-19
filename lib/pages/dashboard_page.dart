@@ -19,7 +19,6 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-  bool _isSearching = false;
   Set<String> _selectedGenres = {};
   double? selectedRating;
   bool? _sortRatingAscending;
@@ -31,9 +30,9 @@ class _DashboardPageState extends State<DashboardPage> {
     _loadUsername();
     context.read<AnimeBloc>().add(FetchTopAnimeEvent());
     _searchFocusNode.addListener(() {
-      setState(() {
-        _isSearching = _searchFocusNode.hasFocus;
-      });
+      if (_searchFocusNode.hasFocus) {
+        context.read<AnimeBloc>().add(const FetchHistoryEvent());
+      }
     });
     _searchController.addListener(() {
       setState(() {});
@@ -91,63 +90,10 @@ class _DashboardPageState extends State<DashboardPage> {
                 _buildContentArea(),
               ],
             ),
-            if (_isSearching)
-              Positioned(
-                top: 100,
-                left: 20,
-                right: 20,
-                child: BlocBuilder<AnimeBloc, AnimeState>(
-                  builder: (context, state) {
-                    if (state is AnimeLoaded &&
-                        state.searchHistory.isNotEmpty) {
-                      return Container(
-                        width: double.infinity,
-                        constraints: const BoxConstraints(maxHeight: 200),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).shadowColor.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.searchHistory.take(5).length,
-                          itemBuilder: (context, index) {
-                            final history = state.searchHistory[index];
-                            final query = history['query'] as String;
-                            return Container(
-                              color: Colors.transparent,
-                              child: GestureDetector(
-                                onTap: () {
-                                  _searchController.text = query;
-                                  _searchFocusNode.unfocus();
-                                  context.read<AnimeBloc>().add(
-                                    SearchAnimeEvent(query),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                  child: Text(query, style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ),
-          ],
-        ),
-      );
-    }
+        ],
+      ),
+    );
+  }
 
     return Scaffold(
       body: Stack(
@@ -168,59 +114,6 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ],
           ),
-          if (_isSearching)
-            Positioned(
-              top: 80, // Position below search bar
-              left: isTablet
-                  ? 20
-                  : 270, // Align with text area after search icon
-              right: 20,
-              child: BlocBuilder<AnimeBloc, AnimeState>(
-                builder: (context, state) {
-                  if (state is AnimeLoaded && state.searchHistory.isNotEmpty) {
-                    return Container(
-                      constraints: const BoxConstraints(maxHeight: 200),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context).shadowColor.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: state.searchHistory.take(5).length,
-                        itemBuilder: (context, index) {
-                          final history = state.searchHistory[index];
-                          final query = history['query'] as String;
-                          return Container(
-                            color: Colors.transparent,
-                            child: GestureDetector(
-                              onTap: () {
-                                _searchController.text = query;
-                                _searchFocusNode.unfocus();
-                                context.read<AnimeBloc>().add(
-                                  SearchAnimeEvent(query),
-                                );
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                child: Text(query, style: TextStyle(color: Theme.of(context).colorScheme.onBackground)),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
         ],
       ),
     );
@@ -237,9 +130,7 @@ class _DashboardPageState extends State<DashboardPage> {
         cursorColor: Theme.of(context).colorScheme.primary,
         decoration: InputDecoration(
           hintText: 'Cari anime kesukaanmu...',
-          hintStyle: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
           filled: true,
           fillColor: Theme.of(context).inputDecorationTheme.fillColor,
           prefixIcon: Icon(
@@ -305,7 +196,10 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 8),
                 Text(
                   'Hari ini ada banyak anime populer buat kamu tonton!',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 16),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -455,10 +349,10 @@ class _DashboardPageState extends State<DashboardPage> {
           itemCount: animeList.length,
           itemBuilder: (context, index) {
             final anime = animeList[index];
-                      return MediaCard(
-                        item: anime,
-                        onTap: () => context.go('/detail/${anime.malId}'),
-                      );
+            return MediaCard(
+              item: anime,
+              onTap: () => context.push('/detail/${anime.malId}'),
+            );
           },
         ),
       );
@@ -474,7 +368,7 @@ class _DashboardPageState extends State<DashboardPage> {
           final anime = animeList[index];
           return MediaCard(
             item: anime,
-            onTap: () => context.go('/detail/${anime.malId}'),
+            onTap: () => context.push('/detail/${anime.malId}'),
           );
         },
       ),
@@ -583,38 +477,6 @@ class _DashboardPageState extends State<DashboardPage> {
       _sortRatingAscending = null;
     });
     context.read<AnimeBloc>().add(ResetFilterEvent());
-  }
-
-  void _showDeleteHistoryDialog(BuildContext context, String query) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Hapus pencarian ini dari histori Anda?'),
-          content: Text(
-            'Anda telah mencari sebelumnya. Menghapus "$query" dari histori akan menghapusnya secara permanen dari akun Anda di semua perangkat.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () {
-                context.read<AnimeBloc>().add(RemoveHistoryItemEvent(query));
-                setState(() {
-                  _isSearching = false;
-                });
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('Hapus'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _showMobileDrawer(BuildContext context) {

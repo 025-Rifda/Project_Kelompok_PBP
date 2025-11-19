@@ -306,8 +306,13 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   }
 
   //  Ambil riwayat pencarian
-  void _handleFetchHistory(FetchHistoryEvent event, Emitter<AnimeState> emit) {
+  Future<void> _handleFetchHistory(
+    FetchHistoryEvent event,
+    Emitter<AnimeState> emit,
+  ) async {
     if (state is! AnimeLoaded) return;
+    _searchHistory = await SearchHistoryService.getHistory();
+    _deletedQueries = await SearchHistoryService.getDeletedQueries();
     final currentState = state as AnimeLoaded;
     emit(currentState.copyWith(searchHistory: List.from(_searchHistory)));
   }
@@ -346,9 +351,9 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
 
-    _searchHistory.removeWhere((item) => item['query'] == event.query);
-    _deletedQueries.add(event.query);
     await SearchHistoryService.removeQuery(event.query);
+    _searchHistory = await SearchHistoryService.getHistory();
+    _deletedQueries = await SearchHistoryService.getDeletedQueries();
     emit(currentState.copyWith(searchHistory: List.from(_searchHistory)));
   }
 
