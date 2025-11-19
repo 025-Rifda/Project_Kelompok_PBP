@@ -76,12 +76,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20),
             _buildSectionTitle('Akun'),
-            _buildSettingItem(
-              icon: Icons.person,
-              title: 'Profil',
-              subtitle: 'Kelola informasi profil Anda',
-              onTap: () => context.go('/settings/profile'),
-            ),
+
             _buildSettingItem(
               icon: Icons.notifications,
               title: 'Notifikasi',
@@ -107,31 +102,6 @@ class _SettingsPageState extends State<SettingsPage> {
               title: 'Informasi Perangkat',
               subtitle: 'Lihat detail perangkat Anda',
               onTap: () => context.go('/settings/device-info'),
-            ),
-            const SizedBox(height: 30),
-
-            // 🔹 Tombol Logout dengan konfirmasi
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: _showLogoutConfirmation,
-                icon: const Icon(Icons.logout),
-                label: const Text('Logout'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
             ),
           ],
         ),
