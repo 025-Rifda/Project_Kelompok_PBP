@@ -185,14 +185,20 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Theme.of(context).cardColor,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Row(
         children: [
           IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/settings'),
           ),
           Expanded(
@@ -201,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 'Profil',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -209,7 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
           IconButton(
             icon: Icon(
               _isEditing ? Icons.check_circle : Icons.edit,
-              color: Theme.of(context).colorScheme.primary,
+              color: Colors.white,
             ),
             onPressed: () {
               if (_isEditing) {

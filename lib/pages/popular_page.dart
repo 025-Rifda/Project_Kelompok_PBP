@@ -63,14 +63,20 @@ class _PopularPageState extends State<PopularPage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Theme.of(context).cardColor,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Row(
         children: [
           IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/dashboard'),
           ),
           Expanded(
@@ -79,7 +85,7 @@ class _PopularPageState extends State<PopularPage> {
                 'Anime Populer',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -91,50 +97,49 @@ class _PopularPageState extends State<PopularPage> {
 
   Widget _buildContent() {
     return BlocBuilder<AnimeBloc, AnimeState>(
-        builder: (context, state) {
-          if (state is AnimeLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is AnimeLoaded) {
-            final displayList = state.displayList
-                .map((json) => Anime.fromJson(json))
-                .toList();
+      builder: (context, state) {
+        if (state is AnimeLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is AnimeLoaded) {
+          final displayList = state.displayList
+              .map((json) => Anime.fromJson(json))
+              .toList();
 
-             return Column(
-               children: [
-                 _buildFilterBar(context),
-                Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(20),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
-                          childAspectRatio: 0.7,
-                        ),
-                    itemCount: displayList.length,
-                    itemBuilder: (context, index) {
-                      final anime = displayList[index];
-                      return MediaCard(
-                        item: anime,
-                        onTap: () => context.push('/detail/${anime.malId}'),
-                      );
-                    },
+          return Column(
+            children: [
+              _buildFilterBar(context),
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(20),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 0.7,
                   ),
+                  itemCount: displayList.length,
+                  itemBuilder: (context, index) {
+                    final anime = displayList[index];
+                    return MediaCard(
+                      item: anime,
+                      onTap: () => context.push('/detail/${anime.malId}'),
+                    );
+                  },
                 ),
-              ],
-            );
-          } else if (state is AnimeError) {
-            return Center(
-              child: Text(
-                'Error: ${state.message}',
-                style: Theme.of(context).textTheme.titleLarge,
               ),
-            );
-          }
-          return const Center(child: Text('Welcome to Popular Anime'));
-        },
-      );
+            ],
+          );
+        } else if (state is AnimeError) {
+          return Center(
+            child: Text(
+              'Error: ${state.message}',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          );
+        }
+        return const Center(child: Text('Welcome to Popular Anime'));
+      },
+    );
   }
 
   Widget _buildFilterBar(BuildContext context) {

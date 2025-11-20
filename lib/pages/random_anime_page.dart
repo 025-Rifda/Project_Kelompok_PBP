@@ -28,7 +28,18 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 209, 132, 218),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 236, 185, 245),
+                  Color.fromARGB(255, 172, 130, 220),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           title: const Text(
             'Anime Random',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -38,80 +49,6 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
             onPressed: () => context.go('/dashboard'),
           ),
         ),
-<<<<<<< Updated upstream
-        body: BlocBuilder<AnimeCubit, AnimeState>(
-          builder: (context, state) {
-            if (state is AnimeLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is AnimeLoaded) {
-              final anime = Anime.fromJson(state.animeList.first);
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Anime Acak untuk Kamu!',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    Expanded(
-                      child: isMobile
-                          ? GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 1,
-                                crossAxisSpacing: 15,
-                                mainAxisSpacing: 15,
-                                childAspectRatio: 0.8,
-                              ),
-                              itemCount: 1,
-                              itemBuilder: (context, index) {
-                                return MediaCard(
-                                  item: anime,
-                                  onTap: () =>
-                                      context.push('/detail/${anime.malId}'),
-                                );
-                              },
-                            )
-                          : ListView.builder(
-                              itemCount: 1,
-                              itemBuilder: (context, index) {
-                                return Center(
-                                  child: SizedBox(
-                                    width: 300,
-                                    child: MediaCard(
-                                      item: anime,
-                                      onTap: () =>
-                                          context.push('/detail/${anime.malId}'),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: () =>
-                          context.read<AnimeCubit>().fetchRandomAnime(),
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Generate Lagi'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-=======
         body: _buildContent(),
       );
     }
@@ -136,14 +73,20 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Theme.of(context).cardColor,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Row(
         children: [
           IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/dashboard'),
           ),
           Expanded(
@@ -152,8 +95,7 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
                 'Anime Random',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
->>>>>>> Stashed changes
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -190,7 +132,7 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
                     final anime = displayList[index];
                     return MediaCard(
                       item: anime,
-                      onTap: () => context.go('/detail/${anime.malId}'),
+                      onTap: () => context.push('/detail/${anime.malId}'),
                     );
                   },
                 ),

@@ -29,23 +29,30 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Theme.of(context).cardColor,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Row(
         children: [
           IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/dashboard'),
           ),
           Expanded(
             child: Center(
               child: Text(
                 'Pengaturan',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Colors.white,
+                  fontSize: 22,
                 ),
               ),
             ),
@@ -112,7 +119,10 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildFilterBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      color: Theme.of(context).cardColor,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
         children: [
           Text(

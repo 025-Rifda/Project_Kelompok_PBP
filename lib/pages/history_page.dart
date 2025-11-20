@@ -107,14 +107,20 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Theme.of(context).cardColor,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Row(
         children: [
           IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/dashboard'),
           ),
           Expanded(
@@ -123,7 +129,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 'Riwayat Kunjungan',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Colors.white,
                 ),
               ),
             ),
