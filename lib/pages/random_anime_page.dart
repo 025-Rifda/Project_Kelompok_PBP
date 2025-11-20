@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sizer/sizer.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
 import '../bloc/anime_state.dart';
@@ -24,28 +25,31 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 600;
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 236, 185, 245),
-                  Color.fromARGB(255, 172, 130, 220),
-                ],
+                colors: [Color(0xFFEFC8FF), Color(0xFFB497E5)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
             ),
           ),
-          title: const Text(
+          title: Text(
             'Anime Random',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 14.sp,
+            ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 18.sp),
             onPressed: () => context.go('/dashboard'),
           ),
         ),
@@ -54,6 +58,7 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
     }
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F2FF),
       body: Row(
         children: [
           const Sidebar(selectedPage: 'Anime Random'),
@@ -70,15 +75,14 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
     );
   }
 
+  // HEADER (DESKTOP)
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(2.2.h),
+      width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(255, 236, 185, 245),
-            Color.fromARGB(255, 172, 130, 220),
-          ],
+          colors: [Color(0xFFEFC8FF), Color(0xFFB497E5)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -86,14 +90,15 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
             onPressed: () => context.go('/dashboard'),
           ),
           Expanded(
             child: Center(
               child: Text(
                 'Anime Random',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: TextStyle(
+                  fontSize: 15.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -105,31 +110,35 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
     );
   }
 
+  // MAIN CONTENT
   Widget _buildContent() {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 700;
+
     return BlocBuilder<AnimeBloc, AnimeState>(
       builder: (context, state) {
         if (state is AnimeLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is AnimeLoaded) {
-          final displayList = state.displayList
+          final list = state.displayList
               .map((json) => Anime.fromJson(json))
               .toList();
 
           return Column(
             children: [
-              _buildFilterBar(context),
+              _buildFilterBar(),
               Expanded(
                 child: GridView.builder(
-                  padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 0.7,
+                  padding: EdgeInsets.all(2.h),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: isMobile ? 2 : 5,
+                    crossAxisSpacing: 2.w,
+                    mainAxisSpacing: 2.h,
+                    childAspectRatio: isMobile ? 0.64 : 0.75,
                   ),
-                  itemCount: displayList.length,
+                  itemCount: list.length,
                   itemBuilder: (context, index) {
-                    final anime = displayList[index];
+                    final anime = list[index];
                     return MediaCard(
                       item: anime,
                       onTap: () => context.push('/detail/${anime.malId}'),
@@ -139,52 +148,61 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
               ),
             ],
           );
-        } else if (state is AnimeError) {
-          return Center(
-            child: Text(
-              'Error: ${state.message}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          );
         }
-        return const Center(child: Text('Welcome to Random Anime'));
+
+        return Center(
+          child: Text(
+            'Welcome to Random Anime',
+            style: TextStyle(fontSize: 12.sp),
+          ),
+        );
       },
     );
   }
 
-  Widget _buildFilterBar(BuildContext context) {
+  // FILTER BAR BARU - BESAR & CANTIK
+  Widget _buildFilterBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      color: Theme.of(context).cardColor,
+      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.8.h),
+      margin: EdgeInsets.only(bottom: 1.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
+        ],
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Row(
         children: [
           Text(
             'Filter',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+            style: TextStyle(
+              fontSize: 12.5.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.deepPurple,
             ),
           ),
           const Spacer(),
           Wrap(
-            spacing: 10,
+            spacing: 2.w,
+            runSpacing: 1.h,
             children: [
-              _filterButton(
+              _bigFilterButton(
                 icon: Icons.star,
                 label: 'Rating',
-                color: const Color(0xFFBBDEFB),
+                color: const Color(0xFFE0F0FF),
                 onPressed: () => _showRatingFilter(context),
               ),
-              _filterButton(
+              _bigFilterButton(
                 icon: Icons.refresh,
                 label: 'Generate Lagi',
-                color: Colors.white,
+                color: const Color(0xFFF9F9F9),
                 onPressed: () => _generateNewAnime(context),
               ),
-              _filterButton(
+              _bigFilterButton(
                 icon: Icons.restore,
                 label: 'Reset',
-                color: Colors.grey,
+                color: const Color(0xFFE8E8E8),
                 onPressed: () => _resetFilters(context),
               ),
             ],
@@ -194,25 +212,36 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
     );
   }
 
-  Widget _filterButton({
+  // TOMBOL FILTER BESAR (PERBAIKAN)
+  Widget _bigFilterButton({
     required IconData icon,
     required String label,
     required Color color,
     required VoidCallback onPressed,
   }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 16),
-      label: Text(label),
+    return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.black,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        textStyle: const TextStyle(fontSize: 12),
+        elevation: 0,
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.6.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      onPressed: onPressed,
+      child: Row(
+        children: [
+          Icon(icon, size: 13.sp),
+          SizedBox(width: 1.w),
+          Text(
+            label,
+            style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600),
+          ),
+        ],
       ),
     );
   }
 
+  // POPUP FILTER RATING
   void _showRatingFilter(BuildContext context) {
     bool? selectedSort;
 
@@ -220,43 +249,34 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Urutkan Berdasarkan Rating'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('Low -> High'),
-                  leading: Radio<bool?>(
-                    value: true,
-                    groupValue: selectedSort,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        selectedSort = value;
-                      });
-                    },
-                  ),
-                ),
-                ListTile(
-                  title: const Text('High -> Low'),
-                  leading: Radio<bool?>(
-                    value: false,
-                    groupValue: selectedSort,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        selectedSort = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Urutkan Berdasarkan Rating',
+            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<bool?>(
+                title: Text("Low → High"),
+                value: true,
+                groupValue: selectedSort,
+                onChanged: (v) => setState(() => selectedSort = v),
+              ),
+              RadioListTile<bool?>(
+                title: Text("High → Low"),
+                value: false,
+                groupValue: selectedSort,
+                onChanged: (v) => setState(() => selectedSort = v),
+              ),
+            ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
+              child: const Text("Batal"),
             ),
             TextButton(
               onPressed: () {
@@ -266,18 +286,8 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
                   );
                 }
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      selectedSort == true
-                          ? 'Diurutkan rating dari terendah'
-                          : 'Diurutkan rating dari tertinggi',
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
               },
-              child: const Text('OK'),
+              child: const Text("OK"),
             ),
           ],
         ),
@@ -296,7 +306,6 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
   }
 
   void _resetFilters(BuildContext context) {
-    setState(() {});
     context.read<AnimeBloc>().add(ResetFilterEvent());
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
