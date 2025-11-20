@@ -29,20 +29,12 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
 
     if (isMobile) {
       return Scaffold(
+        backgroundColor: const Color.fromARGB(255, 209, 132, 218),
         appBar: AppBar(
           centerTitle: true,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFEFC8FF), Color(0xFFB497E5)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
           title: Text(
             'Anime Random',
-            style: TextStyle(
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 14.sp,
@@ -58,7 +50,6 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F2FF),
       body: Row(
         children: [
           const Sidebar(selectedPage: 'Anime Random'),
@@ -82,7 +73,10 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFFEFC8FF), Color(0xFFB497E5)],
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -97,7 +91,7 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
             child: Center(
               child: Text(
                 'Anime Random',
-                style: TextStyle(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontSize: 15.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -166,20 +160,16 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
       padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.8.h),
       margin: EdgeInsets.only(bottom: 1.h),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
-        ],
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: [
           Text(
             'Filter',
-            style: TextStyle(
-              fontSize: 12.5.sp,
-              fontWeight: FontWeight.w700,
-              color: Colors.deepPurple,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),
