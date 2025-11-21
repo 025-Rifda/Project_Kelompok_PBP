@@ -192,7 +192,7 @@ class _FavoritePageState extends State<FavoritePage> {
               _filterButton(
                 icon: Icons.star,
                 label: 'Rating',
-                color: const Color(0xFFBBDEFB),
+                color: const Color.fromARGB(255, 152, 209, 255),
                 onPressed: () => _showRatingFilter(context),
               ),
               _filterButton(

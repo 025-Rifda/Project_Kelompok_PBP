@@ -140,7 +140,7 @@ class _SettingsPageState extends State<SettingsPage> {
             spacing: 10,
             children: [
               _filterButton(
-                icon: Icons.restore,
+                icon: Icons.refresh,
                 label: 'Reset',
                 color: Colors.grey,
                 onPressed: () => _resetSettings(context),

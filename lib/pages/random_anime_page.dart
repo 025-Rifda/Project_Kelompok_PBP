@@ -167,17 +167,19 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
     );
   }
 
-  // FILTER BAR BARU - BESAR & CANTIK
+  // FILTER BAR BARU
   Widget _buildFilterBar() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.8.h),
+      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.5.h),
       margin: EdgeInsets.only(bottom: 1.h),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // TITLE FILTER (ATAS KIRI)
           Text(
             'Filter',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -185,61 +187,71 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          const Spacer(),
-          Wrap(
-            spacing: 2.w,
-            runSpacing: 1.h,
-            children: [
-              _bigFilterButton(
-                icon: Icons.star,
-                label: 'Rating',
-                color: const Color(0xFFE0F0FF),
-                onPressed: () => _showRatingFilter(context),
-              ),
-              _bigFilterButton(
-                icon: Icons.refresh,
-                label: 'Generate Lagi',
-                color: const Color(0xFFF9F9F9),
-                onPressed: () => _generateNewAnime(context),
-              ),
-              _bigFilterButton(
-                icon: Icons.restore,
-                label: 'Reset',
-                color: const Color(0xFFE8E8E8),
-                onPressed: () => _resetFilters(context),
-              ),
-            ],
+
+          SizedBox(height: 1.h),
+
+          // BUTTONS (BAWAH KANAN)
+          Align(
+            alignment: Alignment.centerRight,
+            child: Wrap(
+              spacing: 1.5.w,
+              runSpacing: 1.h,
+              children: [
+                _smallFilterButton(
+                  icon: Icons.star,
+                  label: 'Rating',
+                  color: const Color.fromARGB(255, 152, 209, 255),
+                  onPressed: () => _showRatingFilter(context),
+                ),
+                _smallFilterButton(
+                  icon: Icons.shuffle,
+                  label: 'Generate',
+                  color: const Color.fromARGB(255, 218, 164, 164),
+                  onPressed: () => _generateNewAnime(context),
+                ),
+                _smallFilterButton(
+                  icon: Icons.refresh,
+                  label: 'Reset',
+                  color: Colors.grey.shade400,
+                  onPressed: () => _resetFilters(context),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  // TOMBOL FILTER BESAR (PERBAIKAN)
-  Widget _bigFilterButton({
+  Widget _smallFilterButton({
     required IconData icon,
     required String label,
     required Color color,
     required VoidCallback onPressed,
   }) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: Colors.black,
-        elevation: 0,
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.6.h),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      ),
-      onPressed: onPressed,
-      child: Row(
-        children: [
-          Icon(icon, size: 13.sp),
-          SizedBox(width: 1.w),
-          Text(
-            label,
-            style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600),
-          ),
-        ],
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: Colors.white),
+            SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

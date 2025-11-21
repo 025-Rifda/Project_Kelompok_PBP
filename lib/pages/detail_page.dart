@@ -25,16 +25,27 @@ class DetailPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        automaticallyImplyLeading: false,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 236, 185, 245),
+                Color.fromARGB(255, 172, 130, 220),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Theme.of(context).colorScheme.onPrimary),
+          icon: const Icon(Icons.arrow_back, size: 22, color: Colors.white),
           onPressed: () {
             final router = GoRouter.of(context);
             if (router.canPop()) {
               context.pop();
             } else {
-              // Fallback jika tidak ada stack untuk dipop (mis. dinavigasi dengan context.go)
               context.go('/dashboard');
             }
           },
@@ -42,8 +53,8 @@ class DetailPage extends StatelessWidget {
         title: Text(
           anime.title,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onPrimary, // warna title sama
+            fontWeight: FontWeight.bold, // font bold sama
           ),
         ),
       ),
@@ -85,7 +96,12 @@ class DetailPage extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   '${anime.score?.toStringAsFixed(1) ?? 'N/A'} / 10',
-                  style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onBackground.withOpacity(0.6),
+                  ),
                 ),
               ],
             ),
@@ -108,8 +124,16 @@ class DetailPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _infoRow(context, 'Tahun Rilis', anime.year?.toString() ?? '-'),
-                  _infoRow(context, 'Skor', anime.score?.toStringAsFixed(1) ?? '-'),
+                  _infoRow(
+                    context,
+                    'Tahun Rilis',
+                    anime.year?.toString() ?? '-',
+                  ),
+                  _infoRow(
+                    context,
+                    'Skor',
+                    anime.score?.toStringAsFixed(1) ?? '-',
+                  ),
                   _infoRow(context, 'Status', 'Completed'), // Placeholder
                   _infoRow(
                     context,
@@ -140,7 +164,9 @@ class DetailPage extends StatelessWidget {
               textAlign: TextAlign.justify,
               style: TextStyle(
                 fontSize: isMobile ? 14 : 15,
-                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onBackground.withOpacity(0.8),
               ),
             ),
 
@@ -243,9 +269,21 @@ class DetailPage extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).colorScheme.onBackground),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
           ),
-          Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6), fontSize: 16)),
+          Text(
+            value,
+            style: TextStyle(
+              color: Theme.of(
+                context,
+              ).colorScheme.onBackground.withOpacity(0.6),
+              fontSize: 16,
+            ),
+          ),
         ],
       ),
     );

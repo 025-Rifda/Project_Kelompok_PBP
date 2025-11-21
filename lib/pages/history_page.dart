@@ -280,10 +280,13 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget _buildFilterBar(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      color: Theme.of(context).cardColor,
-      child: Row(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      decoration: BoxDecoration(color: Theme.of(context).cardColor),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Baris 1 — Title
           Text(
             'Filter Riwayat',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -291,29 +294,33 @@ class _HistoryPageState extends State<HistoryPage> {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          const Spacer(),
-          Wrap(
-            spacing: 10,
-            children: [
-              _filterButton(
-                icon: Icons.star,
-                label: 'Rating',
-                color: const Color(0xFFBBDEFB),
-                onPressed: () => _showRatingFilter(context),
-              ),
-              _filterButton(
-                icon: Icons.sort,
-                label: 'Tanggal',
-                color: const Color(0xFF81C784),
-                onPressed: () => _toggleSort(context),
-              ),
-              _filterButton(
-                icon: Icons.clear_all,
-                label: 'Hapus Semua',
-                color: Colors.red,
-                onPressed: () => _clearHistory(context),
-              ),
-            ],
+          const SizedBox(height: 10),
+          // Baris 2 — Tombol di kanan
+          Align(
+            alignment: Alignment.centerRight,
+            child: Wrap(
+              spacing: 10,
+              children: [
+                _filterButton(
+                  icon: Icons.star,
+                  label: 'Rating',
+                  color: const Color(0xFF98D1FF),
+                  onPressed: () => _showRatingFilter(context),
+                ),
+                _filterButton(
+                  icon: Icons.sort,
+                  label: 'Tanggal',
+                  color: const Color(0xFF81C784),
+                  onPressed: () => _toggleSort(context),
+                ),
+                _filterButton(
+                  icon: Icons.delete_sweep,
+                  label: 'Hapus Semua',
+                  color: Colors.red,
+                  onPressed: () => _clearHistory(context),
+                ),
+              ],
+            ),
           ),
         ],
       ),
