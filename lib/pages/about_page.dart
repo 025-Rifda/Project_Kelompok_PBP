@@ -1,3 +1,4 @@
+import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
@@ -24,24 +25,36 @@ class _AboutPageState extends State<AboutPage> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
-      color: Theme.of(context).cardColor,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Row(
         children: [
           IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/settings'),
           ),
-          Text(
-            'Tentang',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+          Expanded(
+            child: Center(
+              child: Text(
+                'Tentang',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
+          const SizedBox(width: 48),
         ],
       ),
     );
@@ -54,26 +67,34 @@ class _AboutPageState extends State<AboutPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.tv, size: 80, color: Color(0xFFE1BEE7)),
+            Icon(
+              Icons.tv,
+              size: 80,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(height: 20),
             Text(
               'AnimeList+',
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFFE1BEE7),
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Versi 1.0.0',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
             ),
             const SizedBox(height: 30),
-            const Text(
+            Text(
               'AnimeList+ adalah aplikasi untuk mencari dan menjelajahi anime favorit Anda. '
               'Temukan anime populer, simpan favorit, dan lihat riwayat pencarian Anda.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: 16),
             ),
             const SizedBox(height: 30),
             _buildAboutItem('Pengembang', 'Kelompok 1'),

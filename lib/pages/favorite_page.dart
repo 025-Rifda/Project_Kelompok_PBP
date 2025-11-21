@@ -24,47 +24,82 @@ class _FavoritePageState extends State<FavoritePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    if (isMobile) {
+      return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 236, 185, 245),
+                  Color.fromARGB(255, 172, 130, 220),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          title: Text(
+            'Anime Favorit',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.go('/dashboard'),
+          ),
+        ),
+        body: _buildContent(),
+      );
+    }
     return Scaffold(
       body: Row(
         children: [
           const Sidebar(selectedPage: 'Favorit'),
-          Expanded(child: Column(children: [_buildHeader(), _buildContent()])),
+          Expanded(
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(child: _buildContent()),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(255, 236, 185, 245),
-            Color.fromARGB(255, 172, 130, 220),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 0,
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 236, 185, 245),
+              Color.fromARGB(255, 172, 130, 220),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
       ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => context.go('/dashboard'),
-          ),
-          Expanded(
-            child: Center(
-              child: Text(
-                'Anime Favorit',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
+      title: Text(
+        'Anime Favorit',
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onPrimary,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => context.go('/dashboard'),
       ),
     );
   }
@@ -193,8 +228,11 @@ class _FavoritePageState extends State<FavoritePage> {
   }
 
   void _showRatingFilter(BuildContext context) {
-    final currentState = context.read<AnimeBloc>().state as AnimeLoaded;
-    bool? selectedSort = currentState.sortFavoritesAscending;
+    final currentState = context.read<AnimeBloc>().state;
+    bool? selectedSort;
+    if (currentState is AnimeLoaded) {
+      selectedSort = currentState.sortFavoritesAscending;
+    }
 
     showDialog(
       context: context,

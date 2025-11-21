@@ -24,21 +24,36 @@ class _HelpPageState extends State<HelpPage> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFFE1BEE7)),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/settings'),
           ),
-          Text(
-            'Bantuan',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFFE1BEE7),
+          Expanded(
+            child: Center(
+              child: Text(
+                'Bantuan',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
+          const SizedBox(width: 48),
         ],
       ),
     );
@@ -83,18 +98,26 @@ class _HelpPageState extends State<HelpPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // JUDUL SECTION — Sama persis dengan SettingsPage
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFFE1BEE7),
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 10),
+
+        // LIST ITEM — mengikuti theme (dark/light)
         ...items.map(
           (item) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Text(item, style: const TextStyle(fontSize: 16)),
+            child: Text(
+              item,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: 16),
+            ),
           ),
         ),
       ],

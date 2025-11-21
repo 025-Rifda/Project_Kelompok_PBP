@@ -1,7 +1,9 @@
+import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart'
+    show kIsWeb, defaultTargetPlatform, TargetPlatform;
 
 class DeviceInfoPage extends StatefulWidget {
   const DeviceInfoPage({super.key});
@@ -40,46 +42,35 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
       } else {
         switch (defaultTargetPlatform) {
           case TargetPlatform.android:
-          final androidInfo = await deviceInfoPlugin.androidInfo;
-          _updateState(
-            androidInfo.model,
-            "Android ${androidInfo.version.release}",
-          );
-            break;
-          case TargetPlatform.iOS:
-          final iosInfo = await deviceInfoPlugin.iosInfo;
-          String model = iosInfo.name.isNotEmpty
-              ? iosInfo.name
-              : iosInfo.utsname.machine;
-          _updateState(model, "${iosInfo.systemName} ${iosInfo.systemVersion}");
-            break;
-          case TargetPlatform.windows:
-          final windowsInfo = await deviceInfoPlugin.windowsInfo;
-          String osName = windowsInfo.buildNumber >= 22000
-              ? "Windows 11"
-              : "Windows ${windowsInfo.buildNumber > 0 ? 10 : ''}";
-          String modelName = windowsInfo.computerName.isNotEmpty
-              ? windowsInfo.computerName
-              : (windowsInfo.editionId.isNotEmpty
-                  ? "Edisi ${windowsInfo.editionId}"
-                  : 'Windows');
-          _updateState(
-            modelName,
-            "$osName (Build ${windowsInfo.buildNumber}, Release ${windowsInfo.releaseId})",
-          );
-            break;
-          case TargetPlatform.macOS:
-            final mac = await deviceInfoPlugin.macOsInfo;
+            final androidInfo = await deviceInfoPlugin.androidInfo;
             _updateState(
-              mac.computerName ?? 'Mac',
-              'macOS ${mac.osRelease}',
+              androidInfo.model,
+              "Android ${androidInfo.version.release}",
             );
             break;
-          case TargetPlatform.linux:
-            final linux = await deviceInfoPlugin.linuxInfo;
+          case TargetPlatform.iOS:
+            final iosInfo = await deviceInfoPlugin.iosInfo;
+            String model = iosInfo.name.isNotEmpty
+                ? iosInfo.name
+                : iosInfo.utsname.machine;
             _updateState(
-              linux.prettyName ?? 'Linux',
-              linux.version ?? '',
+              model,
+              "${iosInfo.systemName} ${iosInfo.systemVersion}",
+            );
+            break;
+          case TargetPlatform.windows:
+            final windowsInfo = await deviceInfoPlugin.windowsInfo;
+            String osName = windowsInfo.buildNumber >= 22000
+                ? "Windows 11"
+                : "Windows ${windowsInfo.buildNumber > 0 ? 10 : ''}";
+            String modelName = windowsInfo.computerName.isNotEmpty
+                ? windowsInfo.computerName
+                : (windowsInfo.editionId.isNotEmpty
+                      ? "Edisi ${windowsInfo.editionId}"
+                      : 'Windows');
+            _updateState(
+              modelName,
+              "$osName (Build ${windowsInfo.buildNumber}, Release ${windowsInfo.releaseId})",
             );
             break;
           default:
@@ -131,7 +122,7 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.deepPurple,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           Flexible(
@@ -155,10 +146,33 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Informasi Perangkat"),
-        backgroundColor: Colors.deepPurple,
-        foregroundColor: Colors.white,
-        elevation: 3,
+        automaticallyImplyLeading: true,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 236, 185, 245),
+                Color.fromARGB(255, 172, 130, 220),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: Text(
+          'Informasi Perangkat',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontSize: 17.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -180,10 +194,9 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
                         children: [
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.devices,
-                                color: Colors.deepPurple,
-                                size: 30,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                               const SizedBox(width: 8),
                               Text(
@@ -191,12 +204,15 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.deepPurple,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             ],
                           ),
-                          const Divider(color: Colors.deepPurple, thickness: 1),
+                          Divider(
+                            color: Theme.of(context).colorScheme.primary,
+                            thickness: 1,
+                          ),
                           const SizedBox(height: 6),
                           _buildDeviceField("Model", _deviceModel),
                           _buildDeviceField("OS", _osVersion),

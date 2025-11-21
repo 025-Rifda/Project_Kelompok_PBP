@@ -62,7 +62,20 @@ class _DashboardPageState extends State<DashboardPage> {
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 236, 185, 245),
+                  Color.fromARGB(255, 172, 130, 220),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           title: Text(
             'Nekofeed',
             style: TextStyle(
@@ -90,10 +103,10 @@ class _DashboardPageState extends State<DashboardPage> {
                 _buildContentArea(),
               ],
             ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
       body: Stack(

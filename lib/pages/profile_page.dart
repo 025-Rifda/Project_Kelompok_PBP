@@ -1,3 +1,4 @@
+import 'package:sizer/sizer.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -95,7 +96,6 @@ class _ProfilePageState extends State<ProfilePage> {
     _addressController.text = _address;
   }
 
-  // PERBAIKAN BESAR DI SINI 🔥
   Future<void> _pickImage() async {
     try {
       final picker = ImagePicker();
@@ -184,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -206,6 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Text(
                 'Profil',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: 17.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -241,105 +242,108 @@ class _ProfilePageState extends State<ProfilePage> {
             Expanded(
               flex: 1,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Stack(
-                    alignment: Alignment.bottomRight,
+                  // FOTO DI ATAS
+                  Column(
                     children: [
-                      _profileImageBytes != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Image.memory(
-                                _profileImageBytes!,
-                                width: 300,
-                                height: 300,
-                                fit: BoxFit.cover,
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          _profileImageBytes != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.memory(
+                                    _profileImageBytes!,
+                                    width: 300,
+                                    height: 300,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Container(
+                                  width: 300,
+                                  height: 300,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 150,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                          Positioned(
+                            bottom: 4,
+                            right: 4,
+                            child: InkWell(
+                              onTap: _pickImage,
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
                               ),
-                            )
-                          : Container(
-                              width: 300,
-                              height: 300,
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Icon(
-                                Icons.person,
-                                size: 150,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                      Positioned(
-                        bottom: 4,
-                        right: 4,
-                        child: InkWell(
-                          onTap: _pickImage,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                              size: 20,
                             ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        _username,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        _email,
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    _username,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    _email,
-                    style: TextStyle(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.6),
-                    ),
-                  ),
-                ],
-              ),
-            ),
 
-            const SizedBox(width: 40),
+                  const SizedBox(height: 40),
 
-            // RIGHT: DATA PROFIL
-            Expanded(
-              flex: 2,
-              child: Column(
-                children: [
-                  _buildProfileField(
-                    'Nama',
-                    _usernameController,
-                    editable: _isEditing,
+                  // FORM DI BAWAH FOTO
+                  Column(
+                    children: [
+                      _buildProfileField(
+                        'Nama',
+                        _usernameController,
+                        editable: _isEditing,
+                      ),
+                      _buildProfileField(
+                        'Email',
+                        _emailController,
+                        editable: _isEditing,
+                      ),
+                      _buildProfileField(
+                        'Phone Number',
+                        _phoneController,
+                        editable: _isEditing,
+                      ),
+                      _buildProfileField(
+                        'Address',
+                        _addressController,
+                        editable: _isEditing,
+                      ),
+                      _buildProfileField('Bergabung Sejak', _joinDate),
+                    ],
                   ),
-                  _buildProfileField(
-                    'Email',
-                    _emailController,
-                    editable: _isEditing,
-                  ),
-                  _buildProfileField(
-                    'Phone Number',
-                    _phoneController,
-                    editable: _isEditing,
-                  ),
-                  _buildProfileField(
-                    'Address',
-                    _addressController,
-                    editable: _isEditing,
-                  ),
-                  _buildProfileField('Bergabung Sejak', _joinDate),
                 ],
               ),
             ),

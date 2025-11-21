@@ -1,3 +1,4 @@
+import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -28,7 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -49,14 +50,15 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Center(
               child: Text(
                 'Pengaturan',
-                style: TextStyle(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  fontSize: 22,
                 ),
               ),
             ),
           ),
+          const SizedBox(width: 48),
         ],
       ),
     );
@@ -127,7 +129,8 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
           Text(
             'Pengaturan',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontSize: 17.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -211,7 +214,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  // 🔹 Tampilkan dialog konfirmasi sebelum logout
+  // Tampilkan dialog konfirmasi sebelum logout
   void _showLogoutConfirmation() {
     showDialog(
       context: context,

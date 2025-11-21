@@ -29,21 +29,34 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
 
     if (isMobile) {
       return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 209, 132, 218),
         appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            'Anime Random',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 14.sp,
+          automaticallyImplyLeading: false,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 236, 185, 245),
+                  Color.fromARGB(255, 172, 130, 220),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
+          title: Text(
+            'Anime Random',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white, size: 18.sp),
             onPressed: () => context.go('/dashboard'),
           ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
         body: _buildContent(),
       );
