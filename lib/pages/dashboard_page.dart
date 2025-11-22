@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
+
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
 import '../bloc/anime_state.dart';
@@ -19,9 +21,10 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-  Set<String> _selectedGenres = {};
+
   double? selectedRating;
   bool? _sortRatingAscending;
+
   String _username = 'Pengguna';
 
   @override
@@ -29,13 +32,11 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _loadUsername();
     context.read<AnimeBloc>().add(FetchTopAnimeEvent());
+
     _searchFocusNode.addListener(() {
       if (_searchFocusNode.hasFocus) {
         context.read<AnimeBloc>().add(const FetchHistoryEvent());
       }
-    });
-    _searchController.addListener(() {
-      setState(() {});
     });
   }
 
@@ -55,77 +56,22 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
-    final isTablet = screenWidth >= 600 && screenWidth < 1200;
-
-    if (isMobile) {
-      return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 236, 185, 245),
-                  Color.fromARGB(255, 172, 130, 220),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          title: Text(
-            'Nekofeed',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.menu),
-              color: Theme.of(context).colorScheme.onPrimary,
-              onPressed: () => _showMobileDrawer(context),
-            ),
-          ],
-        ),
-        body: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Column(
-              children: [
-                _buildSearchBar(),
-                _buildBanner(context),
-                const SizedBox(height: 20),
-
-                _buildContentArea(),
-              ],
-            ),
-          ],
-        ),
-      );
-    }
+    final isMobile = MediaQuery.of(context).size.width < 700;
 
     return Scaffold(
-      body: Stack(
+      body: Row(
         children: [
-          Row(
-            children: [
-              if (!isTablet) const Sidebar(selectedPage: 'Dashboard'),
-              Expanded(
-                child: Column(
-                  children: [
-                    _buildSearchBar(),
-                    _buildBanner(context),
-                    const SizedBox(height: 20),
-
-                    _buildContentArea(),
-                  ],
-                ),
-              ),
-            ],
+          if (!isMobile) const Sidebar(selectedPage: 'Dashboard'),
+          Expanded(
+            child: Column(
+              children: [
+                _buildSearchBar(),
+                SizedBox(height: 2.h),
+                _buildBanner(context),
+                SizedBox(height: 2.h),
+                Expanded(child: _buildContentArea()),
+              ],
+            ),
           ),
         ],
       ),
@@ -134,28 +80,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
   // SEARCH BAR
   Widget _buildSearchBar() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      color: Theme.of(context).cardColor,
+    return Padding(
+      padding: EdgeInsets.all(2.h),
       child: TextField(
         controller: _searchController,
         focusNode: _searchFocusNode,
-        cursorColor: Theme.of(context).colorScheme.primary,
         decoration: InputDecoration(
-          hintText: 'Cari anime kesukaanmu...',
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
           filled: true,
-          fillColor: Theme.of(context).inputDecorationTheme.fillColor,
-          prefixIcon: Icon(
-            Icons.search,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          fillColor: Theme.of(context).cardColor,
+          hintText: 'Cari anime kesukaanmu...',
+          prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryColor),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: Icon(
-                    Icons.clear,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  icon: const Icon(Icons.clear),
                   onPressed: () {
                     _searchController.clear();
                     context.read<AnimeBloc>().add(FetchTopAnimeEvent());
@@ -163,7 +100,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 )
               : null,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(30),
             borderSide: BorderSide.none,
           ),
         ),
@@ -172,18 +109,16 @@ class _DashboardPageState extends State<DashboardPage> {
             query.isEmpty ? FetchTopAnimeEvent() : SearchAnimeEvent(query),
           );
         },
-        onChanged: (value) {
-          setState(() {});
-        },
       ),
     );
   }
 
-  //  BANNER
+  // BANNER
   Widget _buildBanner(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 4.w),
+      padding: EdgeInsets.all(2.5.h),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -201,129 +136,78 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Text(
                   'Hai $_username 💕!',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 1.h),
                 Text(
                   'Hari ini ada banyak anime populer buat kamu tonton!',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 11.sp),
                 ),
               ],
             ),
           ),
-          Image.asset('assets/splash.png', height: 90, width: 90),
+          Image.asset('assets/splash.png', height: 12.h),
         ],
       ),
     );
   }
 
-  //  CONTENT AREA (LIST + FILTERS)
+  // CONTENT AREA
   Widget _buildContentArea() {
-    return Expanded(
-      child: BlocConsumer<AnimeBloc, AnimeState>(
-        listener: (context, state) {
-          if (state is AnimeError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.redAccent,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is AnimeLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is AnimeLoaded) {
-            final animeList = state.displayList
-                .map((json) => Anime.fromJson(json))
-                .toList();
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 16),
-                _buildAnimeList(animeList),
-              ],
-            );
-          } else if (state is AnimeError) {
-            return Center(
-              child: Text(
-                'Ups, anime tidak ditemukan (｡•́︿•̀｡)',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            );
-          }
-          return const Center(child: Text('Welcome to Anime Dashboard'));
-        },
-      ),
+    return BlocConsumer<AnimeBloc, AnimeState>(
+      listener: (context, state) {
+        if (state is AnimeError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is AnimeLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is AnimeLoaded) {
+          final animeList = state.displayList
+              .map((json) => Anime.fromJson(json))
+              .toList();
+
+          return Column(
+            children: [
+              _buildHeader(),
+              SizedBox(height: 2.h),
+              Expanded(child: _buildAnimeGrid(animeList)),
+            ],
+          );
+        }
+
+        return const Center(child: Text('Welcome to Anime Dashboard'));
+      },
     );
   }
 
-  //  HEADER (Title + Filter Buttons)
-  Widget _buildHeader(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
-
-    if (isMobile) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Top Rated Anime',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _filterButton(
-                  icon: Icons.star,
-                  label: 'Rating',
-                  color: const Color.fromARGB(255, 152, 209, 255),
-                  onPressed: () => _showRatingFilter(context),
-                ),
-                _filterButton(
-                  icon: Icons.refresh,
-                  label: 'Reset',
-                  color: Colors.grey,
-                  onPressed: () => _resetFilters(context),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    }
-
+  // HEADER (Title + Filter)
+  Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
       child: Row(
         children: [
           Text(
             'Top Rated Anime',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            style: TextStyle(
+              fontSize: 14.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),
           Wrap(
-            spacing: 10,
+            spacing: 2.w,
             children: [
               _filterButton(
                 icon: Icons.star,
@@ -344,51 +228,30 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ANIME LIST (horizontal scroll)
-  Widget _buildAnimeList(List<Anime> animeList) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
+  // GRIDVIEW (BARU)
+  Widget _buildAnimeGrid(List<Anime> animeList) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
 
-    if (isMobile) {
-      return Expanded(
-        child: GridView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-            childAspectRatio: 0.7,
-          ),
-          itemCount: animeList.length,
-          itemBuilder: (context, index) {
-            final anime = animeList[index];
-            return MediaCard(
-              item: anime,
-              onTap: () => context.push('/detail/${anime.malId}'),
-            );
-          },
-        ),
-      );
-    }
-
-    return Expanded(
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: animeList.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 15),
-        itemBuilder: (context, index) {
-          final anime = animeList[index];
-          return MediaCard(
-            item: anime,
-            onTap: () => context.push('/detail/${anime.malId}'),
-          );
-        },
+    return GridView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: isMobile ? 2 : 5,
+        crossAxisSpacing: 2.w,
+        mainAxisSpacing: 2.h,
+        childAspectRatio: isMobile ? 0.65 : 0.75,
       ),
+      itemCount: animeList.length,
+      itemBuilder: (context, index) {
+        final anime = animeList[index];
+        return MediaCard(
+          item: anime,
+          onTap: () => context.push('/detail/${anime.malId}'),
+        );
+      },
     );
   }
 
-  //  Filter Button Builder
+  // FILTER BUTTON WIDGET
   Widget _filterButton({
     required IconData icon,
     required String label,
@@ -402,50 +265,35 @@ class _DashboardPageState extends State<DashboardPage> {
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       ),
     );
   }
 
-  //  FILTER / SORT FUNCTIONS
-
+  // POPUP SORTING RATING
   void _showRatingFilter(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: const Text('Urutkan Berdasarkan Rating'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('Low -> High'),
-                  leading: Radio<bool?>(
-                    value: true,
-                    groupValue: _sortRatingAscending,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _sortRatingAscending = value;
-                      });
-                    },
-                  ),
-                ),
-                ListTile(
-                  title: const Text('High -> Low'),
-                  leading: Radio<bool?>(
-                    value: false,
-                    groupValue: _sortRatingAscending,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _sortRatingAscending = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<bool>(
+                title: const Text('Low → High'),
+                value: true,
+                groupValue: _sortRatingAscending,
+                onChanged: (v) => setState(() => _sortRatingAscending = v),
+              ),
+              RadioListTile<bool>(
+                title: const Text('High → Low'),
+                value: false,
+                groupValue: _sortRatingAscending,
+                onChanged: (v) => setState(() => _sortRatingAscending = v),
+              ),
+            ],
           ),
           actions: [
             TextButton(
@@ -454,20 +302,12 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             TextButton(
               onPressed: () {
-                context.read<AnimeBloc>().add(
-                  SortByRatingEvent(_sortRatingAscending!),
-                );
+                if (_sortRatingAscending != null) {
+                  context.read<AnimeBloc>().add(
+                    SortByRatingEvent(_sortRatingAscending!),
+                  );
+                }
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      _sortRatingAscending!
-                          ? 'Diurutkan rating dari terendah'
-                          : 'Diurutkan rating dari tertinggi',
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
               },
               child: const Text('OK'),
             ),
@@ -477,70 +317,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  void _toggleSort(BuildContext context) {
-    final currentState = context.read<AnimeBloc>().state;
-    if (currentState is AnimeLoaded) {
-      final ascending = currentState.sortAscending;
-      context.read<AnimeBloc>().add(SortByRatingEvent(!ascending));
-    }
-  }
-
   void _resetFilters(BuildContext context) {
-    setState(() {
-      _sortRatingAscending = null;
-    });
+    setState(() => _sortRatingAscending = null);
     context.read<AnimeBloc>().add(ResetFilterEvent());
-  }
-
-  void _showMobileDrawer(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildMenuItem(
-              context,
-              Icons.dashboard,
-              'Dashboard',
-              '/dashboard',
-              resetToTop: true,
-            ),
-            _buildMenuItem(context, Icons.star, 'Anime Populer', '/popular'),
-            _buildMenuItem(context, Icons.favorite, 'Favorit', '/favorite'),
-            _buildMenuItem(context, Icons.shuffle, 'Anime Random', '/random'),
-            _buildMenuItem(context, Icons.history, 'Riwayat', '/history'),
-            _buildMenuItem(context, Icons.settings, 'Pengaturan', '/settings'),
-            _buildMenuItem(
-              context,
-              Icons.person,
-              'Profil',
-              '/settings/profile',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuItem(
-    BuildContext context,
-    IconData icon,
-    String title,
-    String route, {
-    bool resetToTop = false,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
-      title: Text(title),
-      onTap: () {
-        Navigator.pop(context);
-        if (resetToTop) {
-          context.read<AnimeBloc>().add(FetchTopAnimeEvent(resetToTop: true));
-        }
-        context.go(route);
-      },
-    );
   }
 }

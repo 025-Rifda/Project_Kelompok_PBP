@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
-import '../bloc/anime_bloc.dart';
-import '../bloc/anime_event.dart';
-import '../bloc/anime_state.dart';
 import '../services/history_service.dart';
 import '../models/anime_model.dart';
 
