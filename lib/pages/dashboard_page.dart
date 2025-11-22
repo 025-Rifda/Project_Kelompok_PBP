@@ -19,6 +19,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -59,6 +60,32 @@ class _DashboardPageState extends State<DashboardPage> {
     final isMobile = MediaQuery.of(context).size.width < 700;
 
     return Scaffold(
+      key: _scaffoldKey,
+      appBar: isMobile
+          ? AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 236, 185, 245),
+                      Color.fromARGB(255, 172, 130, 220),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+              title: const Text("Dashboard"),
+              leading: IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => _showMobileMenu(),
+              ),
+            )
+          : null,
+
+      drawer: isMobile ? const Sidebar(selectedPage: 'Dashboard') : null,
+
       body: Row(
         children: [
           if (!isMobile) const Sidebar(selectedPage: 'Dashboard'),
@@ -153,6 +180,49 @@ class _DashboardPageState extends State<DashboardPage> {
           Image.asset('assets/splash.png', height: 12.h),
         ],
       ),
+    );
+  }
+
+  void _showMobileMenu() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.dashboard),
+                title: const Text('Dashboard'),
+                onTap: () => context.go('/dashboard'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.star),
+                title: const Text('Populer'),
+                onTap: () => context.go('/popular'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.favorite),
+                title: const Text('Favorit'),
+                onTap: () => context.go('/favorite'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.history),
+                title: const Text('Riwayat'),
+                onTap: () => context.go('/history'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Pengaturan'),
+                onTap: () => context.go('/settings'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -320,5 +390,29 @@ class _DashboardPageState extends State<DashboardPage> {
   void _resetFilters(BuildContext context) {
     setState(() => _sortRatingAscending = null);
     context.read<AnimeBloc>().add(ResetFilterEvent());
+  }
+
+  Widget _buildBottomNavBar(BuildContext context) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: Theme.of(context).cardColor,
+      selectedItemColor: Theme.of(context).primaryColor,
+      unselectedItemColor: Colors.grey,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.dashboard),
+          label: 'Dashboard',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Populer'),
+        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorit'),
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: 'Pengaturan',
+        ),
+      ],
+    );
   }
 }

@@ -131,6 +131,11 @@ class ResetSettingsEvent extends AnimeEvent {
   const ResetSettingsEvent();
 }
 
+/// Event untuk mengambil anime populer berdasarkan popularitas (bukan rating).
+class FetchPopularAnimeEvent extends AnimeEvent {
+  const FetchPopularAnimeEvent();
+}
+
 /// Event untuk mengambil anime acak.
 class FetchRandomAnimeEvent extends AnimeEvent {
   const FetchRandomAnimeEvent();

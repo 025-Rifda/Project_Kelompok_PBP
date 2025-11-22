@@ -16,6 +16,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
 
   AnimeBloc(this.dio) : super(AnimeInitial()) {
     on<FetchTopAnimeEvent>(_handleFetchTopAnime);
+    on<FetchPopularAnimeEvent>(_handleFetchPopularAnime);
     on<FetchRandomAnimeEvent>(_handleFetchRandomAnime);
     on<SearchAnimeEvent>(_handleSearchAnime);
     on<FilterByGenreEvent>(_handleFilterByGenre);
@@ -76,6 +77,29 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     try {
       _topAnimeList = await _fetchAnimeData(endpoint: 'top/anime');
       _animeList = _topAnimeList;
+      emit(
+        AnimeLoaded(
+          _animeList,
+          favorites: _favorites,
+          searchHistory: _searchHistory,
+        ),
+      );
+    } catch (e) {
+      emit(AnimeError('Gagal memuat data: $e'));
+    }
+  }
+
+  // Fetch anime populer berdasarkan popularitas
+  Future<void> _handleFetchPopularAnime(
+    FetchPopularAnimeEvent event,
+    Emitter<AnimeState> emit,
+  ) async {
+    emit(AnimeLoading());
+    try {
+      _animeList = await _fetchAnimeData(
+        endpoint: 'top/anime',
+        query: {'filter': 'bypopularity'},
+      );
       emit(
         AnimeLoaded(
           _animeList,

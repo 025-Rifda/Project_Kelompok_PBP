@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// Removed GetWidget import to restore default AppBar and buttons on this page
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../bloc/anime_bloc.dart';
@@ -20,12 +19,14 @@ class _PopularPageState extends State<PopularPage> {
   @override
   void initState() {
     super.initState();
-    context.read<AnimeBloc>().add(FetchTopAnimeEvent());
+    context.read<AnimeBloc>().add(FetchPopularAnimeEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 600;
+
+    // MOBILE LAYOUT
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
@@ -55,10 +56,12 @@ class _PopularPageState extends State<PopularPage> {
             onPressed: () => context.go('/dashboard'),
           ),
         ),
+        drawer: _buildDrawer(context),
         body: _buildContent(),
       );
     }
 
+    // DESKTOP LAYOUT
     return Scaffold(
       body: Row(
         children: [
@@ -127,11 +130,15 @@ class _PopularPageState extends State<PopularPage> {
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: MediaQuery.of(context).size.width < 600
+                        ? 2
+                        : 6,
                     crossAxisSpacing: 20,
                     mainAxisSpacing: 20,
-                    childAspectRatio: 0.7,
+                    childAspectRatio: MediaQuery.of(context).size.width < 600
+                        ? 0.65
+                        : 0.70,
                   ),
                   itemCount: displayList.length,
                   itemBuilder: (context, index) {
@@ -231,10 +238,8 @@ class _PopularPageState extends State<PopularPage> {
                   leading: Radio<bool?>(
                     value: true,
                     groupValue: selectedSort,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        selectedSort = value;
-                      });
+                    onChanged: (value) {
+                      setState(() => selectedSort = value);
                     },
                   ),
                 ),
@@ -243,10 +248,8 @@ class _PopularPageState extends State<PopularPage> {
                   leading: Radio<bool?>(
                     value: false,
                     groupValue: selectedSort,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        selectedSort = value;
-                      });
+                    onChanged: (value) {
+                      setState(() => selectedSort = value);
                     },
                   ),
                 ),
@@ -292,6 +295,92 @@ class _PopularPageState extends State<PopularPage> {
       const SnackBar(
         content: Text('Sorting direset'),
         backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 236, 185, 245),
+                  Color.fromARGB(255, 172, 130, 220),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: const Text(
+              'Menu Navigasi',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.dashboard),
+            title: const Text('Dashboard'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/dashboard');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.star),
+            title: const Text('Anime Populer'),
+            onTap: () {
+              Navigator.pop(context);
+              // Already on this page
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favorit'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/favorite');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.history),
+            title: const Text('Riwayat'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/history');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.shuffle),
+            title: const Text('Anime Random'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/random');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Pengaturan'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/settings');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Profil'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/settings/profile');
+            },
+          ),
+        ],
       ),
     );
   }
