@@ -17,19 +17,59 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
+    if (isMobile) {
+      return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 236, 185, 245),
+                  Color.fromARGB(255, 172, 130, 220),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          title: const Text(
+            'Pengaturan',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.go('/dashboard'),
+          ),
+        ),
+        body: _buildContent(),
+      );
+    }
+
+    // WEB / DESKTOP
     return Scaffold(
       body: Row(
         children: [
           const Sidebar(selectedPage: 'Pengaturan'),
-          Expanded(child: Column(children: [_buildHeader(), _buildContent()])),
+          Expanded(
+            child: Column(
+              children: [
+                _buildHeader(isMobile),
+                Expanded(child: _buildContent()),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isMobile) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -43,37 +83,40 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
             onPressed: () => context.go('/dashboard'),
           ),
           Expanded(
             child: Center(
               child: Text(
                 'Pengaturan',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: TextStyle(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 48),
+          SizedBox(width: 17.sp),
         ],
       ),
     );
   }
 
   Widget _buildContent() {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Expanded(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(isMobile ? 12.sp : 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildFilterBar(context),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Tampilan'),
+            _buildFilterBar(context, isMobile),
+            SizedBox(height: 8.sp),
+
+            _buildSectionTitle('Tampilan', fontSize: isMobile ? 14.sp : 13.sp),
             _buildSettingItem(
               icon: Icons.dark_mode,
               title: 'Mode Gelap',
@@ -82,35 +125,55 @@ class _SettingsPageState extends State<SettingsPage> {
                 value: context.watch<ThemeCubit>().state,
                 onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
               ),
+              iconSize: isMobile ? 15.sp : 14.sp,
+              titleSize: isMobile ? 13.sp : 12.sp,
+              subtitleSize: isMobile ? 12.sp : 11.sp,
             ),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Akun'),
 
+            SizedBox(height: 8.sp),
+
+            /// SECTION: Akun
+            _buildSectionTitle('Akun', fontSize: isMobile ? 14.sp : 13.sp),
             _buildSettingItem(
               icon: Icons.notifications,
               title: 'Notifikasi',
               subtitle: 'Atur preferensi notifikasi',
               onTap: () {},
+              iconSize: isMobile ? 15.sp : 14.sp,
+              titleSize: isMobile ? 13.sp : 12.sp,
+              subtitleSize: isMobile ? 12.sp : 11.sp,
             ),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Aplikasi'),
+
+            SizedBox(height: 8.sp),
+
+            /// SECTION: Aplikasi
+            _buildSectionTitle('Aplikasi', fontSize: isMobile ? 14.sp : 13.sp),
             _buildSettingItem(
               icon: Icons.info,
               title: 'Tentang',
               subtitle: 'Versi aplikasi dan informasi lainnya',
               onTap: () => context.go('/settings/about'),
+              iconSize: isMobile ? 15.sp : 14.sp,
+              titleSize: isMobile ? 13.sp : 12.sp,
+              subtitleSize: isMobile ? 12.sp : 11.sp,
             ),
             _buildSettingItem(
               icon: Icons.help,
               title: 'Bantuan',
               subtitle: 'Panduan dan dukungan',
               onTap: () => context.go('/settings/help'),
+              iconSize: isMobile ? 15.sp : 14.sp,
+              titleSize: isMobile ? 13.sp : 12.sp,
+              subtitleSize: isMobile ? 12.sp : 11.sp,
             ),
             _buildSettingItem(
               icon: Icons.devices,
               title: 'Informasi Perangkat',
               subtitle: 'Lihat detail perangkat Anda',
               onTap: () => context.go('/settings/device-info'),
+              iconSize: isMobile ? 15.sp : 14.sp,
+              titleSize: isMobile ? 13.sp : 12.sp,
+              subtitleSize: isMobile ? 12.sp : 11.sp,
             ),
           ],
         ),
@@ -118,7 +181,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildFilterBar(BuildContext context) {
+  Widget _buildFilterBar(BuildContext context, bool isMobile) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
@@ -130,7 +193,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Text(
             'Pengaturan',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontSize: 17.sp,
+              fontSize: isMobile ? 15.sp : 13.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -144,6 +207,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 label: 'Reset',
                 color: Colors.grey,
                 onPressed: () => _resetSettings(context),
+                isMobile: isMobile,
               ),
             ],
           ),
@@ -157,16 +221,18 @@ class _SettingsPageState extends State<SettingsPage> {
     required String label,
     required Color color,
     required VoidCallback onPressed,
+    required bool isMobile,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 16),
+      icon: Icon(icon, size: isMobile ? 14.sp : 12.sp),
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        textStyle: const TextStyle(fontSize: 12),
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        textStyle: TextStyle(fontSize: isMobile ? 14.sp : 12.sp),
       ),
     );
   }
@@ -182,7 +248,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(String title, {required double fontSize}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Text(
@@ -190,6 +256,7 @@ class _SettingsPageState extends State<SettingsPage> {
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: Theme.of(context).colorScheme.primary,
+          fontSize: fontSize,
         ),
       ),
     );
@@ -199,17 +266,33 @@ class _SettingsPageState extends State<SettingsPage> {
     required IconData icon,
     required String title,
     required String subtitle,
+    double iconSize = 22,
+    double titleSize = 14,
+    double subtitleSize = 12,
     Widget? trailing,
     VoidCallback? onTap,
   }) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: ListTile(
-        leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: trailing,
-        onTap: onTap,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 6.sp),
+        child: ListTile(
+          leading: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.primary,
+            size: iconSize,
+          ),
+          title: Text(
+            title,
+            style: TextStyle(fontSize: titleSize, fontWeight: FontWeight.w600),
+          ),
+          subtitle: Text(
+            subtitle,
+            style: TextStyle(fontSize: subtitleSize, color: Colors.grey[600]),
+          ),
+          trailing: trailing,
+          onTap: onTap,
+        ),
       ),
     );
   }

@@ -139,7 +139,7 @@ class Sidebar extends StatelessWidget {
                     Icons.person,
                     'Profil',
                     selectedPage == 'Profil',
-                    '/settings/profile',
+                    '/profile',
                     isDark,
                     isTablet,
                   ),

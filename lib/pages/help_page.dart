@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
+import 'package:sizer/sizer.dart';
 
 class HelpPage extends StatefulWidget {
   const HelpPage({super.key});
@@ -24,7 +25,7 @@ class _HelpPageState extends State<HelpPage> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -38,17 +39,17 @@ class _HelpPageState extends State<HelpPage> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
             onPressed: () => context.go('/settings'),
           ),
           Expanded(
             child: Center(
               child: Text(
                 'Bantuan',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                style: TextStyle(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
                 ),
               ),
             ),
@@ -62,65 +63,120 @@ class _HelpPageState extends State<HelpPage> {
   Widget _buildContent() {
     return Expanded(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHelpSection('Cara Menggunakan Aplikasi', [
-              '1. Gunakan search bar untuk mencari anime favorit Anda.',
-              '2. Klik pada kartu anime untuk melihat detail.',
-              '3. Tambahkan anime ke favorit dengan tombol hati.',
-              '4. Gunakan filter genre dan rating untuk menyaring anime.',
-              '5. Lihat riwayat pencarian Anda di halaman Riwayat.',
-            ]),
-            const SizedBox(height: 20),
-            _buildHelpSection('Fitur Utama', [
-              '• Dashboard: Lihat anime populer dan gunakan filter.',
-              '• Anime Populer: Daftar anime dengan rating tinggi.',
-              '• Favorit: Simpan anime yang Anda sukai.',
-              '• Riwayat: Lihat query pencarian sebelumnya.',
-              '• Pengaturan: Ubah tema dan reset pengaturan.',
-            ]),
-            const SizedBox(height: 20),
-            _buildHelpSection('Tips', [
-              '• Gunakan filter untuk menemukan anime berdasarkan genre.',
-              '• Sort rating membantu menemukan anime terbaik.',
-              '• Reset filter untuk kembali ke daftar asli.',
-              '• Mode gelap tersedia di sidebar.',
-            ]),
+            _buildHelpCard(
+              title: "Cara Menggunakan Aplikasi",
+              icon: Icons.menu_book_rounded,
+              items: [
+                'Gunakan search bar untuk mencari anime favorit Anda.',
+                'Klik pada kartu anime untuk melihat detail.',
+                'Tambahkan anime ke favorit dengan tombol hati.',
+                'Gunakan filter genre dan rating untuk menyaring anime.',
+                'Lihat riwayat pencarian Anda di halaman Riwayat.',
+              ],
+            ),
+            const SizedBox(height: 25),
+            _buildHelpCard(
+              title: "Fitur Utama",
+              icon: Icons.star_rounded,
+              items: [
+                'Dashboard: Lihat anime populer dan gunakan filter.',
+                'Anime Populer: Daftar anime dengan rating tinggi.',
+                'Favorit: Simpan anime yang Anda sukai.',
+                'Riwayat: Lihat query pencarian sebelumnya.',
+                'Pengaturan: Ubah tema dan reset pengaturan.',
+              ],
+            ),
+            const SizedBox(height: 25),
+            _buildHelpCard(
+              title: "Tips",
+              icon: Icons.lightbulb_outline_rounded,
+              items: [
+                'Gunakan filter untuk menemukan anime berdasarkan genre.',
+                'Sort rating membantu menemukan anime terbaik.',
+                'Reset filter untuk kembali ke daftar asli.',
+                'Mode gelap tersedia di sidebar.',
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHelpSection(String title, List<String> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // JUDUL SECTION — Sama persis dengan SettingsPage
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
+  Widget _buildHelpCard({
+    required String title,
+    required IconData icon,
+    required List<String> items,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
-        ),
-        const SizedBox(height: 10),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: Theme.of(context).colorScheme.primary,
+                size: 26,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
 
-        // LIST ITEM — mengikuti theme (dark/light)
-        ...items.map(
-          (item) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text(
-              item,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontSize: 16),
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "•  ",
+                    style: TextStyle(
+                      fontSize: 16,
+                      height: 1.4,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      item,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

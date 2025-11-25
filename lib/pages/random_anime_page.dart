@@ -52,7 +52,7 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
           ),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white, size: 18.sp),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/dashboard'),
           ),
           backgroundColor: Colors.transparent,
@@ -82,8 +82,7 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
   // HEADER (DESKTOP)
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.all(2.2.h),
-      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -105,7 +104,7 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
               child: Text(
                 'Anime Random',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontSize: 15.sp,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -133,7 +132,7 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
 
           return Column(
             children: [
-              _buildFilterBar(),
+              _buildFilterBar(isMobile),
               Expanded(
                 child: GridView.builder(
                   padding: EdgeInsets.all(2.h),
@@ -168,14 +167,11 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
   }
 
   // FILTER BAR BARU
-  Widget _buildFilterBar() {
+  Widget _buildFilterBar(bool isMobile) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.5.h),
-      margin: EdgeInsets.only(bottom: 1.h),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(14),
-      ),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      decoration: BoxDecoration(color: Theme.of(context).cardColor),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -183,37 +179,38 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
           Text(
             'Filter',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: isMobile ? 16.sp : 14.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-
-          SizedBox(height: 1.h),
-
+          const SizedBox(height: 10),
           // BUTTONS (BAWAH KANAN)
           Align(
             alignment: Alignment.centerRight,
             child: Wrap(
-              spacing: 1.5.w,
-              runSpacing: 1.h,
+              spacing: 10,
               children: [
                 _smallFilterButton(
                   icon: Icons.star,
                   label: 'Rating',
                   color: const Color.fromARGB(255, 152, 209, 255),
                   onPressed: () => _showRatingFilter(context),
+                  isMobile: isMobile,
                 ),
                 _smallFilterButton(
                   icon: Icons.shuffle,
                   label: 'Generate',
                   color: const Color.fromARGB(255, 218, 164, 164),
                   onPressed: () => _generateNewAnime(context),
+                  isMobile: isMobile,
                 ),
                 _smallFilterButton(
                   icon: Icons.refresh,
                   label: 'Reset',
                   color: Colors.grey.shade400,
                   onPressed: () => _resetFilters(context),
+                  isMobile: isMobile,
                 ),
               ],
             ),
@@ -228,30 +225,18 @@ class _RandomAnimePageState extends State<RandomAnimePage> {
     required String label,
     required Color color,
     required VoidCallback onPressed,
+    required bool isMobile,
   }) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: Colors.white),
-            SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: isMobile ? 14.sp : 12.sp),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        textStyle: TextStyle(fontSize: isMobile ? 14.sp : 12.sp),
       ),
     );
   }

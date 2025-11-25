@@ -7,6 +7,7 @@ import '../bloc/anime_bloc.dart';
 import '../bloc/anime_state.dart';
 import '../bloc/anime_event.dart';
 import '../models/anime_model.dart';
+import 'package:sizer/sizer.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -54,7 +55,7 @@ class _FavoritePageState extends State<FavoritePage> {
             onPressed: () => context.go('/dashboard'),
           ),
         ),
-        body: _buildContent(),
+        body: _buildContent(isMobile),
       );
     }
     return Scaffold(
@@ -64,8 +65,8 @@ class _FavoritePageState extends State<FavoritePage> {
           Expanded(
             child: Column(
               children: [
-                _buildHeader(),
-                Expanded(child: _buildContent()),
+                _buildHeader(isMobile),
+                Expanded(child: _buildContent(isMobile)),
               ],
             ),
           ),
@@ -74,97 +75,35 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
-  Widget _buildHeader() {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 236, 185, 245),
-              Color.fromARGB(255, 172, 130, 220),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+  Widget _buildHeader(bool isMobile) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
-      title: Text(
-        'Anime Favorit',
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimary,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => context.go('/dashboard'),
-      ),
-    );
-  }
-
-  Widget _buildContent() {
-    return Expanded(
-      child: Column(
+      child: Row(
         children: [
-          _buildFilterBar(context),
+          IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
+            onPressed: () => context.go('/dashboard'),
+          ),
           Expanded(
-            child: BlocBuilder<AnimeBloc, AnimeState>(
-              builder: (context, state) {
-                if (state is AnimeLoaded) {
-                  final favorites = state.favorites;
-                  if (favorites.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.favorite_border,
-                            size: 100,
-                            color: Colors.grey.withValues(alpha: 0.5),
-                          ),
-                          const SizedBox(height: 20),
-                          Text(
-                            'Belum ada anime favorit',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(color: Colors.grey),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Tambahkan anime ke favorit dari halaman detail',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(20),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
-                          childAspectRatio: 0.7,
-                        ),
-                    itemCount: favorites.length,
-                    itemBuilder: (context, index) {
-                      final raw = favorites[index];
-                      final animeModel = Anime.fromJson(raw);
-                      return MediaCard(
-                        item: animeModel,
-                        onTap: () {
-                          context.push('/detail/${animeModel.malId}');
-                        },
-                      );
-                    },
-                  );
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
+            child: Center(
+              child: Text(
+                'Anime Favorit',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
+                ),
+              ),
             ),
           ),
         ],
@@ -172,7 +111,75 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
-  Widget _buildFilterBar(BuildContext context) {
+  Widget _buildContent(bool isMobile) {
+    return Column(
+      children: [
+        _buildFilterBar(context, isMobile),
+        Expanded(
+          child: BlocBuilder<AnimeBloc, AnimeState>(
+            builder: (context, state) {
+              if (state is AnimeLoaded) {
+                final favorites = state.favorites;
+                if (favorites.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.favorite_border,
+                          size: 100,
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Belum ada anime favorit',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge?.copyWith(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Tambahkan anime ke favorit dari halaman detail',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return GridView.builder(
+                  padding: const EdgeInsets.all(20),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: favorites.length,
+                  itemBuilder: (context, index) {
+                    final raw = favorites[index];
+                    // Check if raw is Anime already or Map and parse accordingly
+                    final animeModel = raw is Anime ? raw : Anime.fromJson(raw);
+                    return MediaCard(
+                      item: animeModel,
+                      onTap: () {
+                        context.push('/detail/${animeModel.malId}');
+                      },
+                    );
+                  },
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilterBar(BuildContext context, bool isMobile) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       color: Theme.of(context).cardColor,
@@ -181,6 +188,7 @@ class _FavoritePageState extends State<FavoritePage> {
           Text(
             'Filter Favorit',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: isMobile ? 16.sp : 14.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -194,12 +202,14 @@ class _FavoritePageState extends State<FavoritePage> {
                 label: 'Rating',
                 color: const Color.fromARGB(255, 152, 209, 255),
                 onPressed: () => _showRatingFilter(context),
+                isMobile: isMobile,
               ),
               _filterButton(
                 icon: Icons.refresh,
                 label: 'Reset',
                 color: Colors.grey,
                 onPressed: () => _resetFilters(context),
+                isMobile: isMobile,
               ),
             ],
           ),
@@ -213,16 +223,18 @@ class _FavoritePageState extends State<FavoritePage> {
     required String label,
     required Color color,
     required VoidCallback onPressed,
+    required bool isMobile,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 16),
+      icon: Icon(icon, size: isMobile ? 14.sp : 12.sp),
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        textStyle: const TextStyle(fontSize: 12),
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        textStyle: TextStyle(fontSize: isMobile ? 14.sp : 12.sp),
       ),
     );
   }

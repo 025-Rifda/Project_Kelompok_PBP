@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
+import 'package:sizer/sizer.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
@@ -12,11 +13,15 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Scaffold(
       body: Row(
         children: [
           const Sidebar(selectedPage: 'Tentang'),
-          Expanded(child: Column(children: [_buildHeader(), _buildContent()])),
+          Expanded(
+            child: Column(children: [_buildHeader(), _buildContent(isMobile)]),
+          ),
         ],
       ),
     );
@@ -24,7 +29,7 @@ class _AboutPageState extends State<AboutPage> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -38,28 +43,28 @@ class _AboutPageState extends State<AboutPage> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
             onPressed: () => context.go('/settings'),
           ),
           Expanded(
             child: Center(
               child: Text(
                 'Tentang',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                style: TextStyle(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 48),
+          SizedBox(width: 17.sp),
         ],
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(bool isMobile) {
     return Expanded(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -68,7 +73,7 @@ class _AboutPageState extends State<AboutPage> {
           children: [
             Icon(
               Icons.tv,
-              size: 80,
+              size: 100,
               color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(height: 20),
@@ -77,6 +82,7 @@ class _AboutPageState extends State<AboutPage> {
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.primary,
+                fontSize: isMobile ? 16.sp : 15.sp,
               ),
             ),
             const SizedBox(height: 10),
@@ -84,34 +90,50 @@ class _AboutPageState extends State<AboutPage> {
               'Versi 1.0.0',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
+                fontSize: isMobile ? 14.sp : 13.sp,
               ),
             ),
             const SizedBox(height: 30),
             Text(
-              'AnimeList+ adalah aplikasi untuk mencari dan menjelajahi anime favorit Anda. '
+              'AnimeList+ adalah aplikasi untuk mencari dan menjelajahi anime favorit Anda.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: isMobile ? 12.sp : 11.sp,
+              ),
+            ),
+            Text(
               'Temukan anime populer, simpan favorit, dan lihat riwayat pencarian Anda.',
               textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontSize: 16),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: isMobile ? 12.sp : 11.sp,
+              ),
             ),
             const SizedBox(height: 30),
-            _buildAboutItem('Pengembang', 'Kelompok 1'),
-            _buildAboutItem('Platform', 'Flutter'),
-            _buildAboutItem('API', 'Jikan API (MyAnimeList)'),
-            _buildAboutItem('Lisensi', 'Open Source'),
+            _buildAboutItem('Pengembang', 'Kelompok 1', isMobile),
+            _buildAboutItem('Platform', 'Flutter', isMobile),
+            _buildAboutItem('API', 'Jikan API (MyAnimeList)', isMobile),
+            _buildAboutItem('Lisensi', 'Open Source', isMobile),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAboutItem(String label, String value) {
+  Widget _buildAboutItem(String label, String value, bool isMobile) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
-        title: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(value),
+        title: Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: isMobile ? 13.sp : 12.sp,
+          ),
+        ),
+        subtitle: Text(
+          value,
+          style: TextStyle(fontSize: isMobile ? 12.sp : 11.sp),
+        ),
       ),
     );
   }

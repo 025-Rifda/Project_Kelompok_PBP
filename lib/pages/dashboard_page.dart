@@ -210,6 +210,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 onTap: () => context.go('/favorite'),
               ),
               ListTile(
+                leading: const Icon(Icons.shuffle),
+                title: const Text('Anime Random'),
+                onTap: () => context.go('/random'),
+              ),
+              ListTile(
                 leading: const Icon(Icons.history),
                 title: const Text('Riwayat'),
                 onTap: () => context.go('/history'),
@@ -218,6 +223,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 leading: const Icon(Icons.settings),
                 title: const Text('Pengaturan'),
                 onTap: () => context.go('/settings'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Profile'),
+                onTap: () => context.go('/profile'),
               ),
             ],
           ),
@@ -263,6 +273,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   // HEADER (Title + Filter)
   Widget _buildHeader() {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4.w),
       child: Row(
@@ -270,26 +282,28 @@ class _DashboardPageState extends State<DashboardPage> {
           Text(
             'Top Rated Anime',
             style: TextStyle(
-              fontSize: 14.sp,
+              fontSize: isMobile ? 16.sp : 14.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),
           Wrap(
-            spacing: 2.w,
+            spacing: 10,
             children: [
               _filterButton(
                 icon: Icons.star,
                 label: 'Rating',
-                color: const Color(0xFFBBDEFB),
+                color: const Color.fromARGB(255, 152, 209, 255),
                 onPressed: () => _showRatingFilter(context),
+                isMobile: isMobile,
               ),
               _filterButton(
                 icon: Icons.refresh,
                 label: 'Reset',
                 color: Colors.grey,
                 onPressed: () => _resetFilters(context),
+                isMobile: isMobile,
               ),
             ],
           ),
@@ -327,16 +341,18 @@ class _DashboardPageState extends State<DashboardPage> {
     required String label,
     required Color color,
     required VoidCallback onPressed,
+    required bool isMobile,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon),
+      icon: Icon(icon, size: isMobile ? 14.sp : 12.sp),
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.white,
         padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        textStyle: TextStyle(fontSize: isMobile ? 14.sp : 12.sp),
       ),
     );
   }
@@ -407,11 +423,16 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Populer'),
         BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorit'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.shuffle),
+          label: 'Anime Random',
+        ),
         BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),
           label: 'Pengaturan',
         ),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
     );
   }

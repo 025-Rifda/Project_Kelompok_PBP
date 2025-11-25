@@ -46,13 +46,13 @@ class AppRouter {
         builder: (context, state) => const HistoryPage(),
       ),
       GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsPage(),
         routes: [
-          GoRoute(
-            path: 'profile',
-            builder: (context, state) => const ProfilePage(),
-          ),
           GoRoute(
             path: 'about',
             builder: (context, state) => const AboutPage(),

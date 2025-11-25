@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../widgets/sidebar.dart';
 import '../services/history_service.dart';
 import '../models/anime_model.dart';
+import 'package:sizer/sizer.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -63,6 +64,7 @@ class _HistoryPageState extends State<HistoryPage> {
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -82,13 +84,13 @@ class _HistoryPageState extends State<HistoryPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
+          centerTitle: true,
           leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/dashboard'),
           ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
         body: _buildContent(),
       );
@@ -127,7 +129,7 @@ class _HistoryPageState extends State<HistoryPage> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
             onPressed: () => context.go('/dashboard'),
           ),
           Expanded(
@@ -135,6 +137,7 @@ class _HistoryPageState extends State<HistoryPage> {
               child: Text(
                 'Riwayat Kunjungan',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -147,9 +150,10 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Widget _buildContent() {
+    final isMobile = MediaQuery.of(context).size.width < 700;
     return Column(
       children: [
-        _buildFilterBar(context),
+        _buildFilterBar(context, isMobile),
         Expanded(
           child: _history.isEmpty
               ? Center(
@@ -195,76 +199,108 @@ class _HistoryPageState extends State<HistoryPage> {
                     final timestamp = DateTime.parse(item['timestamp']);
                     final malId = item['mal_id'] as int;
 
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      color: Theme.of(context).cardColor,
-                      child: ListTile(
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            imageUrl,
-                            width: 50,
-                            height: 70,
-                            fit: BoxFit.cover,
-                          ),
+                    return GestureDetector(
+                      onTap: () {
+                        // Navigate to detail page
+                        final anime = Anime(
+                          malId: malId,
+                          title: title,
+                          imageUrl: imageUrl,
+                          score: score,
+                          year: item['year'] as int?,
+                          synopsis: '', // Placeholder
+                        );
+                        context.push('/detail/${anime.malId}');
+                      },
+                      child: Card(
+                        elevation: 2,
+                        margin: const EdgeInsets.only(bottom: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        title: Text(
-                          title,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                  size: 16,
+                        color: Theme.of(context).cardColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.network(
+                                  imageUrl,
+                                  width: 70,
+                                  height: 100,
+                                  fit: BoxFit.cover,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${score?.toStringAsFixed(1) ?? 'N/A'}',
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onBackground.withOpacity(0.7),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              'Dikunjungi: ${timestamp.toLocal().toString().split('.')[0]}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onBackground.withOpacity(0.6),
                               ),
-                            ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            Icons.delete,
-                            color: Theme.of(context).colorScheme.error,
+                              const SizedBox(width: 15),
+
+                              // TITLE + SUBTITLE
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      title,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onBackground,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 8),
+
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${score?.toStringAsFixed(1) ?? 'N/A'}',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground
+                                                .withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+
+                                    Text(
+                                      'Dikunjungi: ${timestamp.toLocal().toString().split('.')[0]}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground
+                                            .withOpacity(0.6),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // DELETE BUTTON
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                                onPressed: () =>
+                                    _removeFromHistory(context, malId),
+                              ),
+                            ],
                           ),
-                          onPressed: () => _removeFromHistory(context, malId),
                         ),
-                        onTap: () {
-                          // Navigate to detail page
-                          final anime = Anime(
-                            malId: malId,
-                            title: title,
-                            imageUrl: imageUrl,
-                            score: score,
-                            year: item['year'] as int?,
-                            synopsis: '', // Placeholder
-                          );
-                          context.push('/detail/${anime.malId}');
-                        },
                       ),
                     );
                   },
@@ -274,7 +310,7 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Widget _buildFilterBar(BuildContext context) {
+  Widget _buildFilterBar(BuildContext context, bool isMobile) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -286,6 +322,7 @@ class _HistoryPageState extends State<HistoryPage> {
           Text(
             'Filter Riwayat',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: isMobile ? 16.sp : 14.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -302,18 +339,21 @@ class _HistoryPageState extends State<HistoryPage> {
                   label: 'Rating',
                   color: const Color(0xFF98D1FF),
                   onPressed: () => _showRatingFilter(context),
+                  isMobile: isMobile,
                 ),
                 _filterButton(
                   icon: Icons.sort,
                   label: 'Tanggal',
                   color: const Color(0xFF81C784),
                   onPressed: () => _toggleSort(context),
+                  isMobile: isMobile,
                 ),
                 _filterButton(
                   icon: Icons.delete_sweep,
                   label: 'Hapus Semua',
                   color: Colors.red,
                   onPressed: () => _clearHistory(context),
+                  isMobile: isMobile,
                 ),
               ],
             ),
@@ -328,16 +368,18 @@ class _HistoryPageState extends State<HistoryPage> {
     required String label,
     required Color color,
     required VoidCallback onPressed,
+    required bool isMobile,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 16),
+      icon: Icon(icon, size: isMobile ? 14.sp : 12.sp),
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        textStyle: const TextStyle(fontSize: 12),
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        textStyle: TextStyle(fontSize: isMobile ? 14.sp : 12.sp),
       ),
     );
   }

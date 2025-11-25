@@ -7,11 +7,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/sidebar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:permission_handler/permission_handler.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -96,39 +96,75 @@ class _ProfilePageState extends State<ProfilePage> {
     _addressController.text = _address;
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage({bool useCamera = false}) async {
     try {
       final picker = ImagePicker();
-      final picked = await picker.pickImage(source: ImageSource.gallery);
 
-      if (picked != null) {
-        final bytes = await picked.readAsBytes();
-        final prefs = await SharedPreferences.getInstance();
-
-        await prefs.setString(
-          'user_image_base64_$_username',
-          base64Encode(bytes),
+      // PLATFORM WEB
+      if (kIsWeb) {
+        final picked = await picker.pickImage(
+          source: useCamera ? ImageSource.camera : ImageSource.gallery,
         );
 
-        String? filePath;
-        if (!kIsWeb) {
-          final directory = await getApplicationDocumentsDirectory();
-          final fileName =
-              'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
-          filePath = path.join(directory.path, fileName);
+        if (picked != null) {
+          final bytes = await picked.readAsBytes();
+          setState(() => _profileImageBytes = bytes);
 
-          final file = File(filePath);
-          await file.writeAsBytes(bytes);
-
-          await prefs.setString('user_image_path_$_username', filePath);
-        } else {
-          await prefs.remove('user_image_path_$_username');
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(
+            'user_image_base64_$_username',
+            base64Encode(bytes),
+          );
         }
+        return; // STOP DI WEB
+      }
 
-        setState(() {
-          _profileImagePath = filePath;
-          _profileImageBytes = bytes;
-        });
+      // PLATFORM MOBILE (ANDROID / IOS)
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.storage, // Android <13
+        Permission.photos, // iOS
+        Permission.camera, // Untuk kamera
+      ].request();
+
+      if (statuses[Permission.storage]!.isGranted ||
+          statuses[Permission.photos]!.isGranted ||
+          statuses[Permission.camera]!.isGranted) {
+        final picked = await picker.pickImage(
+          source: useCamera ? ImageSource.camera : ImageSource.gallery,
+        );
+
+        if (picked != null) {
+          final bytes = await picked.readAsBytes();
+          final prefs = await SharedPreferences.getInstance();
+
+          await prefs.setString(
+            'user_image_base64_$_username',
+            base64Encode(bytes),
+          );
+
+          String? filePath;
+          if (!kIsWeb) {
+            final directory = await getApplicationDocumentsDirectory();
+            final fileName =
+                'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+            filePath = path.join(directory.path, fileName);
+            final file = File(filePath);
+            await file.writeAsBytes(bytes);
+            await prefs.setString('user_image_path_$_username', filePath);
+          }
+
+          setState(() {
+            _profileImageBytes = bytes;
+            _profileImagePath = filePath;
+          });
+        }
+      } else if (statuses[Permission.photos]!.isPermanentlyDenied ||
+          statuses[Permission.storage]!.isPermanentlyDenied) {
+        openAppSettings();
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Izin ditolak')));
       }
     } catch (e) {
       ScaffoldMessenger.of(
@@ -137,41 +173,42 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _saveProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString('username', _usernameController.text);
-    await prefs.setString(
-      'user_email_${_usernameController.text}',
-      _emailController.text,
-    );
-    await prefs.setString(
-      'user_phone_${_usernameController.text}',
-      _phoneController.text,
-    );
-    await prefs.setString(
-      'user_address_${_usernameController.text}',
-      _addressController.text,
-    );
-
-    setState(() {
-      _username = _usernameController.text;
-      _email = _emailController.text;
-      _phone = _phoneController.text;
-      _address = _addressController.text;
-      _isEditing = false;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sudah berhasil disimpan', textAlign: TextAlign.center),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+
+    if (isMobile) {
+      // TAMPILAN MOBILE
+      return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 236, 185, 245),
+                  Color.fromARGB(255, 172, 130, 220),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          title: const Text(
+            'Profil',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.go('/dashboard'),
+          ),
+        ),
+        body: _buildContent(),
+      );
+    }
+
+    // TAMPILAN DESKTOP
     return Scaffold(
       body: Row(
         children: [
@@ -183,8 +220,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildHeader() {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+    final imageSize = isMobile ? 150.0 : 300.0;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      padding: EdgeInsets.all(isMobile ? 9 : 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -198,40 +237,30 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => context.go('/settings'),
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
+            onPressed: () => context.go('/dashboard'),
           ),
           Expanded(
             child: Center(
               child: Text(
                 'Profil',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.bold,
+                style: TextStyle(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
                 ),
               ),
             ),
           ),
-          IconButton(
-            icon: Icon(
-              _isEditing ? Icons.check_circle : Icons.edit,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              if (_isEditing) {
-                _saveProfile();
-              } else {
-                setState(() => _isEditing = true);
-              }
-            },
-          ),
+          SizedBox(width: 17.sp),
         ],
       ),
     );
   }
 
   Widget _buildContent() {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+    final imageSize = isMobile ? 150.0 : 300.0;
     return Expanded(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(30),
@@ -255,14 +284,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                   borderRadius: BorderRadius.circular(16),
                                   child: Image.memory(
                                     _profileImageBytes!,
-                                    width: 300,
-                                    height: 300,
+                                    width: imageSize,
+                                    height: imageSize,
                                     fit: BoxFit.cover,
                                   ),
                                 )
                               : Container(
-                                  width: 300,
-                                  height: 300,
+                                  width: imageSize,
+                                  height: imageSize,
                                   decoration: BoxDecoration(
                                     color: Theme.of(
                                       context,
@@ -271,7 +300,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   child: Icon(
                                     Icons.person,
-                                    size: 150,
+                                    size: isMobile ? 75.0 : 150.0,
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onPrimaryContainer,
@@ -281,7 +310,27 @@ class _ProfilePageState extends State<ProfilePage> {
                             bottom: 4,
                             right: 4,
                             child: InkWell(
-                              onTap: _pickImage,
+                              onTap: () async {
+                                final isCamera = await showDialog<bool>(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: const Text('Pilih Sumber Gambar'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                        child: const Text('Galeri'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        child: const Text('Kamera'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                _pickImage(useCamera: isCamera ?? false);
+                              },
                               child: Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
@@ -303,11 +352,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         _username,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
+                          fontSize: 14.sp,
                         ),
                       ),
                       Text(
                         _email,
                         style: TextStyle(
+                          fontSize: 12.sp,
                           color: Theme.of(
                             context,
                           ).colorScheme.onSurface.withOpacity(0.6),
@@ -365,7 +416,7 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Text(
             label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp),
           ),
           const SizedBox(height: 5),
           editable
@@ -387,6 +438,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: Text(
                     value is TextEditingController ? value.text : value,
+                    style: TextStyle(fontSize: 11.sp),
                   ),
                 ),
         ],

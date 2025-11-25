@@ -7,6 +7,7 @@ import '../bloc/anime_state.dart';
 import '../models/anime_model.dart';
 import '../widgets/sidebar.dart';
 import '../widgets/media_card.dart';
+import 'package:sizer/sizer.dart';
 
 class PopularPage extends StatefulWidget {
   const PopularPage({super.key});
@@ -57,7 +58,7 @@ class _PopularPageState extends State<PopularPage> {
           ),
         ),
         drawer: _buildDrawer(context),
-        body: _buildContent(),
+        body: _buildContent(isMobile),
       );
     }
 
@@ -70,7 +71,7 @@ class _PopularPageState extends State<PopularPage> {
             child: Column(
               children: [
                 _buildHeader(),
-                Expanded(child: _buildContent()),
+                Expanded(child: _buildContent(isMobile)),
               ],
             ),
           ),
@@ -79,42 +80,7 @@ class _PopularPageState extends State<PopularPage> {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(255, 236, 185, 245),
-            Color.fromARGB(255, 172, 130, 220),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => context.go('/dashboard'),
-          ),
-          Expanded(
-            child: Center(
-              child: Text(
-                'Anime Populer',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent() {
+  Widget _buildContent(bool isMobile) {
     return BlocBuilder<AnimeBloc, AnimeState>(
       builder: (context, state) {
         if (state is AnimeLoading) {
@@ -126,19 +92,15 @@ class _PopularPageState extends State<PopularPage> {
 
           return Column(
             children: [
-              _buildFilterBar(context),
+              _buildFilterBar(context, isMobile),
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.all(20),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: MediaQuery.of(context).size.width < 600
-                        ? 2
-                        : 6,
+                    crossAxisCount: isMobile ? 2 : 6,
                     crossAxisSpacing: 20,
                     mainAxisSpacing: 20,
-                    childAspectRatio: MediaQuery.of(context).size.width < 600
-                        ? 0.65
-                        : 0.70,
+                    childAspectRatio: isMobile ? 0.65 : 0.70,
                   ),
                   itemCount: displayList.length,
                   itemBuilder: (context, index) {
@@ -165,7 +127,43 @@ class _PopularPageState extends State<PopularPage> {
     );
   }
 
-  Widget _buildFilterBar(BuildContext context) {
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
+            onPressed: () => context.go('/dashboard'),
+          ),
+          Expanded(
+            child: Center(
+              child: Text(
+                'Anime Populer',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterBar(BuildContext context, bool isMobile) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       color: Theme.of(context).cardColor,
@@ -174,6 +172,7 @@ class _PopularPageState extends State<PopularPage> {
           Text(
             'Filter',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: isMobile ? 16.sp : 14.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -187,12 +186,14 @@ class _PopularPageState extends State<PopularPage> {
                 label: 'Rating',
                 color: const Color.fromARGB(255, 152, 209, 255),
                 onPressed: () => _showRatingFilter(context),
+                isMobile: isMobile,
               ),
               _filterButton(
                 icon: Icons.refresh,
                 label: 'Reset',
                 color: Colors.grey,
                 onPressed: () => _resetFilters(context),
+                isMobile: isMobile,
               ),
             ],
           ),
@@ -206,16 +207,18 @@ class _PopularPageState extends State<PopularPage> {
     required String label,
     required Color color,
     required VoidCallback onPressed,
+    required bool isMobile,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 16),
+      icon: Icon(icon, size: isMobile ? 14.sp : 12.sp),
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        textStyle: const TextStyle(fontSize: 12),
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        textStyle: TextStyle(fontSize: isMobile ? 14.sp : 12.sp),
       ),
     );
   }
@@ -377,7 +380,7 @@ class _PopularPageState extends State<PopularPage> {
             title: const Text('Profil'),
             onTap: () {
               Navigator.pop(context);
-              context.go('/settings/profile');
+              context.go('/profile');
             },
           ),
         ],

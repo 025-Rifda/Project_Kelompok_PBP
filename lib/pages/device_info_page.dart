@@ -1,4 +1,6 @@
 import 'package:sizer/sizer.dart';
+import 'package:go_router/go_router.dart';
+import '../widgets/sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -100,6 +102,7 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
     setState(() {
       _deviceModel = model;
       _osVersion = os;
+      _errorMessage = "";
     });
   }
 
@@ -111,7 +114,7 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
     });
   }
 
-  Widget _buildDeviceField(String label, String value) {
+  Widget _buildDeviceField(String label, String value, bool isMobile) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
@@ -120,7 +123,7 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
           Text(
             label,
             style: GoogleFonts.poppins(
-              fontSize: 16,
+              fontSize: isMobile ? 14.sp : 12.sp,
               fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -130,8 +133,11 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
               value,
               textAlign: TextAlign.right,
               style: GoogleFonts.poppins(
-                fontSize: value.length > 50 ? 12 : 15,
-                color: Colors.grey[800],
+                fontSize: value.length > 50 ? 14.sp : 11.sp,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.grey[900],
               ),
             ),
           ),
@@ -142,114 +148,177 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = _deviceModel == "Memuat..." && _errorMessage.isEmpty;
+    final isMobile = MediaQuery.of(context).size.width < 700;
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 236, 185, 245),
-                Color.fromARGB(255, 172, 130, 220),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    if (isMobile) {
+      return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 236, 185, 245),
+                  Color.fromARGB(255, 172, 130, 220),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
-        ),
-        title: Text(
-          'Informasi Perangkat',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontSize: 17.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          title: const Text(
+            'Informasi Perangkat',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.go('/settings'),
           ),
         ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: _errorMessage.isNotEmpty
+                ? _buildErrorMessage()
+                : _buildDeviceInfoCard(isMobile),
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  Card(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    elevation: 4,
-                    shadowColor: Colors.deepPurple.shade100,
-                    child: Padding(
-                      padding: const EdgeInsets.all(18),
+      );
+    }
+
+    // Layout untuk Web / Desktop
+    return Scaffold(
+      body: Row(
+        children: [
+          const Sidebar(selectedPage: 'Device Info'),
+          Expanded(
+            child: Column(
+              children: [
+                _buildHeader(isMobile),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.devices,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "Detail Perangkat",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Divider(
-                            color: Theme.of(context).colorScheme.primary,
-                            thickness: 1,
-                          ),
-                          const SizedBox(height: 6),
-                          _buildDeviceField("Model", _deviceModel),
-                          _buildDeviceField("OS", _osVersion),
+                          if (_errorMessage.isNotEmpty)
+                            _buildErrorMessage()
+                          else
+                            _buildDeviceInfoCard(isMobile),
                         ],
                       ),
                     ),
                   ),
-                  if (_errorMessage.isNotEmpty)
-                    Container(
-                      margin: const EdgeInsets.only(top: 16),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            color: Colors.redAccent,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _errorMessage,
-                              style: GoogleFonts.poppins(
-                                color: Colors.red.shade700,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(bool isMobile) {
+    return Container(
+      padding: EdgeInsets.all(isMobile ? 9 : 20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 185, 245),
+            Color.fromARGB(255, 172, 130, 220),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 17.sp),
+            onPressed: () => context.go('/settings'),
+          ),
+          Expanded(
+            child: Center(
+              child: Text(
+                'Informasi Perangkat',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 17.sp),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeviceInfoCard(bool isMobile) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Card(
+        color: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.devices,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Detail Perangkat",
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: isMobile ? 15.sp : 13.sp,
                     ),
+                  ),
                 ],
               ),
+              const Divider(),
+
+              _buildDeviceField("Model", _deviceModel, isMobile),
+              _buildDeviceField("OS", _osVersion, isMobile),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorMessage() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.red.shade200),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline, color: Colors.redAccent),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _errorMessage,
+              style: GoogleFonts.poppins(
+                color: Colors.red.shade700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
