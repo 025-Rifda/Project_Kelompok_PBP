@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sizer/sizer.dart';
+
 import '../widgets/sidebar.dart';
 import '../widgets/media_card.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_state.dart';
 import '../bloc/anime_event.dart';
 import '../models/anime_model.dart';
-import 'package:sizer/sizer.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -26,6 +27,7 @@ class _FavoritePageState extends State<FavoritePage> {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 600;
+
     if (isMobile) {
       return Scaffold(
         appBar: AppBar(
@@ -48,6 +50,7 @@ class _FavoritePageState extends State<FavoritePage> {
             style: TextStyle(
               color: Theme.of(context).colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
+              fontSize: 14.sp,
             ),
           ),
           leading: IconButton(
@@ -58,6 +61,8 @@ class _FavoritePageState extends State<FavoritePage> {
         body: _buildContent(isMobile),
       );
     }
+
+    // DESKTOP
     return Scaffold(
       body: Row(
         children: [
@@ -75,9 +80,10 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
+  // HEADER DESKTOP
   Widget _buildHeader(bool isMobile) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(2.h),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -111,15 +117,17 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
+  // CONTENT
   Widget _buildContent(bool isMobile) {
     return Column(
       children: [
-        _buildFilterBar(context, isMobile),
+        _buildFilterBar(isMobile),
         Expanded(
           child: BlocBuilder<AnimeBloc, AnimeState>(
             builder: (context, state) {
               if (state is AnimeLoaded) {
                 final favorites = state.favorites;
+
                 if (favorites.isEmpty) {
                   return Center(
                     child: Column(
@@ -127,22 +135,22 @@ class _FavoritePageState extends State<FavoritePage> {
                       children: [
                         Icon(
                           Icons.favorite_border,
-                          size: 100,
+                          size: 18.w,
                           color: Colors.grey.withOpacity(0.5),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 2.h),
                         Text(
                           'Belum ada anime favorit',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleLarge?.copyWith(color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 1.h),
                         Text(
-                          'Tambahkan anime ke favorit dari halaman detail',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                          'Tambahkan anime dari halaman detail',
+                          style: TextStyle(fontSize: 10.sp, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -150,27 +158,26 @@ class _FavoritePageState extends State<FavoritePage> {
                 }
 
                 return GridView.builder(
-                  padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 0.7,
+                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: isMobile ? 2 : 4,
+                    crossAxisSpacing: 4.w,
+                    mainAxisSpacing: 2.h,
+                    childAspectRatio: isMobile ? 0.65 : 0.75,
                   ),
                   itemCount: favorites.length,
                   itemBuilder: (context, index) {
                     final raw = favorites[index];
-                    // Check if raw is Anime already or Map and parse accordingly
-                    final animeModel = raw is Anime ? raw : Anime.fromJson(raw);
+                    final anime = raw is Anime ? raw : Anime.fromJson(raw);
+
                     return MediaCard(
-                      item: animeModel,
-                      onTap: () {
-                        context.push('/detail/${animeModel.malId}');
-                      },
+                      item: anime,
+                      onTap: () => context.push('/detail/${anime.malId}'),
                     );
                   },
                 );
               }
+
               return const Center(child: CircularProgressIndicator());
             },
           ),
@@ -179,23 +186,27 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
-  Widget _buildFilterBar(BuildContext context, bool isMobile) {
+  // FILTER BAR
+  Widget _buildFilterBar(bool isMobile) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(
+        horizontal: 4.w,
+        vertical: isMobile ? 1.2.h : 1.h,
+      ),
       color: Theme.of(context).cardColor,
       child: Row(
         children: [
           Text(
             'Filter Favorit',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontSize: isMobile ? 16.sp : 14.sp,
+            style: TextStyle(
+              fontSize: isMobile ? 16.sp : 13.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const Spacer(),
           Wrap(
-            spacing: 10,
+            spacing: 2.w,
             children: [
               _filterButton(
                 icon: Icons.star,
@@ -240,74 +251,41 @@ class _FavoritePageState extends State<FavoritePage> {
   }
 
   void _showRatingFilter(BuildContext context) {
+    // Get current sortFavoritesAscending value safely, default to true if not available
+    bool currentSortAscending = true;
     final currentState = context.read<AnimeBloc>().state;
-    bool? selectedSort;
     if (currentState is AnimeLoaded) {
-      selectedSort = currentState.sortFavoritesAscending;
+      currentSortAscending = currentState.sortFavoritesAscending;
     }
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('Urutkan Berdasarkan Rating'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('Low -> High'),
-                  leading: Radio<bool?>(
-                    value: true,
-                    groupValue: selectedSort,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        selectedSort = value;
-                      });
-                    },
-                  ),
-                ),
-                ListTile(
-                  title: const Text('High -> Low'),
-                  leading: Radio<bool?>(
-                    value: false,
-                    groupValue: selectedSort,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        selectedSort = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
+      builder: (context) => AlertDialog(
+        title: const Text('Urutkan Berdasarkan Rating'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Low → High'),
+              leading: Radio<bool>(
+                value: true,
+                groupValue: currentSortAscending,
+                onChanged: (v) {
+                  context.read<AnimeBloc>().add(SortFavoritesEvent(true));
+                  Navigator.pop(context);
+                },
+              ),
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (selectedSort != null) {
-                  context.read<AnimeBloc>().add(
-                    SortFavoritesEvent(selectedSort!),
-                  );
-                }
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      selectedSort == true
-                          ? 'Diurutkan rating dari terendah'
-                          : 'Diurutkan rating dari tertinggi',
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              },
-              child: const Text('OK'),
+            ListTile(
+              title: const Text('High → Low'),
+              leading: Radio<bool>(
+                value: false,
+                groupValue: currentSortAscending,
+                onChanged: (v) {
+                  context.read<AnimeBloc>().add(SortFavoritesEvent(false));
+                  Navigator.pop(context);
+                },
+              ),
             ),
           ],
         ),
@@ -316,11 +294,10 @@ class _FavoritePageState extends State<FavoritePage> {
   }
 
   void _resetFilters(BuildContext context) {
-    setState(() {});
     context.read<AnimeBloc>().add(ResetFilterEvent());
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Sorting direset'),
+        content: Text('Sorting favorit direset'),
         backgroundColor: Colors.green,
       ),
     );
