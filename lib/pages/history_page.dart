@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../widgets/sidebar.dart';
-import '../services/history_service.dart';
-import '../models/anime_model.dart';
 import 'package:sizer/sizer.dart';
+import '../models/anime_model.dart';
+import '../services/history_service.dart';
+import '../widgets/history/history_empty_state.dart';
+import '../widgets/history/history_filter_bar.dart';
+import '../widgets/history/history_item_tile.dart';
+import '../widgets/sidebar.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -33,9 +36,8 @@ class _HistoryPageState extends State<HistoryPage> {
   List<Map<String, dynamic>> _applyFiltersAndSort(
     List<Map<String, dynamic>> history,
   ) {
-    List<Map<String, dynamic>> filtered = history;
+    final filtered = List<Map<String, dynamic>>.from(history);
 
-    // Sort by rating if specified
     if (_sortRatingAscending != null) {
       filtered.sort((a, b) {
         final aScore = a['score']?.toDouble() ?? 0.0;
@@ -45,7 +47,6 @@ class _HistoryPageState extends State<HistoryPage> {
             : bScore.compareTo(aScore);
       });
     } else {
-      // Sort by timestamp
       filtered.sort((a, b) {
         final aTime = DateTime.parse(a['timestamp']);
         final bTime = DateTime.parse(b['timestamp']);
@@ -86,7 +87,7 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => context.go('/dashboard'),
           ),
           backgroundColor: Colors.transparent,
@@ -137,10 +138,10 @@ class _HistoryPageState extends State<HistoryPage> {
               child: Text(
                 'Riwayat Kunjungan',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
               ),
             ),
           ),
@@ -153,41 +154,15 @@ class _HistoryPageState extends State<HistoryPage> {
     final isMobile = MediaQuery.of(context).size.width < 700;
     return Column(
       children: [
-        _buildFilterBar(context, isMobile),
+        HistoryFilterBar(
+          isMobile: isMobile,
+          onFilterRating: () => _showRatingFilter(context),
+          onToggleDate: () => _toggleSort(context),
+          onClearAll: () => _clearHistory(context),
+        ),
         Expanded(
           child: _history.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.history,
-                        size: 100,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onBackground.withOpacity(0.5),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Belum ada riwayat kunjungan',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onBackground.withOpacity(0.7),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Riwayat anime yang dikunjungi akan muncul di sini',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onBackground.withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+              ? const HistoryEmptyState()
               : ListView.builder(
                   padding: const EdgeInsets.all(20),
                   itemCount: _history.length,
@@ -199,109 +174,23 @@ class _HistoryPageState extends State<HistoryPage> {
                     final timestamp = DateTime.parse(item['timestamp']);
                     final malId = item['mal_id'] as int;
 
-                    return GestureDetector(
+                    return HistoryItemTile(
+                      title: title,
+                      imageUrl: imageUrl,
+                      score: score,
+                      visitedAt: timestamp,
                       onTap: () {
-                        // Navigate to detail page
                         final anime = Anime(
                           malId: malId,
                           title: title,
                           imageUrl: imageUrl,
                           score: score,
                           year: item['year'] as int?,
-                          synopsis: '', // Placeholder
+                          synopsis: '',
                         );
                         context.push('/detail/${anime.malId}');
                       },
-                      child: Card(
-                        elevation: 2,
-                        margin: const EdgeInsets.only(bottom: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        color: Theme.of(context).cardColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.network(
-                                  imageUrl,
-                                  width: 70,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-
-                              // TITLE + SUBTITLE
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      title,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onBackground,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 8),
-
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${score?.toStringAsFixed(1) ?? 'N/A'}',
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground
-                                                .withOpacity(0.7),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 5),
-
-                                    Text(
-                                      'Dikunjungi: ${timestamp.toLocal().toString().split('.')[0]}',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onBackground
-                                            .withOpacity(0.6),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              // DELETE BUTTON
-                              IconButton(
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                                onPressed: () =>
-                                    _removeFromHistory(context, malId),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      onDelete: () => _removeFromHistory(context, malId),
                     );
                   },
                 ),
@@ -310,91 +199,16 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Widget _buildFilterBar(BuildContext context, bool isMobile) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      decoration: BoxDecoration(color: Theme.of(context).cardColor),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Baris 1 — Title
-          Text(
-            'Filter Riwayat',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontSize: isMobile ? 16.sp : 14.sp,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 10),
-          // Baris 2 — Tombol di kanan
-          Align(
-            alignment: Alignment.centerRight,
-            child: Wrap(
-              spacing: 10,
-              children: [
-                _filterButton(
-                  icon: Icons.star,
-                  label: 'Rating',
-                  color: const Color(0xFF98D1FF),
-                  onPressed: () => _showRatingFilter(context),
-                  isMobile: isMobile,
-                ),
-                _filterButton(
-                  icon: Icons.sort,
-                  label: 'Tanggal',
-                  color: const Color(0xFF81C784),
-                  onPressed: () => _toggleSort(context),
-                  isMobile: isMobile,
-                ),
-                _filterButton(
-                  icon: Icons.delete_sweep,
-                  label: 'Hapus Semua',
-                  color: Colors.red,
-                  onPressed: () => _clearHistory(context),
-                  isMobile: isMobile,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _filterButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onPressed,
-    required bool isMobile,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: isMobile ? 14.sp : 12.sp),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        textStyle: TextStyle(fontSize: isMobile ? 14.sp : 12.sp),
-      ),
-    );
-  }
-
   void _toggleSort(BuildContext context) {
     setState(() {
       _sortNewestFirst = !_sortNewestFirst;
+      _sortRatingAscending = null;
     });
     _loadHistory();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          _sortNewestFirst
-              ? 'Diurutkan dari terbaru'
-              : 'Diurutkan dari terlama',
+          _sortNewestFirst ? 'Diurutkan dari terbaru' : 'Diurutkan dari terlama',
         ),
         backgroundColor: Colors.blue,
       ),
@@ -403,7 +217,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   void _removeFromHistory(BuildContext context, int malId) async {
     await HistoryService.removeFromHistory(malId);
-    _loadHistory(); // Reload history
+    if (!mounted) return;
+    _loadHistory();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Anime dihapus dari riwayat'),
@@ -428,7 +243,8 @@ class _HistoryPageState extends State<HistoryPage> {
           TextButton(
             onPressed: () async {
               await HistoryService.clearHistory();
-              _loadHistory(); // Reload history
+              if (!mounted) return;
+              _loadHistory();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -489,12 +305,17 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
             TextButton(
               onPressed: () {
+                final sortChoice = _sortRatingAscending ?? true;
+                setState(() {
+                  _sortRatingAscending = sortChoice;
+                  _sortNewestFirst = false;
+                });
                 _loadHistory();
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      _sortRatingAscending!
+                      sortChoice
                           ? 'Diurutkan rating dari terendah'
                           : 'Diurutkan rating dari tertinggi',
                     ),
