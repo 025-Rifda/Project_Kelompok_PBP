@@ -75,6 +75,14 @@ flutter:
     - assets/splash.png
     - assets/Background.jpeg
     - assets/bg.jpeg
+    - assets/foto pengembang/bersama.jpg
+    - assets/foto pengembang/chantika.jpg
+    - assets/foto pengembang/dea.jpg
+    - assets/foto pengembang/dinda.jpg
+    - assets/foto pengembang/elysa.jpg
+    - assets/foto pengembang/lian.jpg
+    - assets/foto pengembang/rifda.jpg
+    - assets/foto pengembang/rista.jpg
 
 # KONFIGURASI ICON (tidak ada yang dihapus)
 flutter_launcher_icons:

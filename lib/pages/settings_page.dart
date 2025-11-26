@@ -161,6 +161,16 @@ class _SettingsPageState extends State<SettingsPage> {
               titleSize: isMobile ? 13.sp : 12.sp,
               subtitleSize: isMobile ? 12.sp : 11.sp,
             ),
+            // ➤ Halaman "Tentang Pengembang" (ABOUT US)
+            _buildSettingItem(
+              icon: Icons.group,
+              title: 'Tentang Pengembang',
+              subtitle: 'Profil tim & informasi aplikasi',
+              onTap: () => context.go('/settings/pengembang'),
+              iconSize: isMobile ? 15.sp : 14.sp,
+              titleSize: isMobile ? 13.sp : 12.sp,
+              subtitleSize: isMobile ? 12.sp : 11.sp,
+            ),
           ],
         ),
       ),

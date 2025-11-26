@@ -17,6 +17,7 @@ import '../pages/random_anime_page.dart';
 import '../pages/webview_page.dart';
 import '../pages/detail_loader_page.dart';
 import '../models/anime_model.dart';
+import '../pages/pengembang_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -61,6 +62,10 @@ class AppRouter {
           GoRoute(
             path: 'device-info',
             builder: (context, state) => const DeviceInfoPage(),
+          ),
+          GoRoute(
+            path: 'pengembang',
+            builder: (context, state) => PengembangPage(),
           ),
         ],
       ),
