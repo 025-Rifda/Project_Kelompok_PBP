@@ -10,6 +10,7 @@ import '../bloc/anime_state.dart';
 import '../models/anime_model.dart';
 import '../widgets/sidebar.dart';
 import '../widgets/media_card.dart';
+import '../widgets/rating_dialog.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -55,40 +56,64 @@ class _DashboardPageState extends State<DashboardPage> {
     super.dispose();
   }
 
+  // ======================== LOGOUT WITH RATING DIALOG ==========================
+  Future<void> _handleLogout() async {
+    // Show rating dialog first
+    final result = await showDialog(
+      context: context,
+      builder: (context) => const RatingDialog(),
+    );
+
+    // The actual logout confirmation and logout process is handled inside RatingDialog
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 700;
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: isMobile
-          ? AppBar(
-              automaticallyImplyLeading: false,
-              flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color.fromARGB(255, 236, 185, 245),
-                      Color.fromARGB(255, 172, 130, 220),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-              ),
-              title: const Text("Dashboard"),
-              leading: IconButton(
+
+      // ======================== APP BAR ==========================
+      appBar: AppBar(
+        automaticallyImplyLeading: isMobile,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 236, 185, 245),
+                Color.fromARGB(255, 172, 130, 220),
+              ],
+            ),
+          ),
+        ),
+        title: const Text("Dashboard"),
+
+        // MENU MOBILE
+        leading: isMobile
+            ? IconButton(
                 icon: const Icon(Icons.menu),
                 onPressed: () => _showMobileMenu(),
-              ),
-            )
-          : null,
+              )
+            : null,
 
-      drawer: isMobile ? const Sidebar(selectedPage: 'Dashboard') : null,
+        // 🔥 LOGOUT HANYA MUNCUL DI MOBILE (FIX DOUBLE)
+        actions: [
+          if (isMobile)
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: _handleLogout,
+            ),
+        ],
+      ),
+
+      // 🔥 Sidebar hanya muncul di desktop/tablet
+      drawer: isMobile ? null : const Sidebar(selectedPage: 'Dashboard'),
 
       body: Row(
         children: [
           if (!isMobile) const Sidebar(selectedPage: 'Dashboard'),
+
           Expanded(
             child: Column(
               children: [
@@ -105,7 +130,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // SEARCH BAR
+  // ======================== SEARCH BAR ==========================
   Widget _buildSearchBar() {
     return Padding(
       padding: EdgeInsets.all(2.h),
@@ -140,7 +165,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // BANNER
+  // ======================== BANNER ==========================
   Widget _buildBanner(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -183,6 +208,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  // ======================== MOBILE BOTTOM SHEET MENU ==========================
   void _showMobileMenu() {
     showModalBottomSheet(
       context: context,
@@ -229,6 +255,15 @@ class _DashboardPageState extends State<DashboardPage> {
                 title: const Text('Profile'),
                 onTap: () => context.go('/profile'),
               ),
+              // Add Logout here with rating and confirmation dialog
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close the bottom sheet first
+                  _handleLogout();
+                },
+              ),
             ],
           ),
         );
@@ -236,7 +271,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // CONTENT AREA
+  // ======================== CONTENT BLOC ==========================
   Widget _buildContentArea() {
     return BlocConsumer<AnimeBloc, AnimeState>(
       listener: (context, state) {
@@ -271,7 +306,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // HEADER (Title + Filter)
+  // ======================== HEADER FILTER ==========================
   Widget _buildHeader() {
     final isMobile = MediaQuery.of(context).size.width < 700;
 
@@ -312,7 +347,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // GRIDVIEW (BARU)
+  // ======================== GRID VIEW ==========================
   Widget _buildAnimeGrid(List<Anime> animeList) {
     final isMobile = MediaQuery.of(context).size.width < 700;
 
@@ -335,7 +370,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // FILTER BUTTON WIDGET
+  // ======================== FILTER BUTTON ==========================
   Widget _filterButton({
     required IconData icon,
     required String label,
@@ -357,7 +392,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // POPUP SORTING RATING
+  // ======================== RATING FILTER POPUP ==========================
   void _showRatingFilter(BuildContext context) {
     showDialog(
       context: context,
@@ -403,37 +438,9 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  // ======================== RESET FILTER ==========================
   void _resetFilters(BuildContext context) {
     setState(() => _sortRatingAscending = null);
     context.read<AnimeBloc>().add(ResetFilterEvent());
-  }
-
-  Widget _buildBottomNavBar(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Theme.of(context).cardColor,
-      selectedItemColor: Theme.of(context).primaryColor,
-      unselectedItemColor: Colors.grey,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.dashboard),
-          label: 'Dashboard',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Populer'),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorit'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shuffle),
-          label: 'Anime Random',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Pengaturan',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
-    );
   }
 }
