@@ -1,10 +1,10 @@
-import 'dart:ui';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/auth_repository.dart';
 
 class BokehPainter extends CustomPainter {
   @override
@@ -96,11 +96,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _checkLoggedInUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkLoggedInUser());
   }
 
   Future<void> _checkLoggedInUser() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final authRepository = context.read<AuthRepository>();
+    final user = authRepository.currentUser;
     if (user != null) {
       // Jika user masih login (token masih aktif)
       await Future.delayed(const Duration(milliseconds: 500)); // biar smooth
@@ -118,8 +119,8 @@ class _LoginPageState extends State<LoginPage> {
           builder: (_) => const Center(child: CircularProgressIndicator()),
         );
 
-        // Login dengan Firebase Auth
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        final authRepository = context.read<AuthRepository>();
+        final user = await authRepository.signIn(
           email: _usernameController.text.trim(),
           password: _passwordController.text.trim(),
         );
@@ -127,37 +128,18 @@ class _LoginPageState extends State<LoginPage> {
         // Tutup loading
         if (context.mounted) Navigator.pop(context);
 
-        // Simpan data user ke SharedPreferences setelah login berhasil
-        final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
-          final prefs = await SharedPreferences.getInstance();
-          final username = user.displayName ?? 'Pengguna';
-          final email = user.email ?? _usernameController.text.trim();
-          final joinDate =
-              user.metadata.creationTime?.toIso8601String() ??
-              DateTime.now().toIso8601String();
+          if (!mounted) return;
+          // Arahkan ke dashboard (misal)
+          context.go('/dashboard');
 
-          await prefs.setString('username', username);
-          await prefs.setString('user_email_$username', email);
-          await prefs.setString('user_join_date_$username', joinDate);
-          // Only set default if not already set
-          if (prefs.getString('user_phone_$username') == null) {
-            await prefs.setString('user_phone_$username', '+62');
-          }
-          if (prefs.getString('user_address_$username') == null) {
-            await prefs.setString('user_address_$username', 'Belum diisi');
-          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login berhasil!'),
+              backgroundColor: Colors.green,
+            ),
+          );
         }
-
-        // Arahkan ke dashboard (misal)
-        context.go('/dashboard');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login berhasil!'),
-            backgroundColor: Colors.green,
-          ),
-        );
       } on FirebaseAuthException catch (e) {
         if (context.mounted) Navigator.pop(context);
 
