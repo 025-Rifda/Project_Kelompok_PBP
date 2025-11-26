@@ -8,6 +8,7 @@ import 'widgets/sidebar.dart';
 import 'bloc/anime_bloc.dart';
 import 'bloc/anime_event.dart';
 import 'cubit/anime_cubit.dart';
+import 'cubit/auth_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'core/theme.dart';
@@ -48,6 +49,10 @@ class AplikasiAnime extends StatelessWidget {
               ),
               BlocProvider<AnimeCubit>(
                 create: (context) => AnimeCubit(context.read<Dio>()),
+              ),
+              BlocProvider<AuthCubit>(
+                create: (context) =>
+                    AuthCubit(context.read<AuthRepository>()),
               ),
             ],
             child: BlocBuilder<ThemeCubit, bool>(
