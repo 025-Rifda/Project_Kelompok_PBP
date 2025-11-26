@@ -59,7 +59,7 @@ class _DashboardPageState extends State<DashboardPage> {
   // ======================== LOGOUT WITH RATING DIALOG ==========================
   Future<void> _handleLogout() async {
     // Show rating dialog first
-    final result = await showDialog(
+    await showDialog(
       context: context,
       builder: (context) => const RatingDialog(),
     );
@@ -74,41 +74,30 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       key: _scaffoldKey,
 
-      // ======================== APP BAR ==========================
-      appBar: AppBar(
-        automaticallyImplyLeading: isMobile,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 236, 185, 245),
-                Color.fromARGB(255, 172, 130, 220),
-              ],
-            ),
-          ),
-        ),
-        title: const Text("Dashboard"),
-
-        // MENU MOBILE
-        leading: isMobile
-            ? IconButton(
+      // ======================== APP BAR DIBUAT KONDISIONAL ==========================
+      appBar: isMobile
+          ? AppBar(
+              // Header Ungu Mobile
+              automaticallyImplyLeading:
+                  false, // Disetel ke false agar leading widget kita yang mengatur
+              title: const Text("Dashboard"),
+              // MENU MOBILE (Icon Burger)
+              leading: IconButton(
                 icon: const Icon(Icons.menu),
-                onPressed: () => _showMobileMenu(),
-              )
-            : null,
-
-        // 🔥 LOGOUT HANYA MUNCUL DI MOBILE (FIX DOUBLE)
-        actions: [
-          if (isMobile)
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: _handleLogout,
-            ),
-        ],
-      ),
-
-      // 🔥 Sidebar hanya muncul di desktop/tablet
-      drawer: isMobile ? null : const Sidebar(selectedPage: 'Dashboard'),
+                onPressed: _showMobileMenu, // 🔥 MEMANGGIL BOTTOM SHEET MENU
+              ),
+              // LOGOUT HANYA MUNCUL DI MOBILE
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: _handleLogout,
+                ),
+              ],
+            )
+          : null, // DI DESKTOP/WEB, APPBAR ADALAH NULL (HILANG)
+      // 🔥 Drawer disetel null di semua mode karena kita menggunakan bottom sheet untuk mobile
+      // dan Sidebar sebagai konten utama di desktop.
+      drawer: null,
 
       body: Row(
         children: [
@@ -202,13 +191,14 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
+          // Gambar Kucing
           Image.asset('assets/splash.png', height: 12.h),
         ],
       ),
     );
   }
 
-  // ======================== MOBILE BOTTOM SHEET MENU ==========================
+  // ======================== MOBILE BOTTOM SHEET MENU (Dipanggil oleh AppBar) ==========================
   void _showMobileMenu() {
     showModalBottomSheet(
       context: context,
@@ -255,15 +245,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 title: const Text('Profile'),
                 onTap: () => context.go('/profile'),
               ),
+
               // Add Logout here with rating and confirmation dialog
-              ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Logout'),
-                onTap: () {
-                  Navigator.of(context).pop(); // Close the bottom sheet first
-                  _handleLogout();
-                },
-              ),
             ],
           ),
         );
