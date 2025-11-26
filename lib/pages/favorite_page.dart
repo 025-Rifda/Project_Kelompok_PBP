@@ -50,7 +50,6 @@ class _FavoritePageState extends State<FavoritePage> {
             style: TextStyle(
               color: Theme.of(context).colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
-              fontSize: 14.sp,
             ),
           ),
           leading: IconButton(
