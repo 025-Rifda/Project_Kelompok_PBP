@@ -23,223 +23,7 @@ class DetailPage extends StatelessWidget {
     final isMobile = screenWidth < 600;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(isMobile ? 16 : 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // GAMBAR POSTER
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        anime.imageUrl,
-                        height: isMobile ? 200 : 250,
-                        width: isMobile ? 150 : 180,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // JUDUL & RATING
-                  Text(
-                    anime.title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: isMobile ? 20 : 24,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.star, color: Colors.amber, size: 24),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${anime.score?.toStringAsFixed(1) ?? 'N/A'} / 10',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onBackground.withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // INFO ANIME
-                  Container(
-                    padding: EdgeInsets.all(isMobile ? 16 : 20),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context).shadowColor.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        _infoRow(
-                          context,
-                          'Tahun Rilis',
-                          anime.year?.toString() ?? '-',
-                        ),
-                        _infoRow(
-                          context,
-                          'Skor',
-                          anime.score?.toStringAsFixed(1) ?? '-',
-                        ),
-                        _infoRow(context, 'Status', 'Completed'),
-                        _infoRow(
-                          context,
-                          'Genre',
-                          anime.genres?.join(', ') ?? 'Tidak tersedia',
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // SINOPSIS
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Sinopsis 💕',
-                      style: TextStyle(
-                        fontSize: isMobile ? 16 : 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.primary.withOpacity(0.8),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  Text(
-                    anime.synopsis ?? 'Sinopsis belum tersedia.',
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                      fontSize: isMobile ? 14 : 15,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onBackground.withOpacity(0.8),
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // BUTTONS
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          context.push(
-                            '/webview',
-                            extra:
-                                'https://myanimelist.net/anime/${anime.malId}',
-                          );
-                        },
-                        icon: const Icon(Icons.web),
-                        label: const Text('Lihat di MyAnimeList'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E51A2),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isMobile ? 15 : 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 10),
-
-                      BlocBuilder<AnimeBloc, AnimeState>(
-                        builder: (context, state) {
-                          final isFavorite =
-                              state is AnimeLoaded &&
-                              state.favorites.any(
-                                (fav) => fav['mal_id'] == anime.malId,
-                              );
-
-                          return ElevatedButton.icon(
-                            onPressed: () {
-                              if (isFavorite) {
-                                context.read<AnimeBloc>().add(
-                                  RemoveFromFavoritesEvent(
-                                    anime.malId.toString(),
-                                  ),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Dihapus dari favorit'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              } else {
-                                context.read<AnimeBloc>().add(
-                                  AddToFavoritesEvent(anime.toJson()),
-                                );
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Ditambahkan ke favorit'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              }
-                            },
-                            icon: Icon(
-                              isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                            ),
-                            label: Text(
-                              isFavorite
-                                  ? 'Hapus dari Favorit'
-                                  : 'Tambahkan ke Favorit',
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFFFB3BA),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: isMobile ? 15 : 20,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-
+      backgroundColor: const Color(0xFFF5F0FF),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(isMobile ? 54 : 95),
         child: Container(
@@ -267,7 +51,6 @@ class DetailPage extends StatelessWidget {
                 ),
                 onPressed: () => context.go('/dashboard'),
               ),
-
               Expanded(
                 child: Center(
                   child: Text(
@@ -277,14 +60,298 @@ class DetailPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       fontSize: isMobile ? 16.sp : 14.sp,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
-
               SizedBox(width: isMobile ? 40 : 48),
             ],
           ),
         ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+
+                  // GAMBAR POSTER
+                  Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.network(
+                          anime.imageUrl,
+                          height: isMobile ? 220 : 280,
+                          width: isMobile ? 160 : 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // JUDUL
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 40),
+                    child: Text(
+                      anime.title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: isMobile ? 22 : 28,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFFAC82DC),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // RATING
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.star, color: Colors.amber, size: 28),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${anime.score?.toStringAsFixed(1) ?? 'N/A'} / 10',
+                        style: TextStyle(
+                          fontSize: isMobile ? 20 : 24,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // INFO ANIME CARD
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
+                    padding: EdgeInsets.all(isMobile ? 20 : 24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        _infoRow(
+                          context,
+                          'Tahun Rilis',
+                          anime.year?.toString() ?? '-',
+                        ),
+                        const Divider(height: 24, color: Color(0xFFE0D4F0)),
+                        _infoRow(
+                          context,
+                          'Skor',
+                          anime.score?.toStringAsFixed(1) ?? '-',
+                        ),
+                        const Divider(height: 24, color: Color(0xFFE0D4F0)),
+                        _infoRow(context, 'Status', 'Completed'),
+                        const Divider(height: 24, color: Color(0xFFE0D4F0)),
+                        _infoRow(
+                          context,
+                          'Genre',
+                          anime.genres?.join(', ') ?? 'Tidak tersedia',
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // SINOPSIS SECTION
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
+                    padding: EdgeInsets.all(isMobile ? 20 : 24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Sinopsis',
+                              style: TextStyle(
+                                fontSize: isMobile ? 18 : 22,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFFAC82DC),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              '💕',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          anime.synopsis ?? 'Sinopsis belum tersedia.',
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            fontSize: isMobile ? 14 : 16,
+                            color: Colors.black87,
+                            height: 1.6,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // BUTTONS
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
+                    child: Column(
+                      children: [
+                        // BUTTON MYANIMELIST
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              context.push(
+                                '/webview',
+                                extra:
+                                    'https://myanimelist.net/anime/${anime.malId}',
+                              );
+                            },
+                            icon: const Icon(Icons.web, color: Colors.white),
+                            label: const Text(
+                              'Lihat di MyAnimeList',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2E51A2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 16,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              elevation: 4,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // BUTTON FAVORIT
+                        BlocBuilder<AnimeBloc, AnimeState>(
+                          builder: (context, state) {
+                            final isFavorite = state is AnimeLoaded &&
+                                state.favorites.any(
+                                  (fav) => fav['mal_id'] == anime.malId,
+                                );
+
+                            return SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  if (isFavorite) {
+                                    context.read<AnimeBloc>().add(
+                                          RemoveFromFavoritesEvent(
+                                            anime.malId.toString(),
+                                          ),
+                                        );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Dihapus dari favorit'),
+                                        backgroundColor: Colors.red,
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  } else {
+                                    context.read<AnimeBloc>().add(
+                                          AddToFavoritesEvent(anime.toJson()),
+                                        );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Ditambahkan ke favorit'),
+                                        backgroundColor: Colors.green,
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                },
+                                icon: Icon(
+                                  isFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: Colors.white,
+                                ),
+                                label: Text(
+                                  isFavorite
+                                      ? 'Hapus dari Favorit'
+                                      : 'Tambahkan ke Favorit',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFFFB3BA),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  elevation: 4,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -297,19 +364,20 @@ class DetailPage extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Colors.black87,
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: Theme.of(
-                context,
-              ).colorScheme.onBackground.withOpacity(0.6),
-              fontSize: 16,
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                color: Colors.black54,
+                fontSize: 16,
+              ),
             ),
           ),
         ],
