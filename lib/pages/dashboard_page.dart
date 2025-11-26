@@ -74,29 +74,54 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       key: _scaffoldKey,
 
-      // ======================== APP BAR DIBUAT KONDISIONAL ==========================
+      // ======================== APP BAR DIBUAT KONDISIONAL DENGAN GRADIENT ==========================
       appBar: isMobile
           ? AppBar(
               // Header Ungu Mobile
-              automaticallyImplyLeading:
-                  false, // Disetel ke false agar leading widget kita yang mengatur
-              title: const Text("Dashboard"),
+              automaticallyImplyLeading: false,
+              title: const Text(
+                "Dashboard",
+                style: TextStyle(color: Colors.white), // 🔥 Teks berwarna putih
+              ),
+
+              // 🔥 Set Background transparan
+              backgroundColor: Colors.transparent,
+              elevation: 0, // Hilangkan bayangan/shadow
+              // 🔥 Terapkan Gradient sebagai FlexibleSpaceBar
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 236, 185, 245),
+                      Color.fromARGB(255, 172, 130, 220),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+
               // MENU MOBILE (Icon Burger)
               leading: IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: _showMobileMenu, // 🔥 MEMANGGIL BOTTOM SHEET MENU
+                icon: const Icon(
+                  Icons.menu,
+                  color: Colors.white,
+                ), // 🔥 Ikon putih
+                onPressed: _showMobileMenu,
               ),
               // LOGOUT HANYA MUNCUL DI MOBILE
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.logout),
+                  icon: const Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                  ), // 🔥 Ikon putih
                   onPressed: _handleLogout,
                 ),
               ],
             )
           : null, // DI DESKTOP/WEB, APPBAR ADALAH NULL (HILANG)
-      // 🔥 Drawer disetel null di semua mode karena kita menggunakan bottom sheet untuk mobile
-      // dan Sidebar sebagai konten utama di desktop.
+      // Drawer disetel null karena kita menggunakan bottom sheet untuk mobile
       drawer: null,
 
       body: Row(
@@ -245,8 +270,15 @@ class _DashboardPageState extends State<DashboardPage> {
                 title: const Text('Profile'),
                 onTap: () => context.go('/profile'),
               ),
-
               // Add Logout here with rating and confirmation dialog
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close the bottom sheet first
+                  _handleLogout();
+                },
+              ),
             ],
           ),
         );
