@@ -10,33 +10,41 @@ import 'bloc/anime_event.dart';
 import 'cubit/anime_cubit.dart';
 import 'cubit/auth_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:auth_module/auth_module.dart';
+import 'package:url_launcher_module/url_launcher_module.dart';
 import 'firebase_options.dart';
 import 'core/theme.dart';
 import 'core/router.dart';
-import 'services/auth_repository.dart';
+import 'core/di/app_locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final prefs = await SharedPreferences.getInstance();
+  await configureDependencies(preferences: prefs);
   usePathUrlStrategy();
-  runApp(AplikasiAnime(prefs: prefs));
+  runApp(const AplikasiAnime());
 }
 
 class AplikasiAnime extends StatelessWidget {
-  const AplikasiAnime({super.key, required this.prefs});
-
-  final SharedPreferences prefs;
+  const AplikasiAnime({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final locator = AppLocator.I;
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MultiRepositoryProvider(
           providers: [
-            RepositoryProvider<Dio>(create: (context) => Dio()),
-            RepositoryProvider<AuthRepository>(
-              create: (_) => AuthRepository(preferences: prefs),
+            RepositoryProvider<Dio>.value(value: locator.get<Dio>()),
+            RepositoryProvider<AuthRepository>.value(
+              value: locator.get<AuthRepository>(),
+            ),
+            RepositoryProvider<UrlLauncherRepository>.value(
+              value: locator.get<UrlLauncherRepository>(),
+            ),
+            RepositoryProvider<OpenUrlUseCase>.value(
+              value: locator.get<OpenUrlUseCase>(),
             ),
           ],
           child: MultiBlocProvider(
@@ -51,8 +59,7 @@ class AplikasiAnime extends StatelessWidget {
                 create: (context) => AnimeCubit(context.read<Dio>()),
               ),
               BlocProvider<AuthCubit>(
-                create: (context) =>
-                    AuthCubit(context.read<AuthRepository>()),
+                create: (context) => locator.get<AuthCubit>(),
               ),
             ],
             child: BlocBuilder<ThemeCubit, bool>(

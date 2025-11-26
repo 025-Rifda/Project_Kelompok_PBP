@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:auth_module/auth_module.dart';
 
 /// State tree for authentication flows (login, etc).
 abstract class AuthState {}
@@ -10,7 +10,7 @@ class AuthLoading extends AuthState {}
 class AuthAuthenticated extends AuthState {
   AuthAuthenticated(this.user);
 
-  final User user;
+  final AuthUser user;
 }
 
 class AuthError extends AuthState {

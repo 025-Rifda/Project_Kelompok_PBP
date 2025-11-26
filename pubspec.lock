@@ -49,6 +49,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.0"
+  auth_module:
+    dependency: "direct main"
+    description:
+      path: "packages/auth_module"
+      relative: true
+    source: path
+    version: "0.0.1"
   badges:
     dependency: "direct main"
     description:
@@ -1165,6 +1172,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.4"
+  url_launcher_module:
+    dependency: "direct main"
+    description:
+      path: "packages/url_launcher_module"
+      relative: true
+    source: path
+    version: "0.0.1"
   url_launcher_platform_interface:
     dependency: transitive
     description:

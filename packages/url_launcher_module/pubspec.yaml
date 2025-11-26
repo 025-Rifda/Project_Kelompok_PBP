@@ -1,0 +1,16 @@
+name: url_launcher_module
+description: Reusable URL launcher abstractions and implementation using url_launcher.
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  url_launcher: ^6.3.0
+
+dev_dependencies:
+  flutter_lints: ^5.0.0

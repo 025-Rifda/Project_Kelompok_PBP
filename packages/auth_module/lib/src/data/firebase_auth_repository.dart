@@ -1,20 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../domain/entities/auth_user.dart';
+import '../domain/repositories/auth_repository.dart';
 
-/// Abstraction layer for auth and local persistence to decouple UI from SDK singletons.
-class AuthRepository {
-  AuthRepository({
+/// Firebase-backed implementation of the domain auth repository.
+class FirebaseAuthRepository implements AuthRepository {
+  FirebaseAuthRepository({
     FirebaseAuth? firebaseAuth,
     required SharedPreferences preferences,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _preferences = preferences;
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _preferences = preferences;
 
   final FirebaseAuth _firebaseAuth;
   final SharedPreferences _preferences;
 
-  User? get currentUser => _firebaseAuth.currentUser;
+  @override
+  AuthUser? get currentUser => _toDomainUser(_firebaseAuth.currentUser);
 
-  Future<User?> signIn({
+  @override
+  Future<AuthUser?> signIn({
     required String email,
     required String password,
   }) async {
@@ -26,7 +30,20 @@ class AuthRepository {
     if (user != null) {
       await _persistUser(user, fallbackEmail: email);
     }
-    return user;
+    return _toDomainUser(user);
+  }
+
+  AuthUser? _toDomainUser(User? user) {
+    if (user == null) return null;
+    final displayName = user.displayName?.trim();
+    final name = displayName != null && displayName.isNotEmpty
+        ? displayName
+        : 'Pengguna';
+    return AuthUser(
+      id: user.uid,
+      email: user.email ?? '',
+      displayName: name,
+    );
   }
 
   Future<void> _persistUser(User user, {required String fallbackEmail}) async {

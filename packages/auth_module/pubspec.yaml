@@ -1,0 +1,17 @@
+name: auth_module
+description: Reusable auth module containing domain contracts, use cases, and Firebase-backed repository.
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_auth: ^5.7.0
+  shared_preferences: ^2.2.3
+
+dev_dependencies:
+  flutter_lints: ^5.0.0

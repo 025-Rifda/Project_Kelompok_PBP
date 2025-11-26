@@ -1,12 +1,16 @@
+import 'package:auth_module/auth_module.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../services/auth_repository.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this._authRepository) : super(AuthInitial());
+  AuthCubit(
+    this._loginUseCase,
+    this._getCurrentUserUseCase,
+  ) : super(AuthInitial());
 
-  final AuthRepository _authRepository;
+  final LoginUseCase _loginUseCase;
+  final GetCurrentUserUseCase _getCurrentUserUseCase;
 
   Future<void> login({
     required String email,
@@ -14,7 +18,7 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(AuthLoading());
     try {
-      final user = await _authRepository.signIn(
+      final user = await _loginUseCase(
         email: email,
         password: password,
       );
@@ -29,6 +33,11 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(AuthError('Terjadi kesalahan: $e'));
     }
+  }
+
+  Future<void> checkExistingSession() async {
+    final user = _getCurrentUserUseCase();
+    if (user != null) emit(AuthAuthenticated(user));
   }
 
   String _mapFirebaseError(FirebaseAuthException e) {

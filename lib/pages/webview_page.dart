@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher_module/url_launcher_module.dart';
 
 class WebViewPage extends StatefulWidget {
   final String url;
@@ -12,10 +13,12 @@ class WebViewPage extends StatefulWidget {
 
 class _WebViewPageState extends State<WebViewPage> {
   bool _triedLaunch = false;
+  late final OpenUrlUseCase _openUrlUseCase;
 
   @override
   void initState() {
     super.initState();
+    _openUrlUseCase = context.read<OpenUrlUseCase>();
     // Launch after first frame to ensure context is ready.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _openUrl();
@@ -26,15 +29,9 @@ class _WebViewPageState extends State<WebViewPage> {
     if (_triedLaunch) return; // guard against multiple calls
     _triedLaunch = true;
 
-    final uri = Uri.parse(widget.url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_blank', // open new tab on web
-      );
-      // Return to previous page after launching
-      if (mounted) Navigator.of(context).maybePop();
+    final opened = await _openUrlUseCase(widget.url);
+    if (opened && mounted) {
+      Navigator.of(context).maybePop();
     }
   }
 

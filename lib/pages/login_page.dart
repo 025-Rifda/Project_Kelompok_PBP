@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
-import '../services/auth_repository.dart';
 
 class BokehPainter extends CustomPainter {
   @override
@@ -101,13 +100,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _checkLoggedInUser() async {
-    final authRepository = context.read<AuthRepository>();
-    final user = authRepository.currentUser;
-    if (user != null) {
-      // Jika user masih login (token masih aktif)
-      await Future.delayed(const Duration(milliseconds: 500)); // biar smooth
-      if (mounted) context.go('/dashboard');
-    }
+    await context.read<AuthCubit>().checkExistingSession();
   }
 
   void _login() async {

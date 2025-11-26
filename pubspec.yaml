@@ -53,6 +53,12 @@ dependencies:
   #Permission handler
   permission_handler: ^12.0.1
   
+  # Local feature packages
+  auth_module:
+    path: packages/auth_module
+  url_launcher_module:
+    path: packages/url_launcher_module
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
