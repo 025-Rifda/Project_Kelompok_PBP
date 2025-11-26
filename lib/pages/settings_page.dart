@@ -132,20 +132,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
             SizedBox(height: 8.sp),
 
-            /// SECTION: Akun
-            _buildSectionTitle('Akun', fontSize: isMobile ? 14.sp : 13.sp),
-            _buildSettingItem(
-              icon: Icons.notifications,
-              title: 'Notifikasi',
-              subtitle: 'Atur preferensi notifikasi',
-              onTap: () {},
-              iconSize: isMobile ? 15.sp : 14.sp,
-              titleSize: isMobile ? 13.sp : 12.sp,
-              subtitleSize: isMobile ? 12.sp : 11.sp,
-            ),
-
-            SizedBox(height: 8.sp),
-
             /// SECTION: Aplikasi
             _buildSectionTitle('Aplikasi', fontSize: isMobile ? 14.sp : 13.sp),
             _buildSettingItem(
