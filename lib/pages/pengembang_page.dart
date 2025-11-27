@@ -51,12 +51,12 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://www.instagram.com/dhesurha_/",
     },
     {
-      "Nama": "Dinda",
-      "NIM": "iSI SENDIRI",
+      "Nama": "Dinda Dwi Febiani",
+      "NIM": "241118114019",
       "Quotes": "ISI SENDIRI",
       "img": "assets/foto pengembang/dinda.jpg",
-      "github": "https://github.com/",
-      "instagram": "https://instagram.com/",
+      "github": "https://github.com/Dinda-2802",
+      "instagram": "https://www.instagram.com/dindafbiani",
     },
     {
       "Nama": "Elysa Hayu Noorhaini",
