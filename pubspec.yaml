@@ -26,6 +26,9 @@ dependencies:
   loading_animation_widget: ^1.2.0
   flutter_launcher_icons: ^0.14.4
 
+  # Icons
+  font_awesome_flutter: ^10.7.0
+
   # State management & router
   flutter_bloc: ^9.1.1
   equatable: ^2.0.7
@@ -65,7 +68,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   bloc_test: ^10.0.0
   mocktail: ^1.0.3
-  flutter_launcher_icons: ^0.14.4
+
 
 flutter:
   uses-material-design: true
@@ -76,6 +79,7 @@ flutter:
     - assets/Background.jpeg
     - assets/bg.jpeg
     - assets/foto pengembang/bersama.jpg
+    - assets/foto pengembang/pak yahya.jpg
     - assets/foto pengembang/chantika.jpg
     - assets/foto pengembang/dea.jpg
     - assets/foto pengembang/dinda.jpg
