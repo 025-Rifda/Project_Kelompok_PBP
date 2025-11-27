@@ -97,7 +97,7 @@ class _PopularPageState extends State<PopularPage> {
                 child: GridView.builder(
                   padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: isMobile ? 2 : 6,
+                    crossAxisCount: isMobile ? 2 : 5,
                     crossAxisSpacing: isMobile ? 2.w : 20,
                     mainAxisSpacing: isMobile ? 2.h : 20,
                     childAspectRatio: isMobile ? 0.65 : 0.70,
