@@ -67,12 +67,14 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://www.instagram.com/elysaaa21_/",
     },
     {
-      "Nama": "Lian",
-      "NIM": "iSI SENDIRI",
-      "Quotes": "ISI SENDIRI",
+      "Nama": "Dewi Berliana",
+      "NIM": "24111814003",
+      "Quotes":
+          "Jangan takut jadi beda. Bahkan dalam database,\n"
+          "yang unik itu justru jadi primary key.",
       "img": "assets/foto pengembang/lian.jpg",
-      "github": "https://github.com/",
-      "instagram": "https://instagram.com/",
+      "github": "https://github.com/Berliana003",
+      "instagram": "https://www.instagram.com/berliand_aa",
     },
     {
       "Nama": "Rista",
