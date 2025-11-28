@@ -29,7 +29,7 @@ class _PengembangPageState extends State<PengembangPage> {
     {
       "Nama": "Almas Rifda Zatadin",
       "NIM": "24111814025",
-      "Quotes": "Selalu ikuti kata hatimu. Namun, ingat, bawalah otakmu juga.",
+      "Quotes": "jika commit aja jarang, apalagi komitmen nyata.",
       "img": "assets/foto pengembang/rifda.jpg",
       "github": "https://github.com/025-rifda",
       "instagram": "https://instagram.com/rizenka.airin0701",
@@ -45,7 +45,8 @@ class _PengembangPageState extends State<PengembangPage> {
     {
       "Nama": "Dea Suci Ramadani",
       "NIM": "24111814128",
-      "Quotes": "ISI SENDIRI",
+      "Quotes":
+          "Saat kamu merasa hampir menyerah, ingatlah bahwa Allah tidak menurunkan 1 kesulitan berjalan sendirian, ada kemudahan yang menyertainya, sebagaimana diajarkan dalam Al-Insyirah.",
       "img": "assets/foto pengembang/dea.jpg",
       "github": "https://github.com/128-Dea",
       "instagram": "https://www.instagram.com/dhesurha_/",
@@ -53,7 +54,8 @@ class _PengembangPageState extends State<PengembangPage> {
     {
       "Nama": "Dinda Dwi Febiani",
       "NIM": "241118114019",
-      "Quotes": "Jangan menunggu arah untuk melangkah, tapi melangkah lah agar kau tau arah",
+      "Quotes":
+          "Jangan menunggu arah untuk melangkah, tapi melangkah lah agar kau tau arah",
       "img": "assets/foto pengembang/dinda.jpg",
       "github": "https://github.com/Dinda-2802",
       "instagram": "https://www.instagram.com/dindafbiani",
@@ -61,7 +63,8 @@ class _PengembangPageState extends State<PengembangPage> {
     {
       "Nama": "Elysa Hayu Noorhaini",
       "NIM": "24111814078",
-      "Quotes": "Keinginan sering timeout-sepertinya server realita lagi penuh drama.",
+      "Quotes":
+          "Keinginan sering timeout-sepertinya server realita lagi penuh drama.",
       "img": "assets/foto pengembang/elysa.jpg",
       "github": "https://github.com/Elysa-21",
       "instagram": "https://www.instagram.com/elysaaa21_/",
