@@ -53,7 +53,7 @@ class _PengembangPageState extends State<PengembangPage> {
     {
       "Nama": "Dinda Dwi Febiani",
       "NIM": "241118114019",
-      "Quotes": "ISI SENDIRI",
+      "Quotes": "Jangan menunggu arah untuk melangkah, tapi melangkah lah agar kau tau arah",
       "img": "assets/foto pengembang/dinda.jpg",
       "github": "https://github.com/Dinda-2802",
       "instagram": "https://www.instagram.com/dindafbiani",
@@ -61,7 +61,7 @@ class _PengembangPageState extends State<PengembangPage> {
     {
       "Nama": "Elysa Hayu Noorhaini",
       "NIM": "24111814078",
-      "Quotes": "ISI SENDIRI",
+      "Quotes": "Keinginan sering timeout-sepertinya server realita lagi penuh drama.",
       "img": "assets/foto pengembang/elysa.jpg",
       "github": "https://github.com/Elysa-21",
       "instagram": "https://www.instagram.com/elysaaa21_/",
