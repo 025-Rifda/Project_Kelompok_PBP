@@ -27,12 +27,12 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://instagram.com/",
     },
     {
-      "Nama": "Rifda",
-      "NIM": "iSI SENDIRI",
-      "Quotes": "ISI SENDIRI",
+      "Nama": "Almas Rifda Zatadin",
+      "NIM": "24111814025",
+      "Quotes": "Selalu ikuti kata hatimu. Namun, ingat, bawalah otakmu juga.",
       "img": "assets/foto pengembang/rifda.jpg",
-      "github": "https://github.com/",
-      "instagram": "https://instagram.com/",
+      "github": "https://github.com/025-rifda",
+      "instagram": "https://instagram.com/rizenka.airin0701",
     },
     {
       "Nama": "Chantika",
