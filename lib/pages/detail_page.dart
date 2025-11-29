@@ -52,7 +52,7 @@ class DetailPage extends StatelessWidget {
                   color: Colors.white,
                   size: isMobile ? 18.sp : 17.sp,
                 ),
-                onPressed: () => context.go('/dashboard'),
+                onPressed: () => context.pop(),
               ),
               Expanded(
                 child: Center(
