@@ -31,6 +31,7 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     on<FetchHistoryEvent>(_handleFetchHistory);
     on<ClearHistoryEvent>(_handleClearHistory);
     on<RemoveHistoryItemEvent>(_handleRemoveHistoryItem);
+    on<ClearAllFavoritesEvent>(_handleClearAllFavorites);
     on<ResetFilterEvent>(_handleReset);
     on<ResetSettingsEvent>(_handleResetSettings);
     _loadSearchHistory();
@@ -311,7 +312,14 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
 
-    _favorites.removeWhere((fav) => fav['mal_id'].toString() == event.animeId);
+    // Buat list baru tanpa item yang dihapus untuk memastikan state berubah
+    final updatedFavorites = _favorites
+        .where((fav) => fav['mal_id'].toString() != event.animeId)
+        .toList();
+
+    // Assign list baru ke _favorites
+    _favorites = List.from(updatedFavorites);
+
     emit(currentState.copyWith(favorites: List.from(_favorites)));
     // persist
     _saveFavorites();
@@ -396,6 +404,40 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     _deletedQueries.clear();
     await SearchHistoryService.clearHistory();
     emit(currentState.copyWith(searchHistory: []));
+  }
+
+  // Hapus semua favorit
+  void _handleClearAllFavorites(
+    ClearAllFavoritesEvent event,
+    Emitter<AnimeState> emit,
+  ) {
+    print('ClearAllFavoritesEvent dipanggil');
+    if (state is! AnimeLoaded) {
+      print('State bukan AnimeLoaded, return');
+      return;
+    }
+    final currentState = state as AnimeLoaded;
+    print('Sebelum clear: favorites length = ${currentState.favorites.length}');
+
+    // Clear the favorites list
+    _favorites.clear();
+
+    // Emit new state with empty favorites list
+    final newState = AnimeLoaded(
+      currentState.animeList,
+      filteredList: currentState.filteredList,
+      selectedGenres: currentState.selectedGenres,
+      minRating: currentState.minRating,
+      sortAscending: currentState.sortAscending,
+      sortFavoritesAscending: currentState.sortFavoritesAscending,
+      favorites: [], // Empty list
+      searchHistory: currentState.searchHistory,
+    );
+    print('Emit state baru: favorites length = ${newState.favorites.length}');
+    emit(newState);
+
+    // Save asynchronously in background
+    _saveFavorites();
   }
 
   //  Reset filter dan urutan

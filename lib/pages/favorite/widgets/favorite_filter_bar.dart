@@ -41,6 +41,13 @@ class FavoriteFilterBar extends StatelessWidget {
                 isMobile: isMobile,
               ),
               _filterButton(
+                icon: Icons.delete_sweep,
+                label: 'Hapus Semua',
+                color: Colors.red,
+                onPressed: () => _clearAllFavorites(context),
+                isMobile: isMobile,
+              ),
+              _filterButton(
                 icon: Icons.refresh,
                 label: 'Reset',
                 color: Colors.grey,
@@ -79,6 +86,38 @@ class FavoriteFilterBar extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         textStyle: TextStyle(fontSize: isMobile ? 14.sp : 12.sp),
+      ),
+    );
+  }
+
+  void _clearAllFavorites(BuildContext context) {
+    final bloc = context.read<AnimeBloc>();
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Konfirmasi'),
+        content: const Text('Apakah Anda yakin ingin menghapus semua favorit?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              bloc.add(ClearAllFavoritesEvent());
+
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Semua favorit telah dihapus'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

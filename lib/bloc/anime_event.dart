@@ -140,3 +140,8 @@ class FetchPopularAnimeEvent extends AnimeEvent {
 class FetchRandomAnimeEvent extends AnimeEvent {
   const FetchRandomAnimeEvent();
 }
+
+/// Event untuk menghapus semua favorit.
+class ClearAllFavoritesEvent extends AnimeEvent {
+  const ClearAllFavoritesEvent();
+}
