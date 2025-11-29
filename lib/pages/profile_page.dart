@@ -46,6 +46,62 @@ class _ProfilePageState extends State<ProfilePage> {
     _loadProfile();
   }
 
+  void _toggleEditing() {
+    setState(() {
+      _isEditing = !_isEditing;
+    });
+  }
+
+  Future<void> _saveProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final newUsername = _usernameController.text.trim();
+    final newEmail = _emailController.text.trim();
+    final newPhone = _phoneController.text.trim();
+    final newAddress = _addressController.text.trim();
+
+    // Update preferences
+    await prefs.setString('username', newUsername);
+    await prefs.setString('user_email_$newUsername', newEmail);
+    await prefs.setString('user_phone_$newUsername', newPhone);
+    await prefs.setString('user_address_$newUsername', newAddress);
+
+    // If username changed, migrate image data
+    if (newUsername != _username) {
+      final oldImageBase64 = prefs.getString('user_image_base64_$_username');
+      final oldImagePath = prefs.getString('user_image_path_$_username');
+      if (oldImageBase64 != null) {
+        await prefs.setString('user_image_base64_$newUsername', oldImageBase64);
+        await prefs.remove('user_image_base64_$_username');
+      }
+      if (oldImagePath != null) {
+        await prefs.setString('user_image_path_$newUsername', oldImagePath);
+        await prefs.remove('user_image_path_$_username');
+      }
+    }
+
+    setState(() {
+      _username = newUsername;
+      _email = newEmail;
+      _phone = newPhone;
+      _address = newAddress;
+      _isEditing = false;
+    });
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Profil berhasil disimpan')));
+  }
+
+  void _cancelEditing() {
+    _usernameController.text = _username;
+    _emailController.text = _email;
+    _phoneController.text = _phone;
+    _addressController.text = _address;
+    setState(() {
+      _isEditing = false;
+    });
+  }
+
   Future<void> _loadProfile() async {
     final prefs = await SharedPreferences.getInstance();
     final username = prefs.getString('username') ?? 'Pengguna';
@@ -349,14 +405,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        _username,
+                        _isEditing ? _usernameController.text : _username,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 14.sp,
                         ),
                       ),
                       Text(
-                        _email,
+                        _isEditing ? _emailController.text : _email,
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: Theme.of(
@@ -393,6 +449,37 @@ class _ProfilePageState extends State<ProfilePage> {
                         editable: _isEditing,
                       ),
                       _buildProfileField('Bergabung Sejak', _joinDate),
+                      const SizedBox(height: 20),
+                      if (_isEditing)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: _saveProfile,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text('Simpan'),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: _cancelEditing,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text('Batal'),
+                            ),
+                          ],
+                        )
+                      else
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: _toggleEditing,
+                            child: const Text('Edit Profil'),
+                          ),
+                        ),
                     ],
                   ),
                 ],
