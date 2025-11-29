@@ -21,9 +21,12 @@ class DetailPage extends StatelessWidget {
 
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F0FF),
+      backgroundColor: isDark
+          ? Theme.of(context).scaffoldBackgroundColor
+          : const Color(0xFFF5F0FF),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(isMobile ? 54 : 95),
         child: Container(
@@ -105,14 +108,18 @@ class DetailPage extends StatelessWidget {
 
                   // JUDUL
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 40),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 20 : 40,
+                    ),
                     child: Text(
                       anime.title,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: isMobile ? 22 : 28,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFFAC82DC),
+                        color: isDark
+                            ? const Color.fromARGB(255, 148, 108, 217)
+                            : const Color(0xFFAC82DC),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -130,7 +137,7 @@ class DetailPage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: isMobile ? 20 : 24,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                          color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
                     ],
@@ -140,14 +147,20 @@ class DetailPage extends StatelessWidget {
 
                   // INFO ANIME CARD
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 16 : 40,
+                    ),
                     padding: EdgeInsets.all(isMobile ? 20 : 24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDark
+                          ? Theme.of(context).cardColor
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: isDark
+                              ? Colors.black.withOpacity(0.35)
+                              : Colors.black.withOpacity(0.08),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
@@ -182,14 +195,20 @@ class DetailPage extends StatelessWidget {
 
                   // SINOPSIS SECTION
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 16 : 40,
+                    ),
                     padding: EdgeInsets.all(isMobile ? 20 : 24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDark
+                          ? Theme.of(context).cardColor
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: isDark
+                              ? Colors.black.withOpacity(0.35)
+                              : Colors.black.withOpacity(0.08),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
@@ -205,14 +224,13 @@ class DetailPage extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: isMobile ? 18 : 22,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFFAC82DC),
+                                color: isDark
+                                    ? const Color.fromARGB(255, 148, 108, 217)
+                                    : const Color(0xFFAC82DC),
                               ),
                             ),
                             const SizedBox(width: 8),
-                            const Text(
-                              '💕',
-                              style: TextStyle(fontSize: 20),
-                            ),
+                            const Text('💕', style: TextStyle(fontSize: 20)),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -221,7 +239,7 @@ class DetailPage extends StatelessWidget {
                           textAlign: TextAlign.justify,
                           style: TextStyle(
                             fontSize: isMobile ? 14 : 16,
-                            color: Colors.black87,
+                            color: isDark ? Colors.white : Colors.black87,
                             height: 1.6,
                             letterSpacing: 0.3,
                           ),
@@ -234,7 +252,9 @@ class DetailPage extends StatelessWidget {
 
                   // BUTTONS
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 16 : 40,
+                    ),
                     child: Column(
                       children: [
                         // BUTTON MYANIMELIST
@@ -276,7 +296,8 @@ class DetailPage extends StatelessWidget {
                         // BUTTON FAVORIT
                         BlocBuilder<AnimeBloc, AnimeState>(
                           builder: (context, state) {
-                            final isFavorite = state is AnimeLoaded &&
+                            final isFavorite =
+                                state is AnimeLoaded &&
                                 state.favorites.any(
                                   (fav) => fav['mal_id'] == anime.malId,
                                 );
@@ -287,10 +308,10 @@ class DetailPage extends StatelessWidget {
                                 onPressed: () {
                                   if (isFavorite) {
                                     context.read<AnimeBloc>().add(
-                                          RemoveFromFavoritesEvent(
-                                            anime.malId.toString(),
-                                          ),
-                                        );
+                                      RemoveFromFavoritesEvent(
+                                        anime.malId.toString(),
+                                      ),
+                                    );
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Dihapus dari favorit'),
@@ -300,8 +321,8 @@ class DetailPage extends StatelessWidget {
                                     );
                                   } else {
                                     context.read<AnimeBloc>().add(
-                                          AddToFavoritesEvent(anime.toJson()),
-                                        );
+                                      AddToFavoritesEvent(anime.toJson()),
+                                    );
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Ditambahkan ke favorit'),
@@ -357,6 +378,7 @@ class DetailPage extends StatelessWidget {
   }
 
   Widget _infoRow(BuildContext context, String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -364,18 +386,18 @@ class DetailPage extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: Colors.black87,
+              color: isDark ? Colors.white : Colors.black87,
             ),
           ),
           Expanded(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                color: Colors.black54,
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.black54,
                 fontSize: 16,
               ),
             ),
