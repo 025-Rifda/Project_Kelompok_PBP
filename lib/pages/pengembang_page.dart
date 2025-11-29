@@ -19,17 +19,18 @@ class _PengembangPageState extends State<PengembangPage> {
 
   final List<Map<String, String>> developers = [
     {
+      "Role": "DOSEN PENGAMPU",
       "Nama": "Saifuddin Yahya, S.Kom., M.T.I.",
       "NIPD": "0020129004",
-      "Quotes": "ISI SENDIRI",
       "img": "assets/foto pengembang/pak yahya.jpg",
       "github": "https://github.com/saifudin",
       "instagram": "https://instagram.com/",
     },
     {
+      "Role": "KETUA",
       "Nama": "Almas Rifda Zatadin",
       "NIM": "24111814025",
-      "Quotes": "jika commit aja jarang, apalagi komitmen nyata.",
+      "Quotes": "Jika commit aja jarang, apalagi komitmen nyata.",
       "img": "assets/foto pengembang/rifda.jpg",
       "github": "https://github.com/025-rifda",
       "instagram": "https://instagram.com/rizenka.airin0701",
@@ -43,6 +44,7 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://www.instagram.com/channntk",
     },
     {
+      "Role": "ANGGOTA-2",
       "Nama": "Dea Suci Ramadani",
       "NIM": "24111814128",
       "Quotes":
@@ -52,6 +54,7 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://www.instagram.com/dhesurha_/",
     },
     {
+      "Role": "ANGGOTA-3",
       "Nama": "Dinda Dwi Febiani",
       "NIM": "241118114019",
       "Quotes":
@@ -61,6 +64,7 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://www.instagram.com/dindafbiani",
     },
     {
+      "Role": "ANGGOTA-4",
       "Nama": "Elysa Hayu Noorhaini",
       "NIM": "24111814078",
       "Quotes":
@@ -70,6 +74,7 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://www.instagram.com/elysaaa21_/",
     },
     {
+      "Role": "ANGGOTA-5",
       "Nama": "Dewi Berliana",
       "NIM": "24111814003",
       "Quotes":
@@ -80,6 +85,7 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://www.instagram.com/berliand_aa",
     },
     {
+      "Role": "ANGGOTA-6",
       "Nama": "Rista",
       "NIM": "iSI SENDIRI",
       "Quotes": "ISI SENDIRI",
@@ -487,6 +493,17 @@ class _PengembangPageState extends State<PengembangPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
+          dev["Role"] ?? "",
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: isDark
+                ? const Color.fromARGB(255, 148, 108, 217)
+                : Colors.deepPurple.shade600,
+          ),
+        ),
+        SizedBox(height: 0.3.h),
+        Text(
           dev["Nama"]!,
           style: TextStyle(
             fontSize: 16.sp,
@@ -505,7 +522,11 @@ class _PengembangPageState extends State<PengembangPage> {
         }(), style: TextStyle(fontSize: 12.sp, color: textColor)),
         Text(
           "Quotes: ${dev["Quotes"]}",
-          style: TextStyle(fontSize: 12.sp, color: textColor),
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: textColor,
+            fontStyle: FontStyle.italic,
+          ),
         ),
         SizedBox(height: 1.h),
         Row(
