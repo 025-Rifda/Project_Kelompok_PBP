@@ -261,7 +261,7 @@ class _DeviceInfoPageState extends State<DeviceInfoPage> {
     return Align(
       alignment: Alignment.topCenter,
       child: Card(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         elevation: 4,
         child: Padding(

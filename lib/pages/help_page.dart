@@ -115,7 +115,7 @@ class _HelpPageState extends State<HelpPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -154,12 +154,12 @@ class _HelpPageState extends State<HelpPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "•  ",
                     style: TextStyle(
                       fontSize: 16,
                       height: 1.4,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                     ),
                   ),
                   Expanded(
