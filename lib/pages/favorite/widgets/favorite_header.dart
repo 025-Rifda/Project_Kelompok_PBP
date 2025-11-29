@@ -38,7 +38,7 @@ class FavoriteHeader extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: isMobile ? 15.sp : 14.sp,
+                  fontSize: isMobile ? 17.sp : 14.sp,
                 ),
               ),
             ),

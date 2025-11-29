@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sizer/sizer.dart';
 import '../../../widgets/media_card.dart';
 import '../../../bloc/anime_bloc.dart';
@@ -33,15 +34,15 @@ class FavoriteContent extends StatelessWidget {
             ),
             itemCount: favorites.length,
             itemBuilder: (_, index) {
-              // 🔥 Aman: kalau item sudah Anime → pakai langsung
-              // Jika masih Map (hasil load dari local) → parse ke Anime
+              // Jika item masih Map → konversi ke Anime
               final raw = favorites[index];
               final anime = raw is Anime ? raw : Anime.fromJson(raw);
 
               return MediaCard(
                 item: anime,
                 onTap: () {
-                  Navigator.pushNamed(context, '/detail/${anime.malId}');
+                  // 🔥 Navigasi menggunakan GoRouter
+                  context.push('/detail/${anime.malId}');
                 },
               );
             },

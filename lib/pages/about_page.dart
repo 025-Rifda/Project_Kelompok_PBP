@@ -58,7 +58,7 @@ class _AboutPageState extends State<AboutPage> {
               ),
             ),
           ),
-          SizedBox(width: 17.sp),
+          SizedBox(width: 14.sp),
         ],
       ),
     );

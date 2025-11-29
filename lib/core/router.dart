@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+
 import '../pages/splash_page.dart';
 import '../pages/login_page.dart';
 import '../pages/register_page.dart';
@@ -23,89 +24,95 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
     routerNeglect: false,
+
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const SplashPage()),
-      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
-      GoRoute(
-        path: '/register',
-        builder: (context, state) => const RegisterPage(),
-      ),
-      GoRoute(
-        path: '/dashboard',
-        builder: (context, state) => const DashboardPage(),
-      ),
-      GoRoute(
-        path: '/popular',
-        builder: (context, state) => const PopularPage(),
-      ),
-      GoRoute(
-        path: '/favorite',
-        builder: (context, state) => const FavoritePage(),
-      ),
-      GoRoute(
-        path: '/history',
-        builder: (context, state) => const HistoryPage(),
-      ),
-      GoRoute(
-        path: '/profile',
-        builder: (context, state) => const ProfilePage(),
-      ),
+      // -----------------------------------------
+      // AUTH & ROOT
+      // -----------------------------------------
+      GoRoute(path: '/', builder: (_, __) => const SplashPage()),
+      GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+      GoRoute(path: '/register', builder: (_, __) => const RegisterPage()),
+
+      // -----------------------------------------
+      // MAIN PAGES
+      // -----------------------------------------
+      GoRoute(path: '/dashboard', builder: (_, __) => const DashboardPage()),
+      GoRoute(path: '/popular', builder: (_, __) => const PopularPage()),
+      GoRoute(path: '/favorite', builder: (_, __) => const FavoritePage()),
+      GoRoute(path: '/history', builder: (_, __) => const HistoryPage()),
+      GoRoute(path: '/profile', builder: (_, __) => const ProfilePage()),
+
+      // -----------------------------------------
+      // SETTINGS
+      // -----------------------------------------
       GoRoute(
         path: '/settings',
-        builder: (context, state) => const SettingsPage(),
+        builder: (_, __) => const SettingsPage(),
         routes: [
-          GoRoute(
-            path: 'about',
-            builder: (context, state) => const AboutPage(),
-          ),
-          GoRoute(path: 'help', builder: (context, state) => const HelpPage()),
+          GoRoute(path: 'about', builder: (_, __) => const AboutPage()),
+          GoRoute(path: 'help', builder: (_, __) => const HelpPage()),
           GoRoute(
             path: 'device-info',
-            builder: (context, state) => const DeviceInfoPage(),
+            builder: (_, __) => const DeviceInfoPage(),
           ),
-          GoRoute(
-            path: 'pengembang',
-            builder: (context, state) => PengembangPage(),
-          ),
+          GoRoute(path: 'pengembang', builder: (_, __) => PengembangPage()),
         ],
       ),
-      GoRoute(
-        path: '/random',
-        builder: (context, state) => const RandomAnimePage(),
-      ),
-      // Compatible route when navigating with extra payload
+
+      // -----------------------------------------
+      // RANDOM ANIME
+      // -----------------------------------------
+      GoRoute(path: '/random', builder: (_, __) => const RandomAnimePage()),
+
+      // -----------------------------------------
+      // DETAIL ROUTES
+      // -----------------------------------------
+
+      // A. Navigasi menggunakan extra → /detail
+      // dipakai saat klik card di dashboard atau popular
       GoRoute(
         path: '/detail',
         builder: (context, state) {
           final extra = state.extra;
+
           Anime? anime;
           if (extra is Anime) {
             anime = extra;
           } else if (extra is Map<String, dynamic>) {
             anime = Anime.fromJson(extra);
           }
+
           if (anime == null) {
             return const Scaffold(
               body: Center(child: Text('Anime data not found')),
             );
           }
+
           return DetailPage(anime: anime);
         },
       ),
-      // New sharable route: /detail/:id
+
+      // B. Navigasi dengan ID → /detail/:id
+      // dipakai untuk favorit, history, atau share link
       GoRoute(
         path: '/detail/:id',
         builder: (context, state) {
           final idStr = state.pathParameters['id'];
           final id = int.tryParse(idStr ?? '');
+
           if (id == null) {
             return const Scaffold(
               body: Center(child: Text('Invalid anime ID')),
             );
           }
+
           return DetailLoaderPage(id: id);
         },
       ),
+
+      // -----------------------------------------
+      // WEBVIEW
+      // -----------------------------------------
       GoRoute(
         path: '/webview',
         builder: (context, state) {

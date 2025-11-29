@@ -133,7 +133,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SizedBox(height: 8.sp),
 
             /// SECTION: Aplikasi
-            _buildSectionTitle('Aplikasi', fontSize: isMobile ? 14.sp : 13.sp),
+            _buildSectionTitle('Aplikasi', fontSize: isMobile ? 17.sp : 14.sp),
             _buildSettingItem(
               icon: Icons.info,
               title: 'Tentang',
