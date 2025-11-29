@@ -36,6 +36,7 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://instagram.com/rizenka.airin0701",
     },
     {
+      "Role": "ANGGOTA-1",
       "Nama": "Chantika Putri Meunasah",
       "NIM": "24111814037",
       "Quotes": "Enjoy your process",
@@ -47,8 +48,7 @@ class _PengembangPageState extends State<PengembangPage> {
       "Role": "ANGGOTA-2",
       "Nama": "Dea Suci Ramadani",
       "NIM": "24111814128",
-      "Quotes":
-          "Saat kamu merasa hampir menyerah, ingatlah bahwa Allah tidak menurunkan 1 kesulitan berjalan sendirian, ada kemudahan yang menyertainya, sebagaimana diajarkan dalam Al-Insyirah.",
+      "Quotes": "Ketenangan adalah kekuatan yang jarang ada di dalam hati.",
       "img": "assets/foto pengembang/dea.jpg",
       "github": "https://github.com/128-Dea",
       "instagram": "https://www.instagram.com/dhesurha_/",
