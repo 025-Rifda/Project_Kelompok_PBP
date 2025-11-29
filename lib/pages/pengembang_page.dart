@@ -35,12 +35,12 @@ class _PengembangPageState extends State<PengembangPage> {
       "instagram": "https://instagram.com/rizenka.airin0701",
     },
     {
-      "Nama": "Chantika",
-      "NIM": "iSI SENDIRI",
-      "Quotes": "ISI SENDIRI",
+      "Nama": "Chantika Putri Meunasah",
+      "NIM": "24111814037",
+      "Quotes": "Enjoy your process",
       "img": "assets/foto pengembang/chantika.jpg",
-      "github": "https://github.com/",
-      "instagram": "https://instagram.com/",
+      "github": "https://github.com/Chantikaputrii",
+      "instagram": "https://www.instagram.com/channntk",
     },
     {
       "Nama": "Dea Suci Ramadani",
