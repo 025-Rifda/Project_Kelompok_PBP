@@ -22,6 +22,7 @@ class _PengembangPageState extends State<PengembangPage> {
       "Role": "DOSEN PENGAMPU",
       "Nama": "Saifuddin Yahya, S.Kom., M.T.I.",
       "NIPD": "0020129004",
+      "Quotes": "-",
       "img": "assets/foto pengembang/pak yahya.jpg",
       "github": "https://github.com/saifudin",
       "instagram": "https://instagram.com/",
@@ -402,7 +403,7 @@ class _PengembangPageState extends State<PengembangPage> {
                     ),
                     SizedBox(height: 1.h),
                     Text(
-                      "\"Kolaborasi yang tulus melahirkan karya yang bermakna.\"",
+                      "\"Di Balik Setiap Baris Kode, Ada Jiwa Mahasiswa Yang Tersesat Di Balik Layar\"",
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontStyle: FontStyle.italic,
