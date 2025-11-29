@@ -156,15 +156,13 @@ class _DashboardPageState extends State<DashboardPage> {
           fillColor: Theme.of(context).cardColor,
           hintText: 'Cari anime kesukaanmu...',
           prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryColor),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    context.read<AnimeBloc>().add(FetchTopAnimeEvent());
-                  },
-                )
-              : null,
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              _searchController.clear();
+              context.read<AnimeBloc>().add(FetchTopAnimeEvent());
+            },
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
             borderSide: BorderSide.none,
