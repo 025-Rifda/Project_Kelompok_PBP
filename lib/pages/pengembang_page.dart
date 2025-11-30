@@ -87,9 +87,9 @@ class _PengembangPageState extends State<PengembangPage> {
     },
     {
       "Role": "ANGGOTA-6",
-      "Nama": "Rista",
-      "NIM": "iSI SENDIRI",
-      "Quotes": "ISI SENDIRI",
+      "Nama": "Azka Mariszta Assadel",
+      "NIM": "24111814029",
+      "Quotes": "-",
       "img": "assets/foto pengembang/rista.jpg",
       "github": "https://github.com/",
       "instagram": "https://instagram.com/",
@@ -371,7 +371,26 @@ class _PengembangPageState extends State<PengembangPage> {
                   children: [
                     SizedBox(height: 1.h),
                     Text(
-                      "About This Project",
+                      "KELOMPOK 1",
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? const Color.fromARGB(255, 148, 108, 217)
+                            : Colors.deepPurple,
+                      ),
+                    ),
+                    SizedBox(height: 1.h),
+                    Text(
+                      "\"Di Balik Setiap Baris Kode, Ada Jiwa Mahasiswa Yang Tersesat Di Balik Layar\"",
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: isDark ? Colors.white : null,
+                      ),
+                    ),
+                    SizedBox(height: 1.5.h),
+                    Text(
+                      "About this project",
                       style: TextStyle(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.bold,
@@ -385,25 +404,6 @@ class _PengembangPageState extends State<PengembangPage> {
                       "Aplikasi ini dikembangkan oleh tim kami sebagai proyek pembelajaran "
                       "dengan tujuan meningkatkan keterampilan Flutter, API integration, "
                       "UI/UX modern, dan kolaborasi kelompok.",
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: isDark ? Colors.white : null,
-                      ),
-                    ),
-                    SizedBox(height: 1.5.h),
-                    Text(
-                      "Kata-Kata Mutiara",
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.bold,
-                        color: isDark
-                            ? const Color.fromARGB(255, 148, 108, 217)
-                            : Colors.deepPurple,
-                      ),
-                    ),
-                    SizedBox(height: 1.h),
-                    Text(
-                      "\"Kolaborasi yang tulus melahirkan karya yang bermakna.\"",
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontStyle: FontStyle.italic,

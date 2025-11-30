@@ -78,7 +78,7 @@ class _AboutPageState extends State<AboutPage> {
             ),
             const SizedBox(height: 20),
             Text(
-              'AnimeList+',
+              'NekoFeed',
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.primary,
@@ -95,7 +95,7 @@ class _AboutPageState extends State<AboutPage> {
             ),
             const SizedBox(height: 30),
             Text(
-              'AnimeList+ adalah aplikasi untuk mencari dan menjelajahi anime favorit Anda.',
+              'Nekofeed adalah aplikasi untuk mencari dan menjelajahi anime favorit Anda.',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: isMobile ? 12.sp : 11.sp,
