@@ -22,7 +22,6 @@ class _PengembangPageState extends State<PengembangPage> {
       "Role": "DOSEN PENGAMPU",
       "Nama": "Saifuddin Yahya, S.Kom., M.T.I.",
       "NIPD": "0020129004",
-      "Quotes": "-",
       "img": "assets/foto pengembang/pak yahya.jpg",
       "github": "https://github.com/saifudin",
       "instagram": "https://instagram.com/",
@@ -31,7 +30,8 @@ class _PengembangPageState extends State<PengembangPage> {
       "Role": "KETUA",
       "Nama": "Almas Rifda Zatadin",
       "NIM": "24111814025",
-      "Quotes": "Jika commit aja jarang, apalagi komitmen nyata.",
+      "Quotes":
+          "Hidup adalah loop yang akan terus berulang sampai kamu berani mengubah kondisinya.",
       "img": "assets/foto pengembang/rifda.jpg",
       "github": "https://github.com/025-rifda",
       "instagram": "https://instagram.com/rizenka.airin0701",
@@ -403,7 +403,7 @@ class _PengembangPageState extends State<PengembangPage> {
                     ),
                     SizedBox(height: 1.h),
                     Text(
-                      "\"Di Balik Setiap Baris Kode, Ada Jiwa Mahasiswa Yang Tersesat Di Balik Layar\"",
+                      "\"Kolaborasi yang tulus melahirkan karya yang bermakna.\"",
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontStyle: FontStyle.italic,
