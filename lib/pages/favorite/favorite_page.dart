@@ -20,7 +20,7 @@ class _FavoritePageState extends State<FavoritePage> {
   @override
   void initState() {
     super.initState();
-    context.read<AnimeBloc>().add(FetchFavoritesEvent());
+    context.read<AnimeBloc>().add(LoadFavoritesEvent());
   }
 
   @override

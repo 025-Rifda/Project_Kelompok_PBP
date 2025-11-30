@@ -32,9 +32,6 @@ class _FavoriteContentState extends State<FavoriteContent> {
           }
 
           return ListView.builder(
-            key: ValueKey(
-              'favorites_${favorites.length}_${favorites.hashCode}',
-            ),
             padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
             itemCount: favorites.length,
             itemBuilder: (_, index) {

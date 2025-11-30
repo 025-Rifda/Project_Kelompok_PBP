@@ -292,10 +292,12 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
 
+    // Validasi mal_id harus valid (tidak null dan tidak 0)
+    final malId = event.anime['mal_id'];
+    if (malId == null || malId == 0) return;
+
     // Cek apakah sudah ada di favorit
-    final exists = _favorites.any(
-      (fav) => fav['mal_id'] == event.anime['mal_id'],
-    );
+    final exists = _favorites.any((fav) => fav['mal_id'] == malId);
     if (!exists) {
       _favorites.add(event.anime);
       emit(currentState.copyWith(favorites: List.from(_favorites)));
@@ -312,10 +314,17 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
     if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
 
+    // Parse animeId to int for robust comparison
+    final int animeId = int.tryParse(event.animeId) ?? 0;
+
     // Buat list baru tanpa item yang dihapus untuk memastikan state berubah
-    final updatedFavorites = _favorites
-        .where((fav) => fav['mal_id'].toString() != event.animeId)
-        .toList();
+    final updatedFavorites = _favorites.where((fav) {
+      final favId = fav['mal_id'];
+      final favIdInt = favId is int
+          ? favId
+          : int.tryParse(favId.toString()) ?? 0;
+      return favIdInt != animeId;
+    }).toList();
 
     // Assign list baru ke _favorites
     _favorites = List.from(updatedFavorites);
@@ -407,37 +416,21 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   }
 
   // Hapus semua favorit
-  void _handleClearAllFavorites(
+  Future<void> _handleClearAllFavorites(
     ClearAllFavoritesEvent event,
     Emitter<AnimeState> emit,
-  ) {
-    print('ClearAllFavoritesEvent dipanggil');
-    if (state is! AnimeLoaded) {
-      print('State bukan AnimeLoaded, return');
-      return;
-    }
+  ) async {
+    if (state is! AnimeLoaded) return;
     final currentState = state as AnimeLoaded;
-    print('Sebelum clear: favorites length = ${currentState.favorites.length}');
 
     // Clear the favorites list
     _favorites.clear();
 
-    // Emit new state with empty favorites list
-    final newState = AnimeLoaded(
-      currentState.animeList,
-      filteredList: currentState.filteredList,
-      selectedGenres: currentState.selectedGenres,
-      minRating: currentState.minRating,
-      sortAscending: currentState.sortAscending,
-      sortFavoritesAscending: currentState.sortFavoritesAscending,
-      favorites: [], // Empty list
-      searchHistory: currentState.searchHistory,
-    );
-    print('Emit state baru: favorites length = ${newState.favorites.length}');
-    emit(newState);
+    // Save the empty list
+    await _saveFavorites();
 
-    // Save asynchronously in background
-    _saveFavorites();
+    // Emit new state with empty favorites
+    emit(currentState.copyWith(favorites: []));
   }
 
   //  Reset filter dan urutan

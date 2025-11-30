@@ -103,17 +103,22 @@ class FavoriteFilterBar extends StatelessWidget {
             child: const Text('Batal'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               bloc.add(ClearAllFavoritesEvent());
 
-              Navigator.pop(context);
+              // Wait longer for the event to process
+              await Future.delayed(const Duration(milliseconds: 500));
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Semua favorit telah dihapus'),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              if (context.mounted) {
+                Navigator.pop(context);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Semua favorit telah dihapus'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
           ),
