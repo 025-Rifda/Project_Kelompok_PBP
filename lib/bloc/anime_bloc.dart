@@ -5,16 +5,18 @@ import 'anime_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../services/search_history_service.dart';
+import '../features/anime/domain/usecases/fetch_top_anime.dart';
 
 class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   final Dio dio;
+  final FetchTopAnimeUseCase fetchTopAnimeUseCase;
   List<dynamic> _animeList = [];
   List<dynamic> _topAnimeList = [];
   List<dynamic> _favorites = [];
   List<Map<String, dynamic>> _searchHistory = [];
   Set<String> _deletedQueries = {};
 
-  AnimeBloc(this.dio) : super(AnimeInitial()) {
+  AnimeBloc(this.dio, this.fetchTopAnimeUseCase) : super(AnimeInitial()) {
     on<FetchTopAnimeEvent>(_handleFetchTopAnime);
     on<FetchPopularAnimeEvent>(_handleFetchPopularAnime);
     on<FetchRandomAnimeEvent>(_handleFetchRandomAnime);
@@ -76,7 +78,9 @@ class AnimeBloc extends Bloc<AnimeEvent, AnimeState> {
   ) async {
     emit(AnimeLoading());
     try {
-      _topAnimeList = await _fetchAnimeData(endpoint: 'top/anime');
+      final topAnime = await fetchTopAnimeUseCase();
+      final topAnimeJson = topAnime.map((anime) => anime.toJson()).toList();
+      _topAnimeList = topAnimeJson;
       _animeList = _topAnimeList;
       emit(
         AnimeLoaded(

@@ -7,8 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_api/bloc/anime_bloc.dart';
 import 'package:flutter_application_api/bloc/anime_event.dart';
 import 'package:flutter_application_api/bloc/anime_state.dart';
+import 'package:flutter_application_api/features/anime/domain/usecases/fetch_top_anime.dart';
+import 'package:flutter_application_api/models/anime_model.dart';
 
 class MockDio extends Mock implements Dio {}
+class MockFetchTopAnimeUseCase extends Mock implements FetchTopAnimeUseCase {}
 
 Response<dynamic> _buildResponse(String path, List<Map<String, dynamic>> data) {
   return Response<dynamic>(
@@ -30,6 +33,13 @@ void main() {
     'score': 8.5,
   };
 
+  const sampleAnimeModel = Anime(
+    malId: 1,
+    title: 'Sample 1',
+    imageUrl: 'https://example.com/1.jpg',
+    score: 8.5,
+  );
+
   const anotherAnime = {
     'mal_id': 2,
     'title': 'Sample 2',
@@ -39,7 +49,15 @@ void main() {
     'score': 7.0,
   };
 
+  const anotherAnimeModel = Anime(
+    malId: 2,
+    title: 'Sample 2',
+    imageUrl: 'https://example.com/2.jpg',
+    score: 7.0,
+  );
+
   late MockDio mockDio;
+  late MockFetchTopAnimeUseCase mockUseCase;
 
   setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
@@ -48,31 +66,28 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     mockDio = MockDio();
+    mockUseCase = MockFetchTopAnimeUseCase();
   });
 
-  void arrangeSuccessResponses({
-    List<Map<String, dynamic>>? topData,
-    List<Map<String, dynamic>>? searchData,
-  }) {
+  void arrangeSearchResponses({List<Map<String, dynamic>>? data}) {
     when(
       () => mockDio.get(
         any(),
         queryParameters: any(named: 'queryParameters'),
       ),
-    ).thenAnswer((invocation) async {
+    ).thenAnswer((invocation) {
       final path = invocation.positionalArguments.first as String;
-      if (path.contains('top/anime')) {
-        return _buildResponse(path, topData ?? [sampleAnime]);
-      }
-      return _buildResponse(path, searchData ?? [anotherAnime]);
+      return Future.value(_buildResponse(path, data ?? [anotherAnime]));
     });
   }
 
   blocTest<AnimeBloc, AnimeState>(
     'FetchTopAnimeEvent emits AnimeLoaded with API data',
     build: () {
-      arrangeSuccessResponses(topData: [sampleAnime, anotherAnime]);
-      return AnimeBloc(mockDio);
+      when(() => mockUseCase()).thenAnswer(
+        (_) async => [sampleAnimeModel, anotherAnimeModel],
+      );
+      return AnimeBloc(mockDio, mockUseCase);
     },
     act: (bloc) => bloc.add(const FetchTopAnimeEvent()),
     wait: const Duration(milliseconds: 50),
@@ -89,18 +104,8 @@ void main() {
   blocTest<AnimeBloc, AnimeState>(
     'FetchTopAnimeEvent emits AnimeError when request fails',
     build: () {
-      when(
-        () => mockDio.get(
-          any(),
-          queryParameters: any(named: 'queryParameters'),
-        ),
-      ).thenThrow(
-        DioException(
-          requestOptions: RequestOptions(path: 'https://api.jikan.moe/v4/top/anime'),
-          message: 'error',
-        ),
-      );
-      return AnimeBloc(mockDio);
+      when(() => mockUseCase()).thenThrow(Exception('error'));
+      return AnimeBloc(mockDio, mockUseCase);
     },
     act: (bloc) => bloc.add(const FetchTopAnimeEvent()),
     wait: const Duration(milliseconds: 50),
@@ -113,7 +118,7 @@ void main() {
   blocTest<AnimeBloc, AnimeState>(
     'AddToFavoritesEvent and RemoveFromFavoritesEvent update favorites list',
     build: () {
-      return AnimeBloc(mockDio);
+      return AnimeBloc(mockDio, mockUseCase);
     },
     seed: () => const AnimeLoaded([sampleAnime]),
     act: (bloc) async {
@@ -138,8 +143,8 @@ void main() {
   blocTest<AnimeBloc, AnimeState>(
     'SearchAnimeEvent stores query into search history',
     build: () {
-      arrangeSuccessResponses(searchData: [anotherAnime]);
-      return AnimeBloc(mockDio);
+      arrangeSearchResponses(data: [anotherAnime]);
+      return AnimeBloc(mockDio, mockUseCase);
     },
     act: (bloc) async {
       bloc.add(const SearchAnimeEvent('naruto'));

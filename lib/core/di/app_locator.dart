@@ -1,5 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../features/anime/data/datasources/anime_remote_data_source.dart';
+import '../../features/anime/data/repositories/anime_repository_impl.dart';
+import '../../features/anime/domain/repositories/anime_repository.dart';
+import '../../features/anime/domain/usecases/fetch_top_anime.dart';
 import '../../features/auth/auth_module.dart';
 import '../../features/url_launcher/url_launcher_module.dart';
 
@@ -48,9 +52,17 @@ Future<void> configureDependencies({
   required SharedPreferences preferences,
 }) async {
   final locator = AppLocator.I;
+  final dio = Dio();
   locator
     ..registerSingleton<SharedPreferences>(preferences)
-    ..registerSingleton<Dio>(Dio());
+    ..registerSingleton<Dio>(dio)
+    ..registerSingleton<AnimeRemoteDataSource>(AnimeRemoteDataSourceImpl(dio))
+    ..registerSingleton<AnimeRepository>(
+      AnimeRepositoryImpl(locator.get<AnimeRemoteDataSource>()),
+    )
+    ..registerSingleton<FetchTopAnimeUseCase>(
+      FetchTopAnimeUseCase(locator.get<AnimeRepository>()),
+    );
 
   registerAuthModule(locator);
   registerUrlLauncherModule(locator);

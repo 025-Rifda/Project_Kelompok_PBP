@@ -5,6 +5,8 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:sizer/sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/sidebar.dart';
+import 'features/anime/domain/repositories/anime_repository.dart';
+import 'features/anime/domain/usecases/fetch_top_anime.dart';
 import 'bloc/anime_bloc.dart';
 import 'bloc/anime_event.dart';
 import 'cubit/anime_cubit.dart';
@@ -37,6 +39,12 @@ class AplikasiAnime extends StatelessWidget {
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider<Dio>.value(value: locator.get<Dio>()),
+            RepositoryProvider<AnimeRepository>.value(
+              value: locator.get<AnimeRepository>(),
+            ),
+            RepositoryProvider<FetchTopAnimeUseCase>.value(
+              value: locator.get<FetchTopAnimeUseCase>(),
+            ),
             RepositoryProvider<AuthRepository>.value(
               value: locator.get<AuthRepository>(),
             ),
@@ -51,7 +59,10 @@ class AplikasiAnime extends StatelessWidget {
             providers: [
               BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
               BlocProvider<AnimeBloc>(
-                create: (context) => AnimeBloc(context.read<Dio>())
+                create: (context) => AnimeBloc(
+                  context.read<Dio>(),
+                  context.read<FetchTopAnimeUseCase>(),
+                )
                   ..add(FetchTopAnimeEvent())
                   ..add(const LoadFavoritesEvent()),
               ),
