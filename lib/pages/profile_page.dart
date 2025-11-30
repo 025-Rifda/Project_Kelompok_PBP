@@ -12,6 +12,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
+import 'maps_page.dart';
+import 'package:latlong2/latlong.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -27,6 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String _joinDate = 'Januari 2024';
   String _phone = '+62';
   String _address = 'Belum diisi';
+  LatLng? _lastLocation;
 
   String? _profileImagePath;
   Uint8List? _profileImageBytes;
@@ -136,6 +139,13 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     }
 
+    double? lat = prefs.getDouble('user_latitude');
+    double? lng = prefs.getDouble('user_longitude');
+
+    if (lat != null && lng != null) {
+      _lastLocation = LatLng(lat, lng);
+    }
+
     setState(() {
       _username = username;
       _email = email;
@@ -227,6 +237,31 @@ class _ProfilePageState extends State<ProfilePage> {
         context,
       ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
     }
+  }
+
+  void _openMapPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MapsPage(
+          initialLocation:
+              _lastLocation ?? LatLng(-6.2, 106.8), // default Jakarta
+          onLocationSelected: (LatLng pos, String address) async {
+            final prefs = await SharedPreferences.getInstance();
+
+            await prefs.setDouble('user_latitude', pos.latitude);
+            await prefs.setDouble('user_longitude', pos.longitude);
+            await prefs.setString('user_address_${_username}', address);
+
+            setState(() {
+              _lastLocation = pos;
+              _address = address;
+              _addressController.text = address;
+            });
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -443,11 +478,66 @@ class _ProfilePageState extends State<ProfilePage> {
                         _phoneController,
                         editable: _isEditing,
                       ),
-                      _buildProfileField(
-                        'Address',
-                        _addressController,
-                        editable: _isEditing,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Address',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _isEditing
+                                      ? TextField(
+                                          controller: _addressController,
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        )
+                                      : Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 10,
+                                            horizontal: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.pink.shade200,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            _addressController.text,
+                                            style: TextStyle(fontSize: 11.sp),
+                                          ),
+                                        ),
+                                ),
+                              ],
+                            ),
+
+                            // 🔥 TARUH DISINI DENGAN IF DI DALAM LIST
+                            if (_isEditing)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: ElevatedButton.icon(
+                                  onPressed: _openMapPage,
+                                  icon: const Icon(Icons.location_on),
+                                  label: const Text("Pilih di Peta"),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
+
+                      const SizedBox(height: 20),
                       _buildProfileField('Bergabung Sejak', _joinDate),
                       const SizedBox(height: 20),
                       if (_isEditing)
@@ -506,28 +596,34 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp),
           ),
           const SizedBox(height: 5),
-          editable
-              ? TextField(
-                  controller: value,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                )
-              : Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.pink.shade200),
-                  ),
-                  child: Text(
-                    value is TextEditingController ? value.text : value,
-                    style: TextStyle(fontSize: 11.sp),
-                  ),
-                ),
+          Row(
+            children: [
+              Expanded(
+                child: editable
+                    ? TextField(
+                        controller: value,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      )
+                    : Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.pink.shade200),
+                        ),
+                        child: Text(
+                          value is TextEditingController ? value.text : value,
+                          style: TextStyle(fontSize: 11.sp),
+                        ),
+                      ),
+              ),
+            ],
+          ),
         ],
       ),
     );
