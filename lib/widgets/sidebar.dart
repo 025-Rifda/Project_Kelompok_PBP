@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:sizer/sizer.dart';
 import '../bloc/anime_bloc.dart';
 import '../bloc/anime_event.dart';
 import '../bloc/anime_state.dart';
@@ -19,9 +20,8 @@ class Sidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
-    final isTablet = screenWidth >= 600 && screenWidth < 1200;
+    final isMobile = 100.w < 600;
+    final isTablet = 100.w >= 600 && 100.w < 1200;
 
     final isDark = context.watch<ThemeCubit>().state;
 

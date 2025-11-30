@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 class AnimeCard extends StatelessWidget {
   final String title;
@@ -18,8 +19,7 @@ class AnimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
+    final isMobile = 100.w < 600;
 
     return GestureDetector(
       onTap: onTap,
