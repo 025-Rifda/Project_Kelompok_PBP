@@ -313,12 +313,12 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ],
-      );
+      ),
+    );
   }
 
   Widget _buildHeader() {
     final isMobile = MediaQuery.of(context).size.width < 700;
-    final imageSize = isMobile ? 150.0 : 300.0;
     return Container(
       padding: EdgeInsets.all(isMobile ? 9 : 20),
       decoration: const BoxDecoration(
@@ -582,7 +582,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
         ),
-      ),
     );
   }
 
