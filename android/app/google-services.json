@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:968550808800:android:140b1711b8708a7906a485",
         "android_client_info": {
-          "package_name": "com.NekoFeed"
+          "package_name": "com.nekofeed"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:968550808800:android:2af2b6ef705e9a4f06a485",
         "android_client_info": {
-          "package_name": "com.NekoFeed"
+          "package_name": "com.nekofeed"
         }
       },
       "oauth_client": [],

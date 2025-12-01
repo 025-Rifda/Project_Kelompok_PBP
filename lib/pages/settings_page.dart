@@ -108,71 +108,70 @@ class _SettingsPageState extends State<SettingsPage> {
     final isMobile = MediaQuery.of(context).size.width < 700;
 
     return SingleChildScrollView(
-        padding: EdgeInsets.all(isMobile ? 12.sp : 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildFilterBar(context, isMobile),
-            SizedBox(height: 8.sp),
+      padding: EdgeInsets.all(isMobile ? 12.sp : 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildFilterBar(context, isMobile),
+          SizedBox(height: 8.sp),
 
-            _buildSectionTitle('Tampilan', fontSize: isMobile ? 14.sp : 13.sp),
-            _buildSettingItem(
-              icon: Icons.dark_mode,
-              title: 'Mode Gelap',
-              subtitle: 'Aktifkan mode gelap untuk aplikasi',
-              trailing: Switch(
-                value: context.watch<ThemeCubit>().state,
-                onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
-              ),
-              iconSize: isMobile ? 15.sp : 14.sp,
-              titleSize: isMobile ? 13.sp : 12.sp,
-              subtitleSize: isMobile ? 12.sp : 11.sp,
+          _buildSectionTitle('Tampilan', fontSize: isMobile ? 16.sp : 14.sp),
+          _buildSettingItem(
+            icon: Icons.dark_mode,
+            title: 'Mode Gelap',
+            subtitle: 'Aktifkan mode gelap untuk aplikasi',
+            trailing: Switch(
+              value: context.watch<ThemeCubit>().state,
+              onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
             ),
+            iconSize: isMobile ? 17.sp : 15.sp,
+            titleSize: isMobile ? 15.sp : 13.sp,
+            subtitleSize: isMobile ? 14.sp : 12.sp,
+          ),
 
-            SizedBox(height: 8.sp),
+          SizedBox(height: 8.sp),
 
-            /// SECTION: Aplikasi
-            _buildSectionTitle('Aplikasi', fontSize: isMobile ? 17.sp : 14.sp),
-            _buildSettingItem(
-              icon: Icons.info,
-              title: 'Tentang',
-              subtitle: 'Versi aplikasi dan informasi lainnya',
-              onTap: () => context.go('/settings/about'),
-              iconSize: isMobile ? 15.sp : 14.sp,
-              titleSize: isMobile ? 13.sp : 12.sp,
-              subtitleSize: isMobile ? 12.sp : 11.sp,
-            ),
-            _buildSettingItem(
-              icon: Icons.help,
-              title: 'Bantuan',
-              subtitle: 'Panduan dan dukungan',
-              onTap: () => context.go('/settings/help'),
-              iconSize: isMobile ? 15.sp : 14.sp,
-              titleSize: isMobile ? 13.sp : 12.sp,
-              subtitleSize: isMobile ? 12.sp : 11.sp,
-            ),
-            _buildSettingItem(
-              icon: Icons.devices,
-              title: 'Informasi Perangkat',
-              subtitle: 'Lihat detail perangkat Anda',
-              onTap: () => context.go('/settings/device-info'),
-              iconSize: isMobile ? 15.sp : 14.sp,
-              titleSize: isMobile ? 13.sp : 12.sp,
-              subtitleSize: isMobile ? 12.sp : 11.sp,
-            ),
-            // ➤ Halaman "Tentang Pengembang" (ABOUT US)
-            _buildSettingItem(
-              icon: Icons.group,
-              title: 'Tentang Pengembang',
-              subtitle: 'Profil tim & informasi aplikasi',
-              onTap: () => context.go('/settings/pengembang'),
-              iconSize: isMobile ? 15.sp : 14.sp,
-              titleSize: isMobile ? 13.sp : 12.sp,
-              subtitleSize: isMobile ? 12.sp : 11.sp,
-            ),
-          ],
-        ),
-      );
+          /// SECTION: Aplikasi
+          _buildSectionTitle('Aplikasi', fontSize: isMobile ? 16.sp : 14.sp),
+          _buildSettingItem(
+            icon: Icons.info,
+            title: 'Tentang',
+            subtitle: 'Versi aplikasi dan informasi lainnya',
+            onTap: () => context.go('/settings/about'),
+            iconSize: isMobile ? 17.sp : 15.sp,
+            titleSize: isMobile ? 15.sp : 13.sp,
+            subtitleSize: isMobile ? 14.sp : 12.sp,
+          ),
+          _buildSettingItem(
+            icon: Icons.help,
+            title: 'Bantuan',
+            subtitle: 'Panduan dan dukungan',
+            onTap: () => context.go('/settings/help'),
+            iconSize: isMobile ? 17.sp : 15.sp,
+            titleSize: isMobile ? 15.sp : 13.sp,
+            subtitleSize: isMobile ? 14.sp : 12.sp,
+          ),
+          _buildSettingItem(
+            icon: Icons.devices,
+            title: 'Informasi Perangkat',
+            subtitle: 'Lihat detail perangkat Anda',
+            onTap: () => context.go('/settings/device-info'),
+            iconSize: isMobile ? 17.sp : 15.sp,
+            titleSize: isMobile ? 15.sp : 13.sp,
+            subtitleSize: isMobile ? 14.sp : 12.sp,
+          ),
+          _buildSettingItem(
+            icon: Icons.group,
+            title: 'Tentang Pengembang',
+            subtitle: 'Profil tim & informasi aplikasi',
+            onTap: () => context.go('/settings/pengembang'),
+            iconSize: isMobile ? 17.sp : 15.sp,
+            titleSize: isMobile ? 15.sp : 13.sp,
+            subtitleSize: isMobile ? 14.sp : 12.sp,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildFilterBar(BuildContext context, bool isMobile) {
@@ -187,7 +186,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Text(
             'Pengaturan',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontSize: isMobile ? 15.sp : 13.sp,
+              fontSize: isMobile ? 16.sp : 14.sp,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),

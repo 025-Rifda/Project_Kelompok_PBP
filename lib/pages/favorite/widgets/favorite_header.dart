@@ -13,8 +13,42 @@ class FavoriteHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isMobile) {
+      // MOBILE MODE
+      return AppBar(
+        automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 236, 185, 245),
+                Color.fromARGB(255, 172, 130, 220),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: Text(
+          'Anime Favorit',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: onBack,
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      );
+    }
+
+    // DESKTOP MODE
     return Container(
-      padding: EdgeInsets.all(isMobile ? 1.5.h : 2.h),
+      padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -35,10 +69,10 @@ class FavoriteHeader extends StatelessWidget {
             child: Center(
               child: Text(
                 'Anime Favorit',
-                style: TextStyle(
-                  color: Colors.white,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
-                  fontSize: isMobile ? 17.sp : 14.sp,
+                  color: Colors.white,
                 ),
               ),
             ),

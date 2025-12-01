@@ -209,7 +209,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 SizedBox(height: 1.h),
                 Text(
                   'Hari ini ada banyak anime populer buat kamu tonton!',
-                  style: TextStyle(color: Colors.white, fontSize: 11.sp),
+                  style: TextStyle(color: Colors.white, fontSize: 13.sp),
                 ),
               ],
             ),

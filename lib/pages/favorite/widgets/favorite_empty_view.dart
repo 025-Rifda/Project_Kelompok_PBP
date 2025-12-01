@@ -12,7 +12,7 @@ class FavoriteEmptyView extends StatelessWidget {
         children: [
           Icon(
             Icons.favorite_border,
-            size: 18.w,
+            size: 13.w,
             color: Colors.grey.withOpacity(0.5),
           ),
           SizedBox(height: 2.h),
@@ -27,7 +27,7 @@ class FavoriteEmptyView extends StatelessWidget {
           SizedBox(height: 1.h),
           Text(
             'Tambahkan anime dari halaman detail',
-            style: TextStyle(fontSize: 10.sp, color: Colors.grey),
+            style: TextStyle(fontSize: 12.sp, color: Colors.grey),
           ),
         ],
       ),

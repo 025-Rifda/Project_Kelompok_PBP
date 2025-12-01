@@ -190,6 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Permission.storage, // Android <13
         Permission.photos, // iOS
         Permission.camera, // Untuk kamera
+        Permission.mediaLibrary,
       ].request();
 
       if (statuses[Permission.storage]!.isGranted ||
@@ -359,235 +360,287 @@ class _ProfilePageState extends State<ProfilePage> {
     final isMobile = MediaQuery.of(context).size.width < 700;
     final imageSize = isMobile ? 150.0 : 300.0;
     return SingleChildScrollView(
-        padding: const EdgeInsets.all(30),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // LEFT: FOTO
-            Expanded(
-              flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // FOTO DI ATAS
-                  Column(
-                    children: [
-                      Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          _profileImageBytes != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.memory(
-                                    _profileImageBytes!,
-                                    width: imageSize,
-                                    height: imageSize,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Container(
+      padding: const EdgeInsets.all(30),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // LEFT: FOTO
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // FOTO DI ATAS
+                Column(
+                  children: [
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        _profileImageBytes != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.memory(
+                                  _profileImageBytes!,
                                   width: imageSize,
                                   height: imageSize,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primaryContainer,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Icon(
-                                    Icons.person,
-                                    size: isMobile ? 75.0 : 150.0,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onPrimaryContainer,
-                                  ),
+                                  fit: BoxFit.cover,
                                 ),
-                          Positioned(
-                            bottom: 4,
-                            right: 4,
-                            child: InkWell(
-                              onTap: () async {
-                                final isCamera = await showDialog<bool>(
-                                  context: context,
-                                  builder: (_) => AlertDialog(
-                                    title: const Text('Pilih Sumber Gambar'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, false),
-                                        child: const Text('Galeri'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, true),
-                                        child: const Text('Kamera'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                                _pickImage(useCamera: isCamera ?? false);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(6),
+                              )
+                            : Container(
+                                width: imageSize,
+                                height: imageSize,
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  shape: BoxShape.circle,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.white,
-                                  size: 20,
+                                child: Icon(
+                                  Icons.person,
+                                  size: isMobile ? 75.0 : 150.0,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
                                 ),
                               ),
+                        Positioned(
+                          bottom: 4,
+                          right: 4,
+                          child: InkWell(
+                            onTap: () async {
+                              final isCamera = await showDialog<bool>(
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  title: const Text('Pilih Sumber Gambar'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: const Text('Galeri'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: const Text('Kamera'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              _pickImage(useCamera: isCamera ?? false);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      _isEditing ? _usernameController.text : _username,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: isMobile ? 16 : 17,
+                      ),
+                    ),
+                    Text(
+                      _isEditing ? _emailController.text : _email,
+                      style: TextStyle(
+                        fontSize: isMobile ? 15 : 16,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 40),
+
+                // FORM DI BAWAH FOTO
+                Column(
+                  children: [
+                    _buildProfileField(
+                      'Nama',
+                      _usernameController,
+                      isMobile: isMobile,
+                      editable: _isEditing,
+                    ),
+                    _buildProfileField(
+                      'Email',
+                      _emailController,
+                      isMobile: isMobile,
+                      editable: _isEditing,
+                    ),
+                    _buildProfileField(
+                      'Phone Number',
+                      _phoneController,
+                      isMobile: isMobile,
+                      editable: _isEditing,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Address',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: isMobile ? 14 : 15,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _isEditing
+                                    ? TextField(
+                                        controller: _addressController,
+                                        style: TextStyle(
+                                          fontSize: isMobile ? 13 : 14,
+                                        ),
+                                        decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      )
+                                    : Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 10,
+                                          horizontal: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.pink.shade200,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          _addressController.text,
+                                          style: TextStyle(
+                                            fontSize: isMobile ? 14 : 15,
+                                          ),
+                                        ),
+                                      ),
+                              ),
+                            ],
+                          ),
+
+                          if (_isEditing)
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: ElevatedButton.icon(
+                                onPressed: _openMapPage,
+                                icon: const Icon(Icons.location_on),
+                                label: Text(
+                                  "Pilih di Peta",
+                                  style: TextStyle(
+                                    fontSize: isMobile ? 14 : 15,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+                    _buildProfileField(
+                      'Bergabung Sejak',
+                      _joinDate,
+                      isMobile: isMobile,
+                    ),
+                    const SizedBox(height: 20),
+                    if (_isEditing)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: _saveProfile,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              minimumSize: Size(
+                                isMobile ? 120 : 150,
+                                isMobile ? 40 : 45,
+                              ), // Ukuran tombol
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isMobile ? 14 : 18,
+                                vertical: isMobile ? 10 : 12,
+                              ),
+                            ),
+                            child: Text(
+                              'Simpan',
+                              style: TextStyle(fontSize: isMobile ? 14 : 15),
+                            ),
+                          ),
+                          SizedBox(width: isMobile ? 8 : 12),
+                          ElevatedButton(
+                            onPressed: _cancelEditing,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              minimumSize: Size(
+                                isMobile ? 120 : 150,
+                                isMobile ? 40 : 45,
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isMobile ? 14 : 18,
+                                vertical: isMobile ? 10 : 12,
+                              ),
+                            ),
+                            child: Text(
+                              'Batal',
+                              style: TextStyle(fontSize: isMobile ? 14 : 15),
                             ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        _isEditing ? _usernameController.text : _username,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                      Text(
-                        _isEditing ? _emailController.text : _email,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  // FORM DI BAWAH FOTO
-                  Column(
-                    children: [
-                      _buildProfileField(
-                        'Nama',
-                        _usernameController,
-                        editable: _isEditing,
-                      ),
-                      _buildProfileField(
-                        'Email',
-                        _emailController,
-                        editable: _isEditing,
-                      ),
-                      _buildProfileField(
-                        'Phone Number',
-                        _phoneController,
-                        editable: _isEditing,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Address',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12.sp,
-                              ),
+                      )
+                    else
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: _toggleEditing,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(
+                              isMobile ? 140 : 160,
+                              isMobile ? 42 : 48,
                             ),
-                            const SizedBox(height: 5),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _isEditing
-                                      ? TextField(
-                                          controller: _addressController,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        )
-                                      : Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 10,
-                                            horizontal: 12,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
-                                            border: Border.all(
-                                              color: Colors.pink.shade200,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            _addressController.text,
-                                            style: TextStyle(fontSize: 11.sp),
-                                          ),
-                                        ),
-                                ),
-                              ],
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile ? 16 : 20,
+                              vertical: isMobile ? 10 : 14,
                             ),
-
-                            // 🔥 TARUH DISINI DENGAN IF DI DALAM LIST
-                            if (_isEditing)
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: ElevatedButton.icon(
-                                  onPressed: _openMapPage,
-                                  icon: const Icon(Icons.location_on),
-                                  label: const Text("Pilih di Peta"),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-                      _buildProfileField('Bergabung Sejak', _joinDate),
-                      const SizedBox(height: 20),
-                      if (_isEditing)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: _saveProfile,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: const Text('Simpan'),
-                            ),
-                            const SizedBox(width: 10),
-                            ElevatedButton(
-                              onPressed: _cancelEditing,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: const Text('Batal'),
-                            ),
-                          ],
-                        )
-                      else
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: _toggleEditing,
-                            child: const Text('Edit Profil'),
+                          ),
+                          child: Text(
+                            'Edit Profil',
+                            style: TextStyle(fontSize: isMobile ? 14 : 15),
                           ),
                         ),
-                    ],
-                  ),
-                ],
-              ),
+                      ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildProfileField(
     String label,
     dynamic value, {
+    required bool isMobile,
     bool editable = false,
   }) {
     return Padding(
@@ -597,7 +650,10 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Text(
             label,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: isMobile ? 14 : 15,
+            ),
           ),
           const SizedBox(height: 5),
           Row(
@@ -606,6 +662,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: editable
                     ? TextField(
                         controller: value,
+                        style: TextStyle(fontSize: isMobile ? 13 : 14),
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
@@ -622,7 +679,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         child: Text(
                           value is TextEditingController ? value.text : value,
-                          style: TextStyle(fontSize: 11.sp),
+                          style: TextStyle(fontSize: isMobile ? 14 : 15),
                         ),
                       ),
               ),
