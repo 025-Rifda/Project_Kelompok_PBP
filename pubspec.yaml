@@ -92,7 +92,7 @@ flutter:
     - assets/foto pengembang/rifda.jpg
     - assets/foto pengembang/rista.jpg
 
-# KONFIGURASI ICON (tidak ada yang dihapus)
+# KONFIGURASI ICON 
 flutter_launcher_icons:
   android: true
   ios: true
