@@ -41,48 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCVc06zbGRxi_Oc3CI0Lt3iiJSLUZi_WBA',
-    appId: '1:857868084085:web:1d168dd08b475e2d38693c',
-    messagingSenderId: '857868084085',
-    projectId: 'kel-1-nekofeed',
-    authDomain: 'kel-1-nekofeed.firebaseapp.com',
-    storageBucket: 'kel-1-nekofeed.firebasestorage.app',
-    measurementId: 'G-TZDVVT2N6E',
+    apiKey: 'AIzaSyDEeptMLBjy_p9Qdw4Q3pidx_juRMkgUrE',
+    appId: '1:968550808800:web:75f0b64eca0d74f906a485',
+    messagingSenderId: '968550808800',
+    projectId: 'nekofeed-67740',
+    authDomain: 'nekofeed-67740.firebaseapp.com',
+    storageBucket: 'nekofeed-67740.firebasestorage.app',
+    measurementId: 'G-S6KKBHQMY1',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAwOKkGcqwGok7yvQBEjpXF9pQNwszsauc',
-    appId: '1:857868084085:android:2c1431748feb257838693c',
-    messagingSenderId: '857868084085',
-    projectId: 'kel-1-nekofeed',
-    storageBucket: 'kel-1-nekofeed.firebasestorage.app',
+    apiKey: 'AIzaSyCVVnrop7YwAvhDlNLhx2v3myfWurn6KKM',
+    appId: '1:968550808800:android:2af2b6ef705e9a4f06a485',
+    messagingSenderId: '968550808800',
+    projectId: 'nekofeed-67740',
+    storageBucket: 'nekofeed-67740.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBgRhysyoZtveWfKOaVzLhCm6SNr3Jq0LA',
-    appId: '1:857868084085:ios:cbf6a72122f4811238693c',
-    messagingSenderId: '857868084085',
-    projectId: 'kel-1-nekofeed',
-    storageBucket: 'kel-1-nekofeed.firebasestorage.app',
+    apiKey: 'AIzaSyCE3rs3ea2T2KnTPWjp_KDM9ThUQ__uF8A',
+    appId: '1:968550808800:ios:58e258d66dfc149206a485',
+    messagingSenderId: '968550808800',
+    projectId: 'nekofeed-67740',
+    storageBucket: 'nekofeed-67740.firebasestorage.app',
     iosBundleId: 'com.example.flutterApplication1',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBgRhysyoZtveWfKOaVzLhCm6SNr3Jq0LA',
-    appId: '1:857868084085:ios:cbf6a72122f4811238693c',
-    messagingSenderId: '857868084085',
-    projectId: 'kel-1-nekofeed',
-    storageBucket: 'kel-1-nekofeed.firebasestorage.app',
+    apiKey: 'AIzaSyCE3rs3ea2T2KnTPWjp_KDM9ThUQ__uF8A',
+    appId: '1:968550808800:ios:58e258d66dfc149206a485',
+    messagingSenderId: '968550808800',
+    projectId: 'nekofeed-67740',
+    storageBucket: 'nekofeed-67740.firebasestorage.app',
     iosBundleId: 'com.example.flutterApplication1',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCVc06zbGRxi_Oc3CI0Lt3iiJSLUZi_WBA',
-    appId: '1:857868084085:web:4fee9e6072284dae38693c',
-    messagingSenderId: '857868084085',
-    projectId: 'kel-1-nekofeed',
-    authDomain: 'kel-1-nekofeed.firebaseapp.com',
-    storageBucket: 'kel-1-nekofeed.firebasestorage.app',
-    measurementId: 'G-CKP0TFXNW8',
+    apiKey: 'AIzaSyDEeptMLBjy_p9Qdw4Q3pidx_juRMkgUrE',
+    appId: '1:968550808800:web:75f0b64eca0d74f906a485',
+    messagingSenderId: '968550808800',
+    projectId: 'nekofeed-67740',
+    authDomain: 'nekofeed-67740.firebaseapp.com',
+    storageBucket: 'nekofeed-67740.firebasestorage.app',
+    measurementId: 'G-S6KKBHQMY1',
   );
+
 }

@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "857868084085",
-    "project_id": "kel-1-nekofeed",
-    "storage_bucket": "kel-1-nekofeed.firebasestorage.app"
+    "project_number": "968550808800",
+    "project_id": "nekofeed-67740",
+    "storage_bucket": "nekofeed-67740.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:857868084085:android:4d7af969f253fc7438693c",
+        "mobilesdk_app_id": "1:968550808800:android:140b1711b8708a7906a485",
         "android_client_info": {
-          "package_name": "com.Kel1.NekoFeed"
+          "package_name": "com.NekoFeed"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAwOKkGcqwGok7yvQBEjpXF9pQNwszsauc"
+          "current_key": "AIzaSyCVVnrop7YwAvhDlNLhx2v3myfWurn6KKM"
         }
       ],
       "services": {
@@ -26,15 +26,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:857868084085:android:2c1431748feb257838693c",
+        "mobilesdk_app_id": "1:968550808800:android:2af2b6ef705e9a4f06a485",
         "android_client_info": {
-          "package_name": "com.example.flutter_application_1"
+          "package_name": "com.NekoFeed"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAwOKkGcqwGok7yvQBEjpXF9pQNwszsauc"
+          "current_key": "AIzaSyCVVnrop7YwAvhDlNLhx2v3myfWurn6KKM"
         }
       ],
       "services": {

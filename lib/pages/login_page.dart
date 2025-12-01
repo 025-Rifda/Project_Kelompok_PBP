@@ -106,9 +106,9 @@ class _LoginPageState extends State<LoginPage> {
   void _login() async {
     if (_formKey.currentState!.validate()) {
       context.read<AuthCubit>().login(
-            email: _usernameController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
+        email: _usernameController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
     }
   }
 
@@ -190,9 +190,14 @@ class _LoginPageState extends State<LoginPage> {
                               child: Text(
                                 'Masuk ke NekoFeed',
                                 style: GoogleFonts.orbitron(
-                                  fontSize: 28,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color.fromARGB(255, 136, 38, 151),
+                                  color: const Color.fromARGB(
+                                    255,
+                                    136,
+                                    38,
+                                    151,
+                                  ),
                                   letterSpacing: 2,
                                   shadows: [
                                     Shadow(
@@ -254,7 +259,9 @@ class _LoginPageState extends State<LoginPage> {
                                   offset: const Offset(0, 10),
                                 ),
                                 BoxShadow(
-                                  color: const Color(0xFFA48CFF).withOpacity(0.1),
+                                  color: const Color(
+                                    0xFFA48CFF,
+                                  ).withOpacity(0.1),
                                   blurRadius: 10,
                                   offset: const Offset(0, 5),
                                 ),
@@ -332,7 +339,8 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                       onPressed: () {
                                         setState(() {
-                                          _isPasswordVisible = !_isPasswordVisible;
+                                          _isPasswordVisible =
+                                              !_isPasswordVisible;
                                         });
                                       },
                                     ),
@@ -415,8 +423,9 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed:
-                                      isLoading ? null : () => context.go('/register'),
+                                  onPressed: isLoading
+                                      ? null
+                                      : () => context.go('/register'),
                                   child: Text(
                                     'Belum punya akun? Daftar di sini',
                                     style: GoogleFonts.inter(
@@ -443,9 +452,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 if (isLoading)
                   Positioned.fill(
-                    child: Container(
-                      color: Colors.black.withOpacity(0.05),
-                    ),
+                    child: Container(color: Colors.black.withOpacity(0.05)),
                   ),
               ],
             );

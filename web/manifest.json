@@ -1,6 +1,6 @@
 {
-    "name": "flutter_application_1",
-    "short_name": "flutter_application_1",
+    "name": "NekoFeed",
+    "short_name": "NekoFeed",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#hexcode",

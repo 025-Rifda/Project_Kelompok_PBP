@@ -220,7 +220,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Text(
                           'Daftar ke NekoFeed',
                           style: GoogleFonts.orbitron(
-                            fontSize: 28,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: const Color.fromARGB(255, 136, 38, 151),
                             letterSpacing: 2,
