@@ -107,8 +107,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildContent() {
     final isMobile = MediaQuery.of(context).size.width < 700;
 
-    return Expanded(
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: EdgeInsets.all(isMobile ? 12.sp : 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,8 +172,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildFilterBar(BuildContext context, bool isMobile) {

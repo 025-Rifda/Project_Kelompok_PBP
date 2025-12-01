@@ -304,10 +304,16 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Row(
         children: [
           const Sidebar(selectedPage: 'Profil'),
-          Expanded(child: Column(children: [_buildHeader(), _buildContent()])),
+          Expanded(
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(child: _buildContent()),
+              ],
+            ),
+          ),
         ],
-      ),
-    );
+      );
   }
 
   Widget _buildHeader() {
@@ -352,8 +358,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildContent() {
     final isMobile = MediaQuery.of(context).size.width < 700;
     final imageSize = isMobile ? 150.0 : 300.0;
-    return Expanded(
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(30),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
